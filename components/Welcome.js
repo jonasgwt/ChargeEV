@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { StyleSheet, Text, SafeAreaView, Image, Pressable } from "react-native";
-
+import { Button } from "@rneui/base";
 export default function Welcome({ navigation }) {
 
   const [page, setPage] = useState(0);
@@ -35,7 +35,13 @@ export default function Welcome({ navigation }) {
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.subTitle}>{subTitle}</Text>
       <Text style={styles.text}>{text}</Text>
-      <Pressable style={styles.nextButton} onPress={handleNext}><Text style={styles.buttonText}>{buttonText}</Text></Pressable>
+      <Button title = {buttonText} 
+      onPress={handleNext} 
+      containerStyle= {styles.Button} 
+      buttonStyle = {{width:"100%"}}
+      color="green"
+      >
+      </Button>
     </SafeAreaView>
   );
 }
@@ -67,16 +73,10 @@ const styles = StyleSheet.create({
     fontFamily: "Inter-Light",
     fontSize: 20,
   },
-  nextButton: {
-    backgroundColor: "#1BB530",
-    height: 50,
-    width: 250,
+  Button: {
     position: "absolute",
     top: "100%",
     borderRadius: 5,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center"
   }, 
   buttonText: {
     fontFamily: "Inter-Regular",
