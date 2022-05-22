@@ -17,21 +17,19 @@ export default function Login({ navigation }) {
   const [error, setErrorMessage] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isSignedIn, setIsSignedIn] = useState(false);
   const [invalidAccount, setInvalidAccount] = useState(false);
   
-
+  // Login user
   const handleLogin = () => {
     signInWithEmailAndPassword(authentication, email, password)
       .then((re) => {
-        setIsSignedIn(true);
         setInvalidAccount(false);
         AsyncStorage.setItem('email', email);
         AsyncStorage.setItem('password', password);
         navigation.navigate("Home");
       })
-      .catch((re) => {
-        console.log(re);
+      .catch((err) => {
+        console.log(err);
         setInvalidAccount(true);
       })
   };
@@ -46,8 +44,8 @@ export default function Login({ navigation }) {
       <View style={styles.titleContainer}>
         <Text h1>Login</Text>
         <Text h2>Lorem ipsum dolor sit amet</Text>
-        <Text h4 style={{ color: "red", marginTop: 10 }}>
-        {invalidAccount? <Text>Invalid Password Or Email</Text> : <Text> </Text>}
+        <Text h4 style={{ color: "red", marginTop: 10, marginBottom: 10 }}>
+        {invalidAccount? "Invalid Password Or Email" : ""}
         </Text>
       </View>
       <Input

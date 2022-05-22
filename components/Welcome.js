@@ -35,7 +35,11 @@ export default function Welcome({ navigation }) {
   // handles onclick of next
   const handleNext = () => {
     if (page < 2) setPage((page) => page + 1);
-    else navigation.navigate("Register");
+    else {
+      navigation.navigate("Register");
+      setPage(0);
+      setButtonText("Next")
+    }
   };
 
   return (

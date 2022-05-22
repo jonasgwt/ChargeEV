@@ -11,7 +11,6 @@ import Login from "./components/Login.js";
 import { themeConfig } from "./themeConfig.js";
 import AppLoading from "expo-app-loading";
 import { authentication } from "./firebase/firebase-config";
-import LoginScreen from "./components/LoginScreen.js";
 import HomeScreen from "./components/HomeScreen.js";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
@@ -25,9 +24,11 @@ const Stack = createNativeStackNavigator();
 const theme = createTheme(themeConfig);
 
 export default function App() {
+  
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [isLoading, setLoading] = useState(true);
 
+  // Auto login if available
   useEffect(() => {
     const storeData = async () => {
       try {
@@ -44,14 +45,18 @@ export default function App() {
               setLoading(false);
             });
         }
-      } catch (e) {
-        console.log(e);
+      } catch (err) {
+        console.log(err);
       }
     };
     storeData();
   }, []);
 
+
+  // Loads in fonts
   const [loaded] = useFonts(fontsToBeLoaded);
+
+  // Show splash screen if loading
   if (!loaded || isLoading) return <AppLoading />;
 
   return (

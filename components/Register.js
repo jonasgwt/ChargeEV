@@ -17,30 +17,40 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
-  updateProfile
+  updateProfile,
 } from "firebase/auth";
 
 export default function Register({ navigation }) {
+  
   const [email, setEmail] = useState("");
   const [firstName, setfirstName] = useState("");
   const [lastName, setlastName] = useState("");
   const [password, setPassword] = useState("");
   const [error, setErrorMessage] = useState("");
 
+  // Registers user
   const handleRegister = async (e) => {
-    if (firstName.length == 0) {
-      alert("name cannot be empty");
+    if (firstName == "" || lastName == "" || email == "" || password == "") {
+      setErrorMessage("Ensure that all fields are filled");
     } else {
-      const { user } = await createUserWithEmailAndPassword(authentication, email, password)
-      console.log(`User ${user.uid} created`)
-      await updateProfile(user, {
-        displayName: firstName
-      });
-      console.log(`User profile ${user.displayName} updated`)
-      navigation.navigate("Home")
+      try {
+        const { user } = await createUserWithEmailAndPassword(authentication, email, password);
+        console.log(`User ${user.uid} created`);
+        await updateProfile(user, {
+          displayName: firstName + lastName,
+        });
+        console.log(`User profile ${user.displayName} updated`);
+        navigation.navigate("Home");
+      } catch (err) {
+        switch (err.code) {
+          case "auth/invalid-email": setErrorMessage("Email is not valid")
+          case 'auth/email-already-in-use': setErrorMessage("Email already in use")
+          case 'auth/weak-password': setErrorMessage("Password needs to be at least 6 characters")
+        }
+        console.log(err)
+      }
     }
-  }
-
+  };
 
   return (
     <KeyboardAvoidingView

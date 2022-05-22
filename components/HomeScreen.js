@@ -8,7 +8,8 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
-  updateProfile
+  updateUser,
+  updateCurrentUser
 } from "firebase/auth";
 import Welcome from './Welcome';
 import { Button } from 'react-native-elements';
@@ -24,8 +25,10 @@ const NextScreen = ({ navigation }) => {
     navigation.navigate("Welcome");
   }
 
+
   return (
-    <SafeAreaView style={{flex:1, alignItems:"center", justifyContent:"center"}}>
+    <SafeAreaView style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+      <Text>{authentication.currentUser.email}</Text>
       <Text>{authentication.currentUser.displayName}</Text>
       <Button title={"Sign Out"} onPress={SignOut}></Button>
     </SafeAreaView>
@@ -45,8 +48,6 @@ const SettingsScreen = ({ navigation }) => {
 const Tab = createMaterialBottomTabNavigator();
 
 export default function HomeScreen() {
-  //updateProfile(authentication.currentUser, {displayName: "Jonas"})
-  console.log(authentication.currentUser.displayName)
   return (
       <Tab.Navigator>
         <Tab.Screen name="Next Screen" component={NextScreen} />
