@@ -1,14 +1,28 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import * as React from 'react';
+import { Text, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+import SettingsScreen from './SettingsScreen';
 
-const HomeScreen = () => {
+function NextScreen() {
   return (
-    <View>
-      <Text>HomeScreen</Text>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>Home!</Text>
     </View>
-  )
+  );
 }
 
-export default HomeScreen
 
-const styles = StyleSheet.create({})
+
+const Tab = createMaterialBottomTabNavigator();
+
+export default function HomeScreen() {
+  return (
+      <Tab.Navigator>
+        <Tab.Screen name="NextScreen" component={NextScreen} />
+        <Tab.Screen name="Settings" component={SettingsScreen} />
+      </Tab.Navigator>
+  );
+}
+    
+
