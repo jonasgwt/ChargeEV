@@ -8,15 +8,30 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, Text, Input } from "@rneui/themed";
+import { authentication } from '../firebase/firebase-config';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword ,signOut} from "firebase/auth";
+
 
 export default function Login({ navigation }) {
   const [error, setErrorMessage] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  const [invalidAccount, setInvalidAccount] = useState(false);
+  
 
   const handleLogin = () => {
-    console.log("clicked");
-  };
+    signInWithEmailAndPassword(authentication, email, password)
+        .then((re) => { 
+            setIsSignedIn(true);
+            setInvalidAccount(false);
+            navigation.navigate("Home")
+        })
+        .catch((re) => {
+            console.log(re);
+            setInvalidAccount(true);
+        })
+    }
 
   return (
     <KeyboardAvoidingView
@@ -27,7 +42,7 @@ export default function Login({ navigation }) {
         <Text h1>Login</Text>
         <Text h2>Lorem ipsum dolor sit amet</Text>
         <Text h4 style={{ color: "red", marginTop: 10 }}>
-          {error}
+        {invalidAccount? <Text>Invalid Password Or Email</Text> : <Text> </Text>}
         </Text>
       </View>
       <Input

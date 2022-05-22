@@ -11,6 +11,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Axios from "axios";
 import { color } from "react-native-elements/dist/helpers";
 import { Button, Text, Input } from "@rneui/themed";
+import { authentication } from '../firebase/firebase-config';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword ,signOut} from "firebase/auth";
+
 
 export default function Register({ navigation }) {
   const [email, setEmail] = useState("");
@@ -18,31 +21,17 @@ export default function Register({ navigation }) {
   const [lastName, setlastName] = useState("");
   const [password, setPassword] = useState("");
   const [error, setErrorMessage] = useState("");
+  const [isSignedIn, setIsSignedIn] = useState(false);
 
   const handleRegister = () => {
-    if (
-      email.length == 0 ||
-      firstName.length == 0 ||
-      lastName.length == 0 ||
-      password.length == 0
-    ) {
-      setErrorMessage("Ensure all fields are filled up");
-    } else {
-      setErrorMessage("");
-      Axios.post("http://chargeev.api.nhhs-sjb.org:3000/api/register", {
-        userEmail: email,
-        userFirstName: firstName,
-        userLastName: lastName,
-        userPassword: password,
-      })
-        .then(() => {
-          console.log("successfully registered");
-          navigation.navigate("Login");
+    createUserWithEmailAndPassword(authentication, email, password)
+        .then((re) => { 
+            console.log(re);
+            setIsSignedIn(true);
         })
-        .catch((err) => {
-          console.error(err);
-        });
-    }
+        .catch((re) => {
+            console.log(re);
+        })
   };
 
   return (

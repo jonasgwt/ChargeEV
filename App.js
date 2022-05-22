@@ -28,7 +28,7 @@ export default function App() {
         <Stack.Navigator screenOptions={{headerShown: false}} style={styles.container} initialRouteName="Welcome">
           <Stack.Screen name="Welcome" component={Welcome} />
           <Stack.Screen name="Register" component={Register} />
-          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="Home" component={HomeScreen} />
         </Stack.Navigator>
       </NavigationContainer>
