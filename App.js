@@ -26,26 +26,33 @@ const theme = createTheme(themeConfig);
 
 export default function App() {
   const [isSignedIn, setIsSignedIn] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [isLoading, setLoading] = useState(true);
 
-  const test = () => {
-    AsyncStorage.getItem("email", (err, res) => res != null ? setEmail(res) : setEmail(""));
-    AsyncStorage.getItem("password", (err, res) => res != null ? setPassword(res) : setPassword(""));
-    
-    console.log(email)
-    console.log(password)
-
-    if (email != null && password != null) {
-      console.log("signing inr")
-      signInWithEmailAndPassword(authentication, email, password)
-        .then((res) => setIsSignedIn(true))
-      .catch((err) => console.log(err))
-    }
-  }
+  useEffect(() => {
+    const storeData = async () => {
+      try {
+        const email = await AsyncStorage.getItem("email");
+        const password = await AsyncStorage.getItem("password");
+        if (email != "" && password != "") {
+          signInWithEmailAndPassword(authentication, email, password)
+            .then((res) => {
+              setIsSignedIn(true);
+              setLoading(false);
+            })
+            .catch((err) => {
+              console.log("Cannot auto-login");
+              setLoading(false);
+            });
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    storeData();
+  }, []);
 
   const [loaded] = useFonts(fontsToBeLoaded);
-  if (!loaded) return <AppLoading />;
+  if (!loaded || isLoading) return <AppLoading />;
 
   return (
     <ThemeProvider theme={theme}>
@@ -53,15 +60,11 @@ export default function App() {
         <Stack.Navigator
           screenOptions={{ headerShown: false }}
           style={styles.container}
-          initialRouteName="Welcome"
+          initialRouteName={isSignedIn ? "Home" : "Welcome"}
         >
           <Stack.Screen name="Welcome" component={Welcome} />
           <Stack.Screen name="Register" component={Register} />
-          <Stack.Screen
-            name="Login"
-            component={Login}
-            initialParams={{ itemId: 42 }}
-          />
+          <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="Home" component={HomeScreen} />
         </Stack.Navigator>
       </NavigationContainer>
