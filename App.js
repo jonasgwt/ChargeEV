@@ -4,13 +4,16 @@ import { fontsToBeLoaded } from "./fontsToBeLoaded.js";
 import { useFonts } from 'expo-font';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { ThemeProvider, createTheme } from '@rneui/themed';
 import Welcome from "./components/Welcome";
 import Register from "./components/Register.js";
 import Login from "./components/Login.js";
+import { themeConfig } from "./themeConfig.js"
 import AppLoading from "expo-app-loading";
 
 
 const Stack = createNativeStackNavigator();
+const theme = createTheme(themeConfig);
 
 export default function App() {
 
@@ -18,6 +21,7 @@ export default function App() {
   if (!loaded) return <AppLoading />
 
   return (
+    <ThemeProvider theme={theme}>
       <NavigationContainer style={styles.container}>
         <Stack.Navigator screenOptions={{headerShown: false}} style={styles.container} initialRouteName="Welcome">
           <Stack.Screen name="Welcome" component={Welcome} />
@@ -25,6 +29,7 @@ export default function App() {
           <Stack.Screen name="Login" component={Login} />
         </Stack.Navigator>
       </NavigationContainer>
+    </ThemeProvider>
   );
 }
 
