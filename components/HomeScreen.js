@@ -1,15 +1,30 @@
-import * as React from 'react';
-import { Text, View } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { SafeAreaView, StyleSheet, Text, View } from 'react-native'
+import React from 'react'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import SettingsScreen from './SettingsScreen';
+import { authentication } from "../firebase/firebase-config";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+} from "firebase/auth";
 
-function NextScreen() {
+const NextScreen = ({ navigation }) => {
+
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Home!</Text>
-    </View>
-  );
+    <SafeAreaView style={{flex:1, alignItems:"center", justifyContent:"center"}}>
+      <Text>{authentication.currentUser.email}</Text>
+    </SafeAreaView>
+  )
+}
+
+const SettingsScreen = ({ navigation }) => {
+  return (
+    <SafeAreaView style={{flex:1, alignItems:"center", justifyContent:"center"}}>
+      <Text>{authentication.currentUser.email}</Text>
+    </SafeAreaView>
+  )
 }
 
 

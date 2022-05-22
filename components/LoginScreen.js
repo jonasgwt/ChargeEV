@@ -7,8 +7,6 @@ import { authentication } from '../firebase/firebase-config';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword ,signOut} from "firebase/auth";
 
 
-
-
 const LoginScreen = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");

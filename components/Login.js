@@ -9,6 +9,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, Text, Input } from "@rneui/themed";
 import { authentication } from '../firebase/firebase-config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword ,signOut} from "firebase/auth";
 
 
@@ -22,16 +23,20 @@ export default function Login({ navigation }) {
 
   const handleLogin = () => {
     signInWithEmailAndPassword(authentication, email, password)
-        .then((re) => { 
-            setIsSignedIn(true);
-            setInvalidAccount(false);
-            navigation.navigate("Home")
-        })
-        .catch((re) => {
-            console.log(re);
-            setInvalidAccount(true);
-        })
-    }
+      .then((re) => {
+        setIsSignedIn(true);
+        setInvalidAccount(false);
+        AsyncStorage.setItem('email', email);
+        AsyncStorage.setItem('password', password);
+        navigation.navigate("Home");
+      })
+      .catch((re) => {
+        console.log(re);
+        setInvalidAccount(true);
+      })
+  };
+
+  
 
   return (
     <KeyboardAvoidingView

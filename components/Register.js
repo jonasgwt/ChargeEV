@@ -11,9 +11,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Axios from "axios";
 import { color } from "react-native-elements/dist/helpers";
 import { Button, Text, Input } from "@rneui/themed";
-import { authentication } from '../firebase/firebase-config';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword ,signOut} from "firebase/auth";
-
+import { authentication } from "../firebase/firebase-config";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+} from "firebase/auth";
 
 export default function Register({ navigation }) {
   const [email, setEmail] = useState("");
@@ -21,18 +25,18 @@ export default function Register({ navigation }) {
   const [lastName, setlastName] = useState("");
   const [password, setPassword] = useState("");
   const [error, setErrorMessage] = useState("");
-  const [isSignedIn, setIsSignedIn] = useState(false);
 
   const handleRegister = () => {
     createUserWithEmailAndPassword(authentication, email, password)
-        .then((re) => { 
-            console.log(re);
-            setIsSignedIn(true);
-        })
-        .catch((re) => {
-            console.log(re);
-        })
+      .then((re) => {
+        console.log(re);
+        navigation.navigate("Home");
+      })
+      .catch((re) => {
+        console.log(re);
+      });
   };
+
 
   return (
     <KeyboardAvoidingView
@@ -50,12 +54,11 @@ export default function Register({ navigation }) {
         placeholder="Email"
         keyboardType="email-address"
         onChangeText={setEmail}
-        errorMessage="hello"
       />
       <View style={styles.nameContainer}>
         <Input
           inputContainerStyle={{ width: "100%" }}
-          containerStyle = {{width: "50%"}}
+          containerStyle={{ width: "50%" }}
           placeholder="First Name"
           onChangeText={setfirstName}
           textContentType="name"
@@ -63,7 +66,7 @@ export default function Register({ navigation }) {
         />
         <Input
           inputContainerStyle={{ width: "100%" }}
-          containerStyle = {{width: "50%"}}
+          containerStyle={{ width: "50%" }}
           placeholder="Last Name"
           onChangeText={setlastName}
           textContentType="name"
@@ -102,7 +105,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: "5%",
-    marginBottom: "30%"
+    marginBottom: "30%",
   },
   nameContainer: {
     display: "flex",
