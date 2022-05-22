@@ -61,6 +61,7 @@ export default function Register({ navigation }) {
         placeholder="Email"
         keyboardType="email-address"
         onChangeText={setEmail}
+        errorMessage="hello"
       />
       <View style={styles.nameContainer}>
         <Input
