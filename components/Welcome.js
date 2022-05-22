@@ -1,30 +1,42 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { StyleSheet, Text, SafeAreaView, Image, Pressable } from "react-native";
-import { Button } from "@rneui/base";
+import { StyleSheet, SafeAreaView, Image, Pressable } from "react-native";
+import { Button, Text } from "@rneui/themed";
+
 export default function Welcome({ navigation }) {
+  
+  // Content
+  const titles = ["Welcome", "Hosts", "Users"];
+  const subTitles = [
+    "Lorem Ipsum dolor sit atment,",
+    "Lorem Ipsum dolor sit atment,",
+    "Lorem Ipsum dolor sit atment,",
+  ];
+  const texts = [
+    "onsectetur adipiscing elit.",
+    "onsectetur adipiscing elit.",
+    "onsectetur adipiscing elit.",
+  ];
 
+  // States
   const [page, setPage] = useState(0);
-  const titles = ['Welcome', 'Hosts', 'Users'];
-  const subTitles = ['Lorem Ipsum dolor sit atment,', 'Lorem Ipsum dolor sit atment,', 'Lorem Ipsum dolor sit atment,'];
-  const texts = ['onsectetur adipiscing elit.', 'onsectetur adipiscing elit.', 'onsectetur adipiscing elit.'];
-
-  const [title, setTitle] = useState(titles[0])
-  const [subTitle, setSubTitle] = useState(subTitles[0])
-  const [text, setText] = useState(texts[0])
+  const [title, setTitle] = useState(titles[0]);
+  const [subTitle, setSubTitle] = useState(subTitles[0]);
+  const [text, setText] = useState(texts[0]);
   const [buttonText, setButtonText] = useState("Next");
 
+  // Update Content upon page change
   useEffect(() => {
-    if (page >= 2) setButtonText("Let's Begin")
+    if (page >= 2) setButtonText("Let's Begin");
     setTitle(titles[page]);
     setSubTitle(subTitles[page]);
     setText(texts[page]);
-  }, [page])
+  }, [page]);
 
+  // handles onclick of next
   const handleNext = () => {
-    if (page < 2) setPage(page => page + 1)
-    else navigation.navigate('Register');
-  }
-
+    if (page < 2) setPage((page) => page + 1);
+    else navigation.navigate("Register");
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -32,16 +44,17 @@ export default function Welcome({ navigation }) {
         style={styles.image}
         source={require("../assets/welcomeLogo.png")}
       ></Image>
-      <Text style={styles.title}>{title}</Text>
-      <Text style={styles.subTitle}>{subTitle}</Text>
-      <Text style={styles.text}>{text}</Text>
-      <Button title = {buttonText} 
-      onPress={handleNext} 
-      containerStyle= {styles.Button} 
-      buttonStyle = {{width:"100%"}}
-      color="green"
-      >
-      </Button>
+      <Text h1 style={{ marginBottom: 20 }}>
+        {title}
+      </Text>
+      <Text h2>{subTitle}</Text>
+      <Text h3>{text}</Text>
+      <Button
+        title={buttonText}
+        buttonStyle={{ width: 250, height: 50 }}
+        containerStyle={styles.nextButton}
+        onPress={handleNext}
+      />
     </SafeAreaView>
   );
 }
@@ -60,27 +73,9 @@ const styles = StyleSheet.create({
     width: 150,
     marginBottom: 30,
   },
-  title: {
-    fontFamily: "Inter-Black",
-    fontSize: 33,
-    marginBottom: 15,
-  },
-  subTitle: {
-    fontFamily: "Inter-Regular",
-    fontSize: 20,
-  }, 
-  text: {
-    fontFamily: "Inter-Light",
-    fontSize: 20,
-  },
-  Button: {
+  nextButton: {
     position: "absolute",
     top: "100%",
     borderRadius: 5,
-  }, 
-  buttonText: {
-    fontFamily: "Inter-Regular",
-    fontSize: 20,
-    color: "white",
-  }
+  },
 });
