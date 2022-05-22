@@ -17,6 +17,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
+  updateProfile
 } from "firebase/auth";
 
 export default function Register({ navigation }) {
@@ -26,16 +27,19 @@ export default function Register({ navigation }) {
   const [password, setPassword] = useState("");
   const [error, setErrorMessage] = useState("");
 
-  const handleRegister = () => {
-    createUserWithEmailAndPassword(authentication, email, password)
-      .then((re) => {
-        console.log(re);
-        navigation.navigate("Home");
-      })
-      .catch((re) => {
-        console.log(re);
+  const handleRegister = async (e) => {
+    if (firstName.length == 0) {
+      alert("name cannot be empty");
+    } else {
+      const { user } = await createUserWithEmailAndPassword(authentication, email, password)
+      console.log(`User ${user.uid} created`)
+      await updateProfile(user, {
+        displayName: firstName
       });
-  };
+      console.log(`User profile ${user.displayName} updated`)
+      navigation.navigate("Home")
+    }
+  }
 
 
   return (
