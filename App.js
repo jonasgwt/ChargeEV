@@ -10,6 +10,8 @@ import Register from "./components/Register.js";
 import Login from "./components/Login.js";
 import { themeConfig } from "./themeConfig.js"
 import AppLoading from "expo-app-loading";
+import LoginScreen from "./components/LoginScreen.js";
+import HomeScreen from "./components/HomeScreen.js";
 
 
 const Stack = createNativeStackNavigator();
@@ -26,7 +28,8 @@ export default function App() {
         <Stack.Navigator screenOptions={{headerShown: false}} style={styles.container} initialRouteName="Welcome">
           <Stack.Screen name="Welcome" component={Welcome} />
           <Stack.Screen name="Register" component={Register} />
-          <Stack.Screen name="Login" component={Login} />
+          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="Home" component={HomeScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </ThemeProvider>
