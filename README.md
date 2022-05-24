@@ -17,12 +17,9 @@
 *** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
+[![LinkedIn][linkedin-shield]](https://www.linkedin.com/in/jonas-goh-891a15146/)(Jonas)
+[![LinkedIn][linkedin-shield]](https://www.linkedin.com/in/tay-jiakang-mila-61a9bb146/)(Mila)
+
 
 
 
@@ -30,10 +27,10 @@
 <br />
 <div align="center">
   <a href="https://github.com/github_username/repo_name">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
+    <img src="logo_nobg (1).png" alt="Logo" width="280" height="80">
   </a>
 
-<h3 align="center">project_title</h3>
+<h3 align="center">ChargeEV</h3>
 
   <p align="center">
     project_description
@@ -41,11 +38,12 @@
     <a href="https://github.com/github_username/repo_name"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/github_username/repo_name">View Demo</a>
+    <a href="https://drive.google.com/file/d/1PxCbZpWghce-7rELC49nZX0rGvxPq9iz/view">Project Video</a>
     ·
     <a href="https://github.com/github_username/repo_name/issues">Report Bug</a>
     ·
     <a href="https://github.com/github_username/repo_name/issues">Request Feature</a>
+    
   </p>
 </div>
 
@@ -164,11 +162,9 @@ Plan: [Link](https://app.instagantt.com/shared/s/kY9oAKAc2ID3k56JL8l7/latest)
 <!-- CONTACT -->
 ## Contact
 
-Name - Jonas Goh jongoh2000@gmail.com 
+Name - Jonas Goh (jongoh2000@gmail.com) 
 
-Name - Mila Tay taymila1gmail.com 
-
-Project Video: [Link](https://drive.google.com/file/d/1PxCbZpWghce-7rELC49nZX0rGvxPq9iz/view)
+Name - Mila Tay (taymila1gmail.com) 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
