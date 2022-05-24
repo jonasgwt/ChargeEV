@@ -37,7 +37,7 @@ export default function Register({ navigation }) {
         const { user } = await createUserWithEmailAndPassword(authentication, email, password);
         console.log(`User ${user.uid} created`);
         await updateProfile(user, {
-          displayName: firstName + lastName,
+          displayName: firstName + " " + lastName,
         });
         console.log(`User profile ${user.displayName} updated`);
         navigation.navigate("Home");

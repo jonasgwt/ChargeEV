@@ -40,8 +40,7 @@ export const themeConfig = {
       shadowRadius: 8,
       borderBottomWidth: 0,
       borderRadius: 8,
-        padding: 10,
-      
+      padding: 10,
     },
   },
 };
