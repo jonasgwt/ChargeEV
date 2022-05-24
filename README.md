@@ -27,13 +27,13 @@
 <br />
 <div align="center">
   <a href="https://github.com/github_username/repo_name">
-    <img src="logo_nobg (1).png" alt="Logo" width="280" height="80">
+    <img src="logo_nobg (1).png" alt="Logo" width="280" height="90">
   </a>
 
 <h3 align="center">ChargeEV</h3>
 
   <p align="center">
-    project_description
+    ChargeEV is an app that connects Electric Vehicle chargers with hosts that are willing to loan out their chargers.
     <br />
     <a href="https://github.com/github_username/repo_name"><strong>Explore the docs »</strong></a>
     <br />
@@ -42,7 +42,7 @@
     ·
     <a href="https://github.com/github_username/repo_name/issues">Report Bug</a>
     ·
-    <a href="https://github.com/github_username/repo_name/issues">Request Feature</a>
+    
     
   </p>
 </div>
@@ -54,7 +54,7 @@
   <summary>Table of Contents</summary>
   <ol>
     <li>
-      <a href="#about-the-project">About The Project</a>
+      <a href="#about-the-project">About the project</a>
       <ul>
         <li><a href="#built-with">Built With</a></li>
       </ul>
@@ -67,6 +67,7 @@
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
+    <li><a href="#backend">Backend</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -79,7 +80,12 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://user-images.githubusercontent.com/48041555/168458294-48f72ec2-1fd9-46f9-bb6d-afd85636e8eb.png)
+
+<div align="center">
+  <a href="">
+    <img src="photo/poster.png" width="790" height="1122">
+  </a>
+</div>
 
 Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `github_username`, `repo_name`, `twitter_handle`, `linkedin_username`, `email_client`, `email`, `project_title`, `project_description`
 
@@ -102,14 +108,17 @@ Here's a blank template to get started: To avoid retyping too much info. Do a se
 ## Getting Started
 
 This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
+To get a local copy up and running follow these steps.
 
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
+This is an example of how to list things you need to use the software and how to install them. 
+##### Install Node, NPM and EXPO
+##### Install Firebase and required react libraries that have been imported
+##### Example:
 * npm
   ```sh
-  npm install npm@latest -g
+  npm install npm -g
   ```
 
 ### Installation
@@ -119,29 +128,54 @@ This is an example of how to list things you need to use the software and how to
    ```sh
    git clone https://github.com/github_username/repo_name.git
    ```
-3. Install NPM packages
+3. Install requried packages
    ```sh
    npm install
    ```
-4. Enter your API in `config.js`
-   ```js
-   const API_KEY = 'ENTER YOUR API';
-   ```
+
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
 
 <!-- USAGE EXAMPLES -->
-## Usage
+## Usage and Mockups
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+Completed:
+<li> Log-in and welcome page</li>
+<li> Basic home page structure and lockup feature</li>
 
-_For more examples, please refer to the [Documentation](https://example.com)_
+### Screenshots and Figma Mockups
+#### Log-in and Charging map view
+<p float="left">
+  <img src="photo/login.PNG" width="60%" />
+  <img src="photo/chargemap.PNG" width="30%" /> 
+</p>
+
+#### User profile display
+<p float="left">
+  <img src="photo/userprofile.PNG" width="20%" />
+</p>
+
+
+#### Adding Charger Process
+<p float="left">
+  <img src="photo/addingcharger.PNG" width="100%" />
+</p>
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
+<!-- BACKEND -->
+## Backend
+
+### Database structure
+<p float="left">
+  <img src="photo/QuickDBD-Free Diagram.png" width="60%" />
+</p>
+
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- ROADMAP -->
 ## Roadmap
@@ -168,10 +202,16 @@ Name - Mila Tay (taymila1gmail.com)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
+<!-- Deviations from initial plan -->
+## Changes from initial plan
+
+<p>While we initially wanted to use our backend with MySQL, we found that Firebase suited our backend better as it allowed for user authentication and also data storage </p>
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 
 <!-- ACKNOWLEDGMENTS -->
-## Acknowledgments
+## Other Details
 
 * []()
 * []()
