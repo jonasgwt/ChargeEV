@@ -196,7 +196,7 @@ Plan: [Link](https://app.instagantt.com/shared/s/kY9oAKAc2ID3k56JL8l7/latest)
 
 Name - Jonas Goh (jongoh2000@gmail.com) 
 
-Name - Mila Tay (taymila1gmail.com) 
+Name - Mila Tay (taymila1@gmail.com) 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
