@@ -35,12 +35,12 @@
   <p align="center">
     ChargeEV is an app that connects Electric Vehicle chargers with hosts that are willing to loan out their chargers.
     <br />
-    <a href="https://github.com/github_username/repo_name"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/jonasgwt/ChargeEV"><strong>Explore the docs »</strong></a>
     <br />
     <br />
     <a href="https://drive.google.com/file/d/1PxCbZpWghce-7rELC49nZX0rGvxPq9iz/view">Project Video</a>
     ·
-    <a href="https://github.com/github_username/repo_name/issues">Report Bug</a>
+    <a href="https://github.com/jonasgwt/ChargeEV/issues">Report Bug</a>
     ·
     
     
@@ -71,7 +71,7 @@
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
+    <li><a href="#other">Others</a></li>
   </ol>
 </details>
 
@@ -83,11 +83,10 @@
 
 <div align="center">
   <a href="">
-    <img src="photo/poster.png" width="790" height="1122">
+    <img src="photo/poster.png" width="70%" height="90%">
   </a>
 </div>
 
-Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `github_username`, `repo_name`, `twitter_handle`, `linkedin_username`, `email_client`, `email`, `project_title`, `project_description`
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -112,7 +111,6 @@ To get a local copy up and running follow these steps.
 
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them. 
 ##### Install Node, NPM and EXPO
 ##### Install Firebase and required react libraries that have been imported
 ##### Example:
@@ -139,7 +137,7 @@ This is an example of how to list things you need to use the software and how to
 
 
 <!-- USAGE EXAMPLES -->
-## Usage and Mockups
+## Usage
 
 Completed:
 <li> Log-in and welcome page</li>
@@ -160,7 +158,7 @@ Completed:
 
 #### Adding Charger Process
 <p float="left">
-  <img src="photo/addingcharger.PNG" width="100%" />
+  <img src="photo/addingcharger.PNG"  />
 </p>
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -211,11 +209,11 @@ Name - Mila Tay (taymila1gmail.com)
 
 
 <!-- ACKNOWLEDGMENTS -->
-## Other Details
+## Other
 
-* []()
-* []()
-* []()
+* For our payment plan we are considering using the paynow system
+* The api keys has been removed from github will only be uploaded after Orbital has concluded for those that hope to work on it
+* Should you have suggestions for features please open an <a href="https://github.com/jonasgwt/ChargeEV/issues">issue</a>
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
