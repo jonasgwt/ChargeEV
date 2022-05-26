@@ -15,6 +15,7 @@ import {
 import Welcome from "./Welcome";
 import Host from "./Host.js"
 import { Button } from "react-native-elements";
+import Profile from "./Profile";
 
 const Homepage = ({ navigation }) => {
   const SignOut = async () => {
@@ -34,15 +35,7 @@ const Homepage = ({ navigation }) => {
   );
 };
 
-const SettingsScreen = ({ navigation }) => {
-  return (
-    <SafeAreaView
-      style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-    >
-      <Text>{authentication.currentUser.email}</Text>
-    </SafeAreaView>
-  );
-};
+
 
 const Tab = createBottomTabNavigator();
 
@@ -74,7 +67,14 @@ export default function HomeScreen() {
             <Icon color={props.color} name='group' />
           ),
         }}/>
-      <Tab.Screen name="Settings" component={SettingsScreen} />
+      <Tab.Screen name="Profile" component={Profile} options={{
+          tabBarLabel: (props) => (
+            <Text style={{ color: props.color }}>Profile</Text>
+          ),
+          tabBarIcon: (props) => (
+            <Icon color={props.color} name='group' />
+          ),
+        }}/>
     </Tab.Navigator>
   );
 }

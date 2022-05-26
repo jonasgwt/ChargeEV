@@ -6,6 +6,7 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Pressable,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Axios from "axios";
@@ -48,6 +49,7 @@ export default function Register({ navigation }) {
           case 'auth/weak-password': setErrorMessage("Password needs to be at least 6 characters")
         }
         console.log(err)
+        Alert.alert(error)
       }
     }
   };
