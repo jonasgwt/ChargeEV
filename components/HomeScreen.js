@@ -13,7 +13,7 @@ import {
   updateCurrentUser,
 } from "firebase/auth";
 import Welcome from "./Welcome";
-import Host from "./Host.js"
+import Host from "./Host/HostNavigator.js"
 import { Button } from "react-native-elements";
 
 const Homepage = ({ navigation }) => {

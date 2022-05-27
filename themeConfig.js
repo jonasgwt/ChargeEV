@@ -26,7 +26,7 @@ export const themeConfig = {
     },
     h4Style: {
       fontFamily: "Inter-Light",
-      fontSize: 15,
+      fontSize: 17,
     },
   },
   Input: {
