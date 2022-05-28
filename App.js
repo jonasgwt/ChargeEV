@@ -9,6 +9,7 @@ import Welcome from "./components/Welcome";
 import Register from "./components/Register.js";
 import EditProfile from "./components/EditProfile.js";
 import Login from "./components/Login.js";
+import Profile from "./components/Profile.js";
 import { themeConfig } from "./themeConfig.js";
 import AppLoading from "expo-app-loading";
 import { authentication } from "./firebase/firebase-config";
@@ -72,7 +73,8 @@ export default function App() {
           <Stack.Screen name="Register" component={Register} />
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="Home" component={HomeScreen} />
-          <Stack.Screen name = "EditProfile" component={EditProfile} />
+          <Stack.Screen name = "EditProfile" component={EditProfile}/>
+          <Stack.Screen name="Profile" component={Profile}/>
         </Stack.Navigator>
       </NavigationContainer>
     </ThemeProvider>

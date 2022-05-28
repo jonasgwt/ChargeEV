@@ -22,8 +22,6 @@ const Profile = ({navigation}) => {
   return (
     <SafeAreaView style={styles.container}>
     
-      
-    
     
     <View style={styles.userInfoSection}>
         <View style={{flexDirection: 'row', marginTop: 15}}>
