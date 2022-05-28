@@ -141,7 +141,7 @@ To get a local copy up and running follow these steps.
 
 Completed:
 <li> Log-in and welcome page</li>
-<li> Basic home page structure and lockup feature</li>
+<li> Basic home page structure and lock-in feature</li>
 
 ### Screenshots and Figma Mockups
 #### Log-in and Charging map view
