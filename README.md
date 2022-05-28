@@ -121,15 +121,7 @@ To get a local copy up and running follow these steps.
 
 ### Installation
 
-1. 
-2. Clone the repo
-   ```sh
-   git clone https://github.com/github_username/repo_name.git
-   ```
-3. Install requried packages
-   ```sh
-   npm install
-   ```
+Guide will be updated shortly
 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -141,7 +133,7 @@ To get a local copy up and running follow these steps.
 
 Completed:
 <li> Log-in and welcome page</li>
-<li> Basic home page structure and lockup feature</li>
+<li> Basic home page structure and lock-in feature</li>
 
 ### Screenshots and Figma Mockups
 #### Log-in and Charging map view
@@ -163,6 +155,11 @@ Completed:
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
+
+###User flow
+<p float="left">
+  <img src="photo/flow.png" />
+</p>
 
 <!-- BACKEND -->
 ## Backend
