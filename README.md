@@ -156,9 +156,9 @@ Completed:
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
-###User journey
+###User flow
 <p float="left">
-  <img src="photo/ProgramFlow.drawio.png" />
+  <img src="photo/flow.png" />
 </p>
 
 <!-- BACKEND -->
