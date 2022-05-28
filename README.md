@@ -158,7 +158,7 @@ Completed:
 
 ###User journey
 <p float="left">
-  <img src="photo/ProgramFlow.drawio .png" />
+  <img src="photo/ProgramFlow.drawio.png" />
 </p>
 
 <!-- BACKEND -->
