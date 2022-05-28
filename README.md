@@ -121,15 +121,7 @@ To get a local copy up and running follow these steps.
 
 ### Installation
 
-1. 
-2. Clone the repo
-   ```sh
-   git clone https://github.com/github_username/repo_name.git
-   ```
-3. Install requried packages
-   ```sh
-   npm install
-   ```
+Guide will be updated shortly
 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -163,6 +155,11 @@ Completed:
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
+
+###User journey
+<p float="left">
+  <img src="photo/ProgramFlow.drawio.png" />
+</p>
 
 <!-- BACKEND -->
 ## Backend
