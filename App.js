@@ -15,6 +15,8 @@ import AppLoading from "expo-app-loading";
 import { authentication } from "./firebase/firebase-config";
 import HomeScreen from "./components/HomeScreen.js";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Font from "expo-font";
+import * as SplashScreen from "expo-splash-screen";
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -26,16 +28,18 @@ const Stack = createNativeStackNavigator();
 const theme = createTheme(themeConfig);
 
 export default function App() {
-  
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [isLoading, setLoading] = useState(true);
 
-  // Auto login if available
+
+  // Loads in Fonts and AsyncStorage data
   useEffect(() => {
     const storeData = async () => {
       try {
+        await SplashScreen.preventAutoHideAsync();
         const email = await AsyncStorage.getItem("email");
         const password = await AsyncStorage.getItem("password");
+        await Font.loadAsync(fontsToBeLoaded);
         if (email != "" && password != "") {
           signInWithEmailAndPassword(authentication, email, password)
             .then((res) => {
@@ -54,12 +58,16 @@ export default function App() {
     storeData();
   }, []);
 
-
-  // Loads in fonts
-  const [loaded] = useFonts(fontsToBeLoaded);
-
-  // Show splash screen if loading
-  if (!loaded || isLoading) return <AppLoading />;
+  // Checks if data is loaded in and hide splash screen
+  useEffect(() => {
+    const check = async () => {
+      if (!isLoading) await SplashScreen.hideAsync();
+    };
+    check();
+  }, [isLoading]);
+  if (isLoading) {
+    return null;
+  }
 
   return (
     <ThemeProvider theme={theme}>
