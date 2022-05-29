@@ -106,9 +106,7 @@ anywhere, even in the most remote areas.
 While apps on the market show EV chargers locations, it does not enable users to add
 their chargers and rent them out. With outdoor chargers costing up to $15000, some
 users might be unwilling to install them. Additionally, in rural areas, there might be a lack
-of charging stations, and thus users will be able to share
-With EV chargers with solar panels, hosts may be willing to charge lower prices than
-firms.
+of charging stations, and thus users will be able to share.
 
 ### Key Features
 
@@ -141,22 +139,36 @@ need to charge. Users will tentatively make payments through a QR code.
 <!-- GETTING STARTED -->
 ## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these steps.
+To start, you can either run the app in development mode using Expo, or install the app with a .apk for Andriod and .app for IOS
 
-### Prerequisites
+### Install using Expo
 
-##### Install Node, NPM and EXPO
-##### Install Firebase and required react libraries that have been imported
-##### Example:
-* npm
+Ensure that you have Node and npm installed. Install Node [here](https://nodejs.org/en/download/)
+##### Clone the repo:
+```sh
+  git clone https://github.com/jonasgwt/ChargeEV
+  cd ChargeEV
+  ```
+##### Install Dependencies:
+* Install Expo
   ```sh
-  npm install npm -g
+  npm install --global expo-cli
   ```
 
-### Installation
+* Install Required Packages
+  ```sh
+  npm install
+  ```
+  
+##### Run Expo:
 
-Guide will be updated shortly
+  ```sh
+  expo start
+  ```
+
+### Install with .apk/.app
+
+Download here
 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -172,7 +184,8 @@ Completed:
 
 ### Screenshots and Figma Mockups
 
- <a href="https://www.figma.com/file/BozibW7ZR0EI4SWFEHyQCm/ChargeEV"> Figma Link </a>
+ Link to Figma Mockup [here](https://www.figma.com/file/BozibW7ZR0EI4SWFEHyQCm/ChargeEV).
+ 
 
 #### Log-in and Charging map view
 <p float="left">
@@ -217,10 +230,6 @@ Refer to the development plan
 
 Plan: [Link](https://app.instagantt.com/shared/s/kY9oAKAc2ID3k56JL8l7/latest)
 
-
-
-<!-- LICENSE -->
-## License
 
 
 
