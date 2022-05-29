@@ -87,6 +87,39 @@
   </a>
 </div>
 
+### Aim 
+
+ChargEV is a mobile-based application targeted towards EV users in large countries to
+provide them with additional locations to charge their vehicles if superchargers are not
+available in the current area.
+
+### Motivation
+
+Many countries have been shifting their focus to electric vehicles (EV) in recent years.
+However, in many larger countries such as the United States (US) and Australia, electric
+cars are seen as less superior compared to traditional petrol vehicles in terms of range
+and convenience.
+Due to its short range, many people are put off from purchasing EVs as they cannot
+travel out of large cities where superchargers are usually located. ChargEV aims to
+solve this problem by enabling people to loan out chargers so that EV users can charge
+anywhere, even in the most remote areas.
+While apps on the market show EV chargers locations, it does not enable users to add
+their chargers and rent them out. With outdoor chargers costing up to $15000, some
+users might be unwilling to install them. Additionally, in rural areas, there might be a lack
+of charging stations, and thus users will be able to share.
+
+### Key Features
+
+* ChargEV will consist of two sections, GetACharge and GiveACharge.
+* GetACharge will consist of users looking to charge their EVs. Using their current
+location, the app will find suitable chargers for the user, and they can then select
+the preferred charge point depending on distance etc.
+* GiveACharge will consist of hosts that provide users with charging points. Hosts
+offer details such as an address, photos, charger type, available times,
+instructions etc. Hosts can also have the option to charge users a chosen
+amount. The app will provide a recommended cost for the host based on their
+need to charge. Users will tentatively make payments through a QR code.
+
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -106,30 +139,36 @@
 <!-- GETTING STARTED -->
 ## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these steps.
+To start, you can either run the app in development mode using Expo, or install the app with a .apk for Andriod and .app for IOS
 
-### Prerequisites
+### Install using Expo
 
-##### Install Node, NPM and EXPO
-##### Install Firebase and required react libraries that have been imported
-##### Example:
-* npm
+Ensure that you have Node and npm installed. Install Node [here](https://nodejs.org/en/download/)
+##### Clone the repo:
+```sh
+  git clone https://github.com/jonasgwt/ChargeEV
+  cd ChargeEV
+  ```
+##### Install Dependencies:
+* Install Expo
   ```sh
-  npm install npm -g
+  npm install --global expo-cli
   ```
 
-### Installation
+* Install Required Packages
+  ```sh
+  npm install
+  ```
+  
+##### Run Expo:
 
-1. 
-2. Clone the repo
-   ```sh
-   git clone https://github.com/github_username/repo_name.git
-   ```
-3. Install requried packages
-   ```sh
-   npm install
-   ```
+  ```sh
+  expo start
+  ```
+
+### Install with .apk/.app
+
+Download here
 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -141,9 +180,13 @@ To get a local copy up and running follow these steps.
 
 Completed:
 <li> Log-in and welcome page</li>
-<li> Basic home page structure and lockup feature</li>
+<li> Basic home page structure and lock-in feature</li>
 
 ### Screenshots and Figma Mockups
+
+ Link to Figma Mockup [here](https://www.figma.com/file/BozibW7ZR0EI4SWFEHyQCm/ChargeEV).
+ 
+
 #### Log-in and Charging map view
 <p float="left">
   <img src="photo/login.PNG" width="60%" />
@@ -163,6 +206,11 @@ Completed:
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
+
+### User flow
+<p float="left">
+  <img src="photo/PF.png" />
+</p>
 
 <!-- BACKEND -->
 ## Backend
@@ -184,10 +232,6 @@ Plan: [Link](https://app.instagantt.com/shared/s/kY9oAKAc2ID3k56JL8l7/latest)
 
 
 
-<!-- LICENSE -->
-## License
-
-
 
 
 
@@ -196,7 +240,7 @@ Plan: [Link](https://app.instagantt.com/shared/s/kY9oAKAc2ID3k56JL8l7/latest)
 
 Name - Jonas Goh (jongoh2000@gmail.com) 
 
-Name - Mila Tay (taymila1gmail.com) 
+Name - Mila Tay (taymila1@gmail.com) 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 

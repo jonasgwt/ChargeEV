@@ -6,12 +6,13 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Pressable,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Axios from "axios";
 import { color } from "react-native-elements/dist/helpers";
 import { Button, Text, Input } from "@rneui/themed";
-import { authentication } from "../firebase/firebase-config";
+import { authentication,firestore } from "../firebase/firebase-config";
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -19,6 +20,17 @@ import {
   signOut,
   updateProfile,
 } from "firebase/auth";
+import {
+  doc,
+  getDoc,
+  setDoc,
+  getDocs,
+  addDoc,
+  collection,
+  GeoPoint,
+  query,
+  where,
+} from "firebase/firestore";
 
 export default function Register({ navigation }) {
   
@@ -34,7 +46,13 @@ export default function Register({ navigation }) {
       setErrorMessage("Ensure that all fields are filled");
     } else {
       try {
-        const { user } = await createUserWithEmailAndPassword(authentication, email, password);
+        const { user } = await createUserWithEmailAndPassword(authentication, email, password)
+        await setDoc(doc(firestore,"users",user.uid), {
+          email:email,
+          fname:firstName,
+          lname:lastName,
+          userImg:null
+        })
         console.log(`User ${user.uid} created`);
         await updateProfile(user, {
           displayName: firstName + " " + lastName,
@@ -48,6 +66,7 @@ export default function Register({ navigation }) {
           case 'auth/weak-password': setErrorMessage("Password needs to be at least 6 characters")
         }
         console.log(err)
+        Alert.alert(error)
       }
     }
   };

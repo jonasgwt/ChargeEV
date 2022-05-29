@@ -5,6 +5,7 @@ import {
   View,
   TextInput,
   Pressable,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, Text, Input } from "@rneui/themed";
@@ -31,6 +32,7 @@ export default function Login({ navigation }) {
       .catch((err) => {
         console.log(err);
         setInvalidAccount(true);
+        Alert.alert("Invalid Password Or Email")
       })
   };
 
@@ -52,6 +54,7 @@ export default function Login({ navigation }) {
         placeholder="Email"
         keyboardType="email-address"
         onChangeText={setEmail}
+        autoCapitalize={false}
       ></Input>
       <Input
         placeholder="Password"

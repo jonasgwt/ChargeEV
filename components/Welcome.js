@@ -7,14 +7,14 @@ export default function Welcome({ navigation }) {
   // Content
   const titles = ["Welcome", "Hosts", "Users"];
   const subTitles = [
-    "Lorem Ipsum dolor sit atment,",
-    "Lorem Ipsum dolor sit atment,",
-    "Lorem Ipsum dolor sit atment,",
+    "To your EV partner",
+    "Loan out your charger",
+    "Loan a charger",
   ];
   const texts = [
-    "onsectetur adipiscing elit.",
-    "onsectetur adipiscing elit.",
-    "onsectetur adipiscing elit.",
+    "",
+    "",
+    "",
   ];
 
   // States
@@ -26,7 +26,7 @@ export default function Welcome({ navigation }) {
 
   // Update Content upon page change
   useEffect(() => {
-    if (page >= 2) setButtonText("Let's Begin");
+    if (page >= 2) setButtonText("Get Started");
     setTitle(titles[page]);
     setSubTitle(subTitles[page]);
     setText(texts[page]);
