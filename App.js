@@ -29,6 +29,7 @@ export default function App() {
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [isLoading, setLoading] = useState(true);
 
+
   // Loads in Fonts and AsyncStorage data
   useEffect(() => {
     const storeData = async () => {
