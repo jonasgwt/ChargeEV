@@ -24,7 +24,7 @@ const Profile = ({navigation}) => {
     
     
     <View style={styles.userInfoSection}>
-        <View style={{flexDirection: 'row', marginTop: 15}}>
+        <View style={{flexDirection: 'row', marginTop: "5%", marginBottom: 15}}>
           <Avatar.Image 
             source={require('../assets/adaptive-icon.png')}
             size={90}
@@ -35,7 +35,7 @@ const Profile = ({navigation}) => {
               marginTop:15,
               marginBottom: 5,
             }]}>{authentication.currentUser.displayName}</Title>
-            <Caption style={styles.caption}>placeholder</Caption>
+            <Caption style={styles.caption}>{authentication.currentUser.uid}</Caption>
           </View>
         </View>
       </View>
@@ -104,6 +104,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     marginBottom: 25,
     marginTop:10,
+    marginLeft:"1%",
   },
   title: {
     fontSize: 24,
@@ -133,6 +134,7 @@ const styles = StyleSheet.create({
   },
   menuWrapper: {
     marginTop: 10,
+    marginLeft: "0%"
   },
   menuItem: {
     flexDirection: 'row',
