@@ -87,6 +87,41 @@
   </a>
 </div>
 
+### Aim 
+
+ChargEV is a mobile-based application targeted towards EV users in large countries to
+provide them with additional locations to charge their vehicles if superchargers are not
+available in the current area.
+
+### Motivation
+
+Many countries have been shifting their focus to electric vehicles (EV) in recent years.
+However, in many larger countries such as the United States (US) and Australia, electric
+cars are seen as less superior compared to traditional petrol vehicles in terms of range
+and convenience.
+Due to its short range, many people are put off from purchasing EVs as they cannot
+travel out of large cities where superchargers are usually located. ChargEV aims to
+solve this problem by enabling people to loan out chargers so that EV users can charge
+anywhere, even in the most remote areas.
+While apps on the market show EV chargers locations, it does not enable users to add
+their chargers and rent them out. With outdoor chargers costing up to $15000, some
+users might be unwilling to install them. Additionally, in rural areas, there might be a lack
+of charging stations, and thus users will be able to share
+With EV chargers with solar panels, hosts may be willing to charge lower prices than
+firms.
+
+### Key Features
+
+* ChargEV will consist of two sections, GetACharge and GiveACharge.
+* GetACharge will consist of users looking to charge their EVs. Using their current
+location, the app will find suitable chargers for the user, and they can then select
+the preferred charge point depending on distance etc.
+* GiveACharge will consist of hosts that provide users with charging points. Hosts
+offer details such as an address, photos, charger type, available times,
+instructions etc. Hosts can also have the option to charge users a chosen
+amount. The app will provide a recommended cost for the host based on their
+need to charge. Users will tentatively make payments through a QR code.
+
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -136,6 +171,9 @@ Completed:
 <li> Basic home page structure and lock-in feature</li>
 
 ### Screenshots and Figma Mockups
+
+ <a href="https://www.figma.com/file/BozibW7ZR0EI4SWFEHyQCm/ChargeEV"> Figma Link </a>
+
 #### Log-in and Charging map view
 <p float="left">
   <img src="photo/login.PNG" width="60%" />
