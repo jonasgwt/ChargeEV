@@ -158,7 +158,7 @@ Completed:
 
 ###User flow
 <p float="left">
-  <img src="photo/flow.png" />
+  <img src="photo/PF.png" />
 </p>
 
 <!-- BACKEND -->
