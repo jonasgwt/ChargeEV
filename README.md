@@ -180,7 +180,7 @@ Download [here](https://drive.google.com/drive/folders/1GC19YGHUu1QHnV6HoAdkamiN
 
 Completed:
 <li> Log-in and welcome page</li>
-<li> Basic home page structure and lock-in feature</li>
+<li> Basic navigation and lock-in feature</li>
 
 ### Screenshots and Figma Mockups
 
@@ -198,13 +198,29 @@ Completed:
   <img src="photo/userprofile.PNG" width="20%" />
 </p>
 
+#### Edit Profile Planned Flow
+
+
+<div align="center">
+  <a href="">
+    <img src="photo/editprofile.png" width="30%" >
+  </a>
+</div>
 
 #### Adding Charger Process
 <p float="left">
   <img src="photo/addingcharger.PNG"  />
 </p>
 
+<div align="center">
+  <a href="">
+    <img src="photo/chargesetup.drawio.png" width="30%" >
+  </a>
+</div>
+
+
 <p align="right">(<a href="#top">back to top</a>)</p>
+
 
 
 ### User flow
