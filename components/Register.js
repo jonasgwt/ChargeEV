@@ -5,6 +5,7 @@ import { Button, Text, Input } from "@rneui/themed";
 import { authentication, firestore } from "../firebase/firebase-config";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Register({ navigation }) {
   const [email, setEmail] = useState("");
@@ -35,16 +36,13 @@ export default function Register({ navigation }) {
           displayName: firstName + " " + lastName,
         });
         console.log(`User profile ${user.displayName} updated`);
-        AsyncStorage.setItem("email", email);
-        AsyncStorage.setItem("password", password);
+        await AsyncStorage.setItem("email", email);
+        await AsyncStorage.setItem("password", password);
         navigation.navigate("Home");
       } catch (err) {
+        console.log(err)
         console.log(err.code);
         switch (err.code) {
-          case "auth/weak-password":
-            setErrorMessage("Password needs to be at least 6 characters");
-            Alert.alert("Password needs to be at least 6 characters");
-            break;
           case "auth/invalid-email":
             setErrorMessage("Email is not valid");
             Alert.alert("Email is not valid");
@@ -52,6 +50,10 @@ export default function Register({ navigation }) {
           case "auth/email-already-in-use":
             setErrorMessage("Email already in use");
             Alert.alert("Email already in use");
+            break;
+          case "auth/weak-password":
+            setErrorMessage("Password needs to be at least 6 characters");
+            Alert.alert("Password needs to be at least 6 characters");
             break;
         }
       }

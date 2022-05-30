@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "test",
+    "name": "ChargeEV",
     "slug": "test",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -14,14 +14,21 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "simulator"
+      "bundleIdentifier": "simulator",
+      "config": {
+        "googleMapsApiKey": "AIzaSyDhY1bJDam6JFfSK6NDXNp9PjPK2ML2aH8"
+      }
     },
     "android": {
+      "package": "com.ChargeEV.ChargeEV",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyDFRRFH_TsLk71lVXeUsLZeL7ZapBKMtYU"
+        }
+      },
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"

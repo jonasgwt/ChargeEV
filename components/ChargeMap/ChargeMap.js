@@ -7,6 +7,7 @@ import {
 import { Button } from "@rneui/themed";
 import MapView from "react-native-maps";
 import * as Location from "expo-location";
+import { PROVIDER_GOOGLE } from "react-native-maps";
 
 export default function ChargeMap({ navigation }) {
   const [status, requestPermission] = Location.useForegroundPermissions();
@@ -14,8 +15,8 @@ export default function ChargeMap({ navigation }) {
 
   // Get initial location and zooms to that region
   useEffect(() => {
-    requestPermission();
     const getLocation = async () => {
+      await requestPermission();
       await Location.enableNetworkProviderAsync();
       const position = await Location.getCurrentPositionAsync();
       const region = {
@@ -37,7 +38,7 @@ export default function ChargeMap({ navigation }) {
         showsUserLocation={true}
         followsUserLocation={true}
         showsTraffic={true}
-        provider="google"
+        provider={PROVIDER_GOOGLE}
       >
         <Button
           style={styles.actionButton}
