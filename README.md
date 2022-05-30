@@ -168,7 +168,7 @@ Ensure that you have Node and npm installed. Install Node [here](https://nodejs.
 
 ### Install with .apk/.app
 
-Download here
+Download [here](https://drive.google.com/drive/folders/1GC19YGHUu1QHnV6HoAdkamiN6RMGNjQn?usp=sharing)
 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
