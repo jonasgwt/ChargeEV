@@ -166,7 +166,8 @@ Ensure that you have Node and npm installed. Install Node [here](https://nodejs.
   expo start
   ```
 
-### Install with .apk/.app
+### Install with .apk/.app 
+(Eg.Run in  Xcode Simulator)
 
 Download [here](https://drive.google.com/drive/folders/1GC19YGHUu1QHnV6HoAdkamiN6RMGNjQn?usp=sharing)
 
