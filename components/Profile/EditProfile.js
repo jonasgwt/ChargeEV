@@ -18,6 +18,7 @@ import {
 } from "firebase/firestore";
 import { authentication, firestore } from "../../firebase/firebase-config";
 import * as ImagePicker from "expo-image-picker";
+import { signOut } from "firebase/auth";
 
 
 
@@ -89,6 +90,7 @@ const EditProfile = ({ navigation }) => {
       console.log(result.uri);
     }
   };
+
 
   const list = [
     {
@@ -184,7 +186,7 @@ const EditProfile = ({ navigation }) => {
             <Button
               title="Cancel"
               color="grey"
-              onPress={() => navigation.navigate("Home")}
+              onPress={() => navigation.navigate("ProfileHomeScreen")}
             ></Button>
           </View>
           <View style={styles.imageContainer}>

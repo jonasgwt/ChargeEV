@@ -11,11 +11,23 @@ import {
 } from "react-native-paper"
 import Icon from "react-native-vector-icons/MaterialCommunityIcons"
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { signOut } from "firebase/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 
 const Stack = createNativeStackNavigator();
 
-const Profile = ({navigation}) => {
+
+
+export default function Profile ({navigation})  {
+
+  const SignOut = async () => {
+    await AsyncStorage.clear();
+    await signOut(authentication);
+    navigation.navigate('Login');
+  };
+
   return (
     <SafeAreaView style={styles.container}>
     
@@ -54,7 +66,7 @@ const Profile = ({navigation}) => {
       </View>
 
       <View style={styles.menuWrapper}>
-        <TouchableRipple onPress={() => {navigation.navigate("EditProfile")}}>
+        <TouchableRipple onPress={() => {navigation.navigate('EditProfile')}}>
           <View style={styles.menuItem}>
             <Icon name="account-edit" color="#1BB530" size={25}/>
             <Text style={styles.menuItemText}>Edit Profile</Text>
@@ -84,6 +96,12 @@ const Profile = ({navigation}) => {
             <Text style={styles.menuItemText}>Support</Text>
           </View>
         </TouchableRipple>
+        <TouchableRipple onPress={SignOut}>
+          <View style={styles.menuItem}>
+            <Icon name="logout" color="#1BB530" size={25}/>
+            <Text style={styles.menuItemText}>Log Out</Text>
+          </View>
+        </TouchableRipple>
         
       </View>
 
@@ -91,7 +109,7 @@ const Profile = ({navigation}) => {
   )
 }
 
-export default Profile
+
 
 const styles = StyleSheet.create({
   container: {
