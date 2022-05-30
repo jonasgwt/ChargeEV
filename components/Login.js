@@ -3,19 +3,15 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   View,
-  TextInput,
-  Pressable,
   Alert,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, Text, Input } from "@rneui/themed";
 import { authentication } from '../firebase/firebase-config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword ,signOut} from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 
 export default function Login({ navigation }) {
-  const [error, setErrorMessage] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [invalidAccount, setInvalidAccount] = useState(false);
@@ -54,7 +50,6 @@ export default function Login({ navigation }) {
         placeholder="Email"
         keyboardType="email-address"
         onChangeText={setEmail}
-        autoCapitalize={false}
       ></Input>
       <Input
         placeholder="Password"

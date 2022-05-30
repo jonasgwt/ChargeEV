@@ -1,39 +1,12 @@
-import React, { useCallback, useEffect, useState } from "react";
-import {
-  StyleSheet,
-  View,
-  Image,
-  TextInput,
-  KeyboardAvoidingView,
-  Pressable,
-  Alert,
-} from "react-native";
+import React, { useState } from "react";
+import { StyleSheet, View, KeyboardAvoidingView, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Axios from "axios";
-import { color } from "react-native-elements/dist/helpers";
 import { Button, Text, Input } from "@rneui/themed";
-import { authentication,firestore } from "../firebase/firebase-config";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-  updateProfile,
-} from "firebase/auth";
-import {
-  doc,
-  getDoc,
-  setDoc,
-  getDocs,
-  addDoc,
-  collection,
-  GeoPoint,
-  query,
-  where,
-} from "firebase/firestore";
+import { authentication, firestore } from "../firebase/firebase-config";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 
 export default function Register({ navigation }) {
-  
   const [email, setEmail] = useState("");
   const [firstName, setfirstName] = useState("");
   const [lastName, setlastName] = useState("");
@@ -46,27 +19,41 @@ export default function Register({ navigation }) {
       setErrorMessage("Ensure that all fields are filled");
     } else {
       try {
-        const { user } = await createUserWithEmailAndPassword(authentication, email, password)
-        await setDoc(doc(firestore,"users",user.uid), {
-          email:email,
-          fname:firstName,
-          lname:lastName,
-          userImg:null
-        })
+        const { user } = await createUserWithEmailAndPassword(
+          authentication,
+          email,
+          password
+        );
+        await setDoc(doc(firestore, "users", user.uid), {
+          email: email,
+          fname: firstName,
+          lname: lastName,
+          userImg: null,
+        });
         console.log(`User ${user.uid} created`);
         await updateProfile(user, {
           displayName: firstName + " " + lastName,
         });
         console.log(`User profile ${user.displayName} updated`);
+        AsyncStorage.setItem("email", email);
+        AsyncStorage.setItem("password", password);
         navigation.navigate("Home");
       } catch (err) {
+        console.log(err.code);
         switch (err.code) {
-          case "auth/invalid-email": setErrorMessage("Email is not valid")
-          case 'auth/email-already-in-use': setErrorMessage("Email already in use")
-          case 'auth/weak-password': setErrorMessage("Password needs to be at least 6 characters")
+          case "auth/weak-password":
+            setErrorMessage("Password needs to be at least 6 characters");
+            Alert.alert("Password needs to be at least 6 characters");
+            break;
+          case "auth/invalid-email":
+            setErrorMessage("Email is not valid");
+            Alert.alert("Email is not valid");
+            break;
+          case "auth/email-already-in-use":
+            setErrorMessage("Email already in use");
+            Alert.alert("Email already in use");
+            break;
         }
-        console.log(err)
-        Alert.alert(error)
       }
     }
   };
@@ -78,8 +65,8 @@ export default function Register({ navigation }) {
     >
       <SafeAreaView style={styles.titleContainer}>
         <Text h1>Create Account</Text>
-        <Text h2>Lorem ipsum dolor sit amet</Text>
-        <Text h4 style={{ color: "red", marginTop: 10 }}>
+        <Text h2>An account for all your EV needs</Text>
+        <Text h4 style={{ color: "red", marginTop: 5 }}>
           {error}
         </Text>
       </SafeAreaView>

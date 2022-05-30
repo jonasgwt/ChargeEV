@@ -1,20 +1,19 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { StyleSheet, SafeAreaView, Image, Pressable } from "react-native";
+import React, { useEffect, useState } from "react";
+import { StyleSheet, SafeAreaView, Image } from "react-native";
 import { Button, Text } from "@rneui/themed";
 
 export default function Welcome({ navigation }) {
-  
   // Content
   const titles = ["Welcome", "Hosts", "Users"];
   const subTitles = [
-    "To your EV partner",
-    "Loan out your charger",
+    "We are ChargeEV",
+    "Loan out your Charger",
     "Loan a charger",
   ];
   const texts = [
-    "",
-    "",
-    "",
+    "Your EV Partner",
+    "Be a part of our extensive network.",
+    "Never worry about charging!",
   ];
 
   // States
@@ -38,7 +37,7 @@ export default function Welcome({ navigation }) {
     else {
       navigation.navigate("Register");
       setPage(0);
-      setButtonText("Next")
+      setButtonText("Next");
     }
   };
 
@@ -48,11 +47,13 @@ export default function Welcome({ navigation }) {
         style={styles.image}
         source={require("../assets/welcomeLogo.png")}
       ></Image>
-      <Text h1 style={{ marginBottom: 20 }}>
+      <Text h1 style={{ marginBottom: 10 }}>
         {title}
       </Text>
-      <Text h2>{subTitle}</Text>
-      <Text h3>{text}</Text>
+      <Text h2 h2Style={{ fontSize: 25, marginBottom: 5 }}>
+        {subTitle}
+      </Text>
+      <Text h4>{text}</Text>
       <Button
         title={buttonText}
         buttonStyle={{ width: 250, height: 50 }}
@@ -62,7 +63,6 @@ export default function Welcome({ navigation }) {
     </SafeAreaView>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {

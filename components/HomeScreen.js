@@ -1,41 +1,12 @@
-import { SafeAreaView, StyleSheet, Text, View } from "react-native";
+import { Text } from "react-native";
 import React from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { authentication } from "../firebase/firebase-config";
 import { Icon } from "@rneui/themed";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-  updateUser,
-  updateCurrentUser,
-} from "firebase/auth";
-import Welcome from "./Welcome";
 import Host from "./Host/HostNavigator.js";
-import { Button } from "react-native-elements";
 import ChargeMap from "./ChargeMap/ChargeMap";
-import Profile from "./Profile";
-
-const Homepage = ({ navigation }) => {
-  const SignOut = async () => {
-    await AsyncStorage.clear();
-    await signOut(authentication);
-    navigation.navigate("Welcome");
-  };
-
-  return (
-    <SafeAreaView
-      style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-    >
-      <Text>{authentication.currentUser.email}</Text>
-      <Text>{authentication.currentUser.displayName}</Text>
-      <Button title={"Sign Out"} onPress={SignOut}></Button>
-    </SafeAreaView>
-  );
-};
-
+import Profile from "./Profile/ProfileNav";
+import Inbox from "./Inbox/InboxNav";
+import Homepage from "./HomePage/HomePage"
 
 
 const Tab = createBottomTabNavigator();
@@ -73,18 +44,26 @@ export default function HomeScreen() {
         component={ChargeMap}
         options={{
           tabBarLabel: (props) => (
-            <Text style={{ color: props.color }}>Charge Map</Text>
+            <Text style={{ color: props.color }}>Map</Text>
           ),
-          tabBarIcon: (props) => <Icon color={props.color} name="group" />,
-          tabBarStyle: { display: "none" },
+          tabBarIcon: (props) => <Icon color={props.color} name="map" />,
+          //tabBarStyle: { display: "none" },
         }}
       />
+      <Tab.Screen name="Inbox" component={Inbox} options={{
+          tabBarLabel: (props) => (
+            <Text style={{ color: props.color }}>Inbox</Text>
+          ),
+          tabBarIcon: (props) => (
+            <Icon color={props.color} name="inbox"/>
+          ),
+        }}/>
       <Tab.Screen name="Profile" component={Profile} options={{
           tabBarLabel: (props) => (
             <Text style={{ color: props.color }}>Profile</Text>
           ),
           tabBarIcon: (props) => (
-            <Icon color={props.color} name='group' />
+            <Icon color={props.color} name="account-circle"/>
           ),
         }}/>
     </Tab.Navigator>

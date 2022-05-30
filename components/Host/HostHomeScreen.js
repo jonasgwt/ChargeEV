@@ -1,4 +1,3 @@
-import { async } from "@firebase/util";
 import React from "react";
 import { View, SafeAreaView, StyleSheet, Touchable } from "react-native";
 import { authentication, firestore } from "../../firebase/firebase-config";
@@ -14,9 +13,9 @@ export default function HostHomeScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text h1 h1Style={{ fontSize: 30 }}>
+      <Text h1 h1Style={{ fontSize: 30, color: "#1BB530"  }}>
         Hello,{" "}
-        <Text h1 h1Style={{ fontSize: 30, color: "#1BB530" }}>
+        <Text h1 h1Style={{ fontSize: 30, color:"black"}}>
           {authentication.currentUser.displayName}
         </Text>
       </Text>

@@ -1,9 +1,6 @@
-import { NavigationContainer } from "@react-navigation/native";
 import React from 'react'
-import { async } from "@firebase/util";
-import { collection } from "firebase/firestore";
 import { View, SafeAreaView, StyleSheet } from "react-native";
-import { authentication, firestore } from "../firebase/firebase-config";
+import { authentication, firestore } from "../../firebase/firebase-config";
 import { doc, getDoc, getDocs } from "firebase/firestore";
 import { Button, Text, } from "@rneui/themed";
 import {
@@ -26,7 +23,7 @@ const Profile = ({navigation}) => {
     <View style={styles.userInfoSection}>
         <View style={{flexDirection: 'row', marginTop: "5%", marginBottom: 15}}>
           <Avatar.Image 
-            source={require('../assets/adaptive-icon.png')}
+            source={require('../../assets/adaptive-icon.png')}
             size={90}
             style={{backgroundColor:"black"}}
           />

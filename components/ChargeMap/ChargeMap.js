@@ -1,12 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   View,
-  SafeAreaView,
   StyleSheet,
-  Touchable,
   Dimensions,
 } from "react-native";
-import { Text, Button } from "@rneui/themed";
+import { Button } from "@rneui/themed";
 import MapView from "react-native-maps";
 import * as Location from "expo-location";
 
