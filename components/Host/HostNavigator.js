@@ -9,7 +9,6 @@ export default function HostNavigator() {
   return (
     <Host.Navigator screenOptions={{ headerShown: false }} initialRouteName="HostHomeScreen">
           <Host.Screen name="HostHomeScreen" component={HostHomeScreen} />
-          <Host.Screen name="HostAddLocation" component={HostAddLocation} />
     </Host.Navigator>
   );
 }

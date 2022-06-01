@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, SafeAreaView, StyleSheet, Touchable } from "react-native";
 import { authentication, firestore } from "../../firebase/firebase-config";
 import { doc, getDoc, getDocs } from "firebase/firestore";
@@ -6,20 +6,32 @@ import { Button, Text, Input, Divider } from "@rneui/themed";
 import Selection from "../resources/Selection";
 
 export default function HostHomeScreen({ navigation }) {
+  const [name, setName] = useState("");
 
   const log = () => {
     console.log("clicked");
   };
 
+  // Get first name of the host
+  useEffect(() => {
+    const getFirstName = async () => {
+      const docRef = doc(firestore, "users", authentication.currentUser.uid);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) setName(docSnap.data().fname);
+      else console.error("User not Found");
+    };
+    getFirstName();
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
-      <Text h1 h1Style={{ fontSize: 30, color: "#1BB530"  }}>
+      <Text h1 h1Style={{ fontSize: 30, color: "#1BB530"}}>
         Hello,{" "}
-        <Text h1 h1Style={{ fontSize: 30, color:"black"}}>
-          {authentication.currentUser.displayName}
+        <Text h1 h1Style={{ fontSize: 30, color: "black" }}>
+          {name}
         </Text>
       </Text>
-      <Divider style={{ width: "100%", margin: 20 }} color="black" />
+      <Divider style={{ width: "100%", margin: 20, }} color="black" />
       <Text
         h2
         h2Style={{
@@ -60,7 +72,9 @@ export default function HostHomeScreen({ navigation }) {
       <Selection
         title="Add New Location"
         logoName="add-location"
-        onPress={() => navigation.navigate('Host', {screen: "HostAddLocation"})}
+        onPress={() =>
+          navigation.navigate("HostAddLocation")
+        }
       />
       <Text
         h2

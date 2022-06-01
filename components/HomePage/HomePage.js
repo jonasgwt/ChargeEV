@@ -1,6 +1,6 @@
 import React from "react";
 import { SafeAreaView } from "react-native";
-import { Text, Button } from "@rneui/themed";
+import { Button, Text } from "@rneui/themed";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { signOut } from "firebase/auth";
 import { authentication } from "../../firebase/firebase-config";

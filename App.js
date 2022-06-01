@@ -14,6 +14,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Font from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import HostAddLocation from "./components/Host/HostAddLocation.js";
 
 const Stack = createNativeStackNavigator();
 const theme = createTheme(themeConfig);
@@ -71,6 +72,9 @@ export default function App() {
           <Stack.Screen name="Register" component={Register} />
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="Home" component={HomeScreen} />
+
+          {/*Hosts*/}
+          <Stack.Screen name="HostAddLocation" component={HostAddLocation} />
         </Stack.Navigator>
       </NavigationContainer>
     </ThemeProvider>
