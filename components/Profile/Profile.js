@@ -33,10 +33,10 @@ export default function Profile ({navigation})  {
     
     
     <View style={styles.userInfoSection}>
-        <View style={{flexDirection: 'row', marginTop: "5%", marginBottom: 15}}>
+        <View style={{flexDirection: 'row', marginTop: "5%", marginBottom: 15, marginLeft: -20}}>
           <Avatar.Image 
             source={require('../../assets/adaptive-icon.png')}
-            size={90}
+            size={80}
             style={{backgroundColor:"black"}}
           />
           <View style={{marginLeft: 20}}>
@@ -51,10 +51,6 @@ export default function Profile ({navigation})  {
 
 
       <View style={styles.userInfoSection}>
-        <View style={styles.row}>
-          <Icon name="map-marker-radius" color="#777777" size={30}/>
-          <Text style={{color:"#777777", marginLeft: 20}}>Singapore</Text>
-        </View>
         <View style={styles.row}>
           <Icon name="phone" color="#777777" size={30}/>
           <Text style={{color:"#777777", marginLeft: 20}}>+65 #########</Text>
@@ -119,7 +115,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     marginBottom: 25,
     marginTop:10,
-    marginLeft:"1%",
+    marginLeft:"0%",
   },
   title: {
     fontSize: 24,
