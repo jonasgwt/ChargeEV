@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Animated,
   TouchableOpacity,
+  Image
 } from "react-native";
 import { Icon } from "@rneui/themed";
 
@@ -13,7 +14,9 @@ export default function SelectionHosting({
   iconName,
   selected,
   setSelected,
+  imageName,
 }) {
+  // Animations
   const selectionAnim = useRef(new Animated.Value(0)).current;
   const bgAnim = useRef(new Animated.Value(0)).current;
   const bgSelectionAnim = bgAnim.interpolate({
@@ -87,6 +90,7 @@ export default function SelectionHosting({
     }
   };
 
+  // Update animations to new state
   useEffect(() => {
     if (selected) animateSelected();
     else animateDeselect();
@@ -110,15 +114,19 @@ export default function SelectionHosting({
         >
           {selectionTitle}
         </Animated.Text>
-        <Icon
-          name={iconName}
-          size={30}
-          containerStyle={{ position: "absolute", right: "5.5%" }}
-          iconStyle={{ color: "white" }}
-        />
-        <Animated.View style={{ opacity: iconAnim }}>
-          <Icon name={iconName} size={30} />
-        </Animated.View>
+        {iconName ? (
+          <>
+            <Icon
+              name={iconName}
+              size={30}
+              containerStyle={{ position: "absolute", right: "5.5%" }}
+              iconStyle={{ color: "white" }}
+            />
+            <Animated.View style={{ opacity: iconAnim }}>
+              <Icon name={iconName} size={30} />
+            </Animated.View>
+          </>
+        ) : <Image source={imageName} style={styles.image} />}
       </Animated.View>
     </TouchableOpacity>
   );
@@ -144,4 +152,11 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOffset: { width: 1, height: 5 },
   },
+  image: {
+    resizeMode: "contain",
+    height: "150%",
+    width: "25%",
+    position: "absolute",
+    right: 0
+  }
 });
