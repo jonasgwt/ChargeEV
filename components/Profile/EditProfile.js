@@ -18,7 +18,7 @@ import {
   getDoc,
   setDoc
 } from "firebase/firestore";
-import { authentication, firestore, storage } from "../../firebase/firebase-config";
+import { authentication, firestore } from "../../firebase/firebase-config";
 import * as ImagePicker from "expo-image-picker";
 import { signOut } from "firebase/auth";
 import { getStorage, ref, uploadBytes, getDownloadURL, uploadBytesResumable } from "firebase/storage";
@@ -33,6 +33,9 @@ const EditProfile = ({ navigation }) => {
   const [transferred, setTransferred] = useState(0);
   const [userData, setUserData] = useState(null);
   const [pickedImagePath, setPickedImagePath] = useState("");
+  const [firstName, setfirstName] = useState("");
+  const [lastName, setlastName] = useState("");
+  const [phone, setPhone] = useState("");
 
   const uploadImage = async () => {
     console.log("Starting upload")
@@ -122,9 +125,10 @@ const EditProfile = ({ navigation }) => {
     console.log(authentication.currentUser.uid)
     console.log(imgUrl)
     await setDoc(doc(firestore, "users", authentication.currentUser.uid), {
-      email: "swapped",
-      fname: "nameswap",
-      lname: "lnameswap",
+      email: authentication.currentUser.email,
+      fname: firstName,
+      lname: lastName,
+      phone: phone,
       userImg: imgUrl,
     });
     Alert.alert("update done")
@@ -222,8 +226,8 @@ const EditProfile = ({ navigation }) => {
                     ? image
                     : userData
                     ? userData.data().userImg ||
-                      "https://firebasestorage.googleapis.com/v0/b/chargeev-986bd.appspot.com/o/photos%2FD724053F-4576-48DB-9C80-618DA1FA31A61654257919032.jpg?alt=media&token=91be5b5e-968b-48a5-9a48-8a4194352467"
-                    : 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg',
+                    'https://firebasestorage.googleapis.com/v0/b/chargeev-986bd.appspot.com/o/photos%2F1B2C5C85-6253-4C85-9355-BE0AEC1B9A921654325573980.png?alt=media&token=3a176203-5203-403f-b63e-d0aa37912875'
+                    : 'https://firebasestorage.googleapis.com/v0/b/chargeev-986bd.appspot.com/o/photos%2F1B2C5C85-6253-4C85-9355-BE0AEC1B9A921654325573980.png?alt=media&token=3a176203-5203-403f-b63e-d0aa37912875',
                 }}
                   style={{
                     height: 100,
@@ -261,16 +265,19 @@ const EditProfile = ({ navigation }) => {
               style={{ marginTop: 50 }}
               placeholder="First Name"
               autoCorrect={false}
+              onChangeText={setfirstName}
             ></Input>
             <Input
               style={styles.action}
               placeholder="Last Name"
               autoCorrect={false}
+              onChangeText={setlastName}
             ></Input>
             <Input
               style={styles.action}
               placeholder="Phone"
               keyboardType="phone-pad"
+              onChangeText={setPhone}
             ></Input>
           </View>
           <View>
