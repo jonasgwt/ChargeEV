@@ -15,7 +15,11 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import { authentication, firestore } from "../../firebase/firebase-config";
+import {
+  authentication,
+  firestore,
+  googleMapsAPIKey,
+} from "../../firebase/firebase-config";
 import { Text, Divider, Button, Icon } from "@rneui/themed";
 import PlaceType from "./AddLocationPages/PlaceType";
 import * as Location from "expo-location";
@@ -24,6 +28,7 @@ import ChargerType from "./AddLocationPages/ChargerType";
 import AddImage from "./AddLocationPages/AddImage";
 import Price from "./AddLocationPages/Price";
 import PaymentMethod from "./AddLocationPages/PaymentMethod";
+import { uploadImage } from "../resources/uploadImage";
 
 export default function HostAddLocation({ navigation }) {
   const [page, setPage] = useState(0);
@@ -54,6 +59,7 @@ export default function HostAddLocation({ navigation }) {
   const [city, setCity] = useState("");
   const [address, setAddress] = useState("");
   const [coords, setCoords] = useState([]);
+  const [placeID, setPlaceID] = useState("");
   const [unitNumber, setUnitNumber] = useState("");
   const [postalCode, setPostalCode] = useState("");
   const [chargerTypes, setChargerTypes] = useState([]);
@@ -155,15 +161,14 @@ export default function HostAddLocation({ navigation }) {
   }, [numPagesCompleted]);
 
   // Navigate to Next page
-  const move = () => {
+  const move = async () => {
     if (page == 1) {
       checkAddress();
-      if (isValidAddress) setPage((page) => page + 1);
-      else {
-        Alert.alert("Invalid Address");
-        return;
-      }
-    } else if (page < 6) setPage((page) => page + 1);
+    } else if (page < 5) setPage((page) => page + 1);
+    else if (page == 5) {
+      console.log("uploading");
+      await uploadData();
+    }
   };
   // Navigate back to page before
   const back = () => {
@@ -175,16 +180,68 @@ export default function HostAddLocation({ navigation }) {
   const checkAddress = () => {
     Location.geocodeAsync(address + " " + city)
       .then((coords) => {
-        setCoords[(coords[0].latitude, coords[0].latitude)];
+        setCoords([coords[0].latitude, coords[0].latitude]);
         Location.reverseGeocodeAsync(coords[0]).then((locations) => {
-          setIsValidAddress(
+          const check =
             locations[0].postalCode == postalCode &&
-              locations[0].isoCountryCode == country &&
-              locations[0].city == city
-          );
+            locations[0].isoCountryCode == country &&
+            locations[0].city == city;
+          if (isValidAddress && check) setPage((page) => page + 1);
+          else setIsValidAddress(check);
         });
       })
       .catch((err) => console.log(err));
+  };
+
+  // Navigate next page if address is valid else alert
+  useEffect(() => {
+    if (page == 1) {
+      if (isValidAddress) {
+        setPage((page) => page + 1);
+      } else {
+        Alert.alert("Invalid Address");
+      }
+    }
+  }, [isValidAddress]);
+
+  // Updates placeID when coords change
+  useEffect(() => {
+    if (coords.length != 0) getPlaceID();
+  }, [coords]);
+
+  // Get placeID
+  const getPlaceID = () => {
+    fetch(
+      "https://maps.googleapis.com/maps/api/geocode/json?address=" +
+        coords[0] +
+        "," +
+        coords[1] +
+        "&key=" +
+        { googleMapsAPIKey }.googleMapsAPIKey
+    )
+      .then((response) => response.json())
+      .then((responseJson) => {
+        setPlaceID(responseJson.results[0].place_id);
+      });
+  };
+
+  // Uploade to firestore
+  const uploadData = async () => {
+    const docRef = await addDoc(collection(firestore, "HostedLocations"), {
+      address: address,
+      chargerType: chargerTypes,
+      city: city,
+      placeID: placeID,
+      costPerCharge: price,
+      country: country,
+      hostedBy: authentication.currentUser.uid,
+      housingType: locationType,
+      locationImage: await uploadImage(pickedImagePath),
+      paymentMethod: paymentMethods,
+      postalCode: postalCode,
+      unitNumber: unitNumber,
+    });
+    console.log("Location added with ID: ", docRef.id);
   };
 
   // Test

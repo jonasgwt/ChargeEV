@@ -25,9 +25,9 @@ export default function HostHomeScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text h1 h1Style={{ fontSize: 30, color: "#1BB530"}}>
+      <Text h1 h1Style={{ fontSize: 35, color: "#1BB530"}}>
         Hello,{" "}
-        <Text h1 h1Style={{ fontSize: 30, color: "black" }}>
+        <Text h1 h1Style={{ fontSize: 35, color: "black" }}>
           {name}
         </Text>
       </Text>
@@ -38,6 +38,7 @@ export default function HostHomeScreen({ navigation }) {
           fontFamily: "Inter-Bold",
           alignSelf: "flex-start",
           paddingLeft: "2%",
+          marginBottom: 5
         }}
       >
         Manage
@@ -60,6 +61,7 @@ export default function HostHomeScreen({ navigation }) {
           alignSelf: "flex-start",
           paddingLeft: "2%",
           marginTop: 30,
+          marginBottom: 5
         }}
       >
         Hosting
@@ -83,6 +85,7 @@ export default function HostHomeScreen({ navigation }) {
           alignSelf: "flex-start",
           paddingLeft: "2%",
           marginTop: 30,
+          marginBottom: 5
         }}
       >
         Report
@@ -95,6 +98,7 @@ export default function HostHomeScreen({ navigation }) {
           alignSelf: "flex-start",
           paddingLeft: "2%",
           marginTop: 30,
+          marginBottom: 5
         }}
       >
         Support
