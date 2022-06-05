@@ -1,4 +1,4 @@
-import React from 'react'
+import {React, useEffect, useState} from 'react'
 import { View, SafeAreaView, StyleSheet } from "react-native";
 import { authentication, firestore } from "../../firebase/firebase-config";
 import { doc, getDoc, getDocs } from "firebase/firestore";
@@ -21,12 +21,30 @@ const Stack = createNativeStackNavigator();
 
 
 export default function Profile ({navigation})  {
+  const [userData, setUserData] = useState(null);
+
+  const getUser = async () => {
+    const docRef = doc(firestore, "users", authentication.currentUser.uid);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      console.log("Document data:", docSnap.data());
+      setUserData(docSnap);
+    } else {
+      // doc.data() will be undefined in this case
+      console.log("No such document!");
+    }
+  };
+
+  useEffect(() => {
+    getUser();
+  }, []);
 
   const SignOut = async () => {
     await AsyncStorage.clear();
     await signOut(authentication);
     navigation.navigate('Login');
   };
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -35,9 +53,12 @@ export default function Profile ({navigation})  {
     <View style={styles.userInfoSection}>
         <View style={{flexDirection: 'row', marginTop: "5%", marginBottom: 15, marginLeft: -20}}>
           <Avatar.Image 
-            source={require('../../assets/adaptive-icon.png')}
+            source={{
+              uri: userData!=null ? userData.get("userImg") : 
+              'https://firebasestorage.googleapis.com/v0/b/chargeev-986bd.appspot.com/o/photos%2F1B2C5C85-6253-4C85-9355-BE0AEC1B9A921654325573980.png?alt=media&token=3a176203-5203-403f-b63e-d0aa37912875'
+            }}
             size={80}
-            style={{backgroundColor:"black"}}
+            imageStyle= {{borderRaduys : 15}}
           />
           <View style={{marginLeft: 20}}>
             <Title style={[styles.title, {
@@ -53,7 +74,7 @@ export default function Profile ({navigation})  {
       <View style={styles.userInfoSection}>
         <View style={styles.row}>
           <Icon name="phone" color="#777777" size={30}/>
-          <Text style={{color:"#777777", marginLeft: 20}}>+65 #########</Text>
+          <Text style={{color:"#777777", marginLeft: 20}}>{userData!=null ? userData.get("phone") : "Phone Number"}</Text>
         </View>
         <View style={styles.row}>
           <Icon name="email" color="#777777" size={30}/>
@@ -62,6 +83,12 @@ export default function Profile ({navigation})  {
       </View>
 
       <View style={styles.menuWrapper}>
+      <TouchableRipple onPress={() => {getUser()}}>
+          <View style={styles.menuItem}>
+            <Icon name="refresh" color="#1BB530" size={25}/>
+            <Text style={styles.menuItemText}>Reload Profile</Text>
+          </View>
+        </TouchableRipple>
         <TouchableRipple onPress={() => {navigation.navigate('EditProfile')}}>
           <View style={styles.menuItem}>
             <Icon name="account-edit" color="#1BB530" size={25}/>
@@ -86,7 +113,7 @@ export default function Profile ({navigation})  {
             <Text style={styles.menuItemText}>Tell Your Friends</Text>
           </View>
         </TouchableRipple>
-        <TouchableRipple onPress={() => {}}>
+        <TouchableRipple onPress={() => {navigation.navigate("Support")}}>
           <View style={styles.menuItem}>
             <Icon name="account-check-outline" color="#1BB530" size={25}/>
             <Text style={styles.menuItemText}>Support</Text>

@@ -22,6 +22,7 @@ import { authentication, firestore } from "../../firebase/firebase-config";
 import * as ImagePicker from "expo-image-picker";
 import { signOut } from "firebase/auth";
 import { getStorage, ref, uploadBytes, getDownloadURL, uploadBytesResumable } from "firebase/storage";
+import { updateProfile } from "firebase/auth";
 
 
 
@@ -126,12 +127,17 @@ const EditProfile = ({ navigation }) => {
     console.log(imgUrl)
     await setDoc(doc(firestore, "users", authentication.currentUser.uid), {
       email: authentication.currentUser.email,
-      fname: firstName,
-      lname: lastName,
-      phone: phone,
+      fname: firstName !=="" ? firstName : userData.get("fname"),
+      lname: lastName !=="" ? lastName : userData.get("lname"),
+      phone: phone !=="" ? phone : userData.get('phone'),
       userImg: imgUrl,
     });
-    Alert.alert("update done")
+    await updateProfile(authentication.currentUser, {
+      displayName: firstName + " " + lastName,
+      photoURL: imgUrl,
+    });
+    Alert.alert("Update done")
+    navigation.navigate("ProfileHomeScreen")
   }
 
   useEffect(() => {
@@ -157,6 +163,7 @@ const EditProfile = ({ navigation }) => {
       setImage(result.uri);
       setPickedImagePath(result.uri);
       console.log("Image is set to " + result.uri);
+      setIsVisible(false);
     }
   };
 
@@ -222,19 +229,15 @@ const EditProfile = ({ navigation }) => {
               >
                 <ImageBackground
                   source={{
-                  uri: image
-                    ? image
-                    : userData
-                    ? userData.data().userImg ||
-                    'https://firebasestorage.googleapis.com/v0/b/chargeev-986bd.appspot.com/o/photos%2F1B2C5C85-6253-4C85-9355-BE0AEC1B9A921654325573980.png?alt=media&token=3a176203-5203-403f-b63e-d0aa37912875'
-                    : 'https://firebasestorage.googleapis.com/v0/b/chargeev-986bd.appspot.com/o/photos%2F1B2C5C85-6253-4C85-9355-BE0AEC1B9A921654325573980.png?alt=media&token=3a176203-5203-403f-b63e-d0aa37912875',
+                    uri: userData!=null ? userData.get("userImg") : 
+              'https://firebasestorage.googleapis.com/v0/b/chargeev-986bd.appspot.com/o/photos%2F1B2C5C85-6253-4C85-9355-BE0AEC1B9A921654325573980.png?alt=media&token=3a176203-5203-403f-b63e-d0aa37912875'
                 }}
                   style={{
                     height: 100,
                     width: 100,
-                    backgroundColor: "black",
                     borderRadius: 15,
                   }}
+                  imageStyle= {{borderRadius : 15}}
                 >
                   <View
                     style={{
@@ -260,7 +263,11 @@ const EditProfile = ({ navigation }) => {
                 </ImageBackground>
               </View>
             </TouchableOpacity>
-            <Text>username</Text>
+            <Text style={{
+              marginTop: 20,
+              color: '#777777',
+              fontSize: 20
+              }}>{authentication.currentUser.displayName}</Text>
             <Input
               style={{ marginTop: 50 }}
               placeholder="First Name"

@@ -13,7 +13,6 @@ import { signInWithEmailAndPassword, sendPasswordResetEmail , getAuth } from "fi
 
 export default function ForgotPassword({ navigation }) {
   const [email, setEmail] = useState("");
-  const [invalidAccount, setInvalidAccount] = useState(false);
 
   //reset password code
   const auth = getAuth();
@@ -29,33 +28,28 @@ export default function ForgotPassword({ navigation }) {
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-        console.log(errorMessage)
-        switch (errorMessage) {
+        console.log(errorCode)
+        switch (errorCode) {
           case "auth/missing-email":
-            setErrorMessage("Fill up email");
-            Alert.alert(error);
+            Alert.alert("Please fill in the field");
             break;
           case "auth/user-not-found":
-            setErrorMessage("Email not found");
+            console.log("err type 2")
             Alert.alert("Email not registered");
             break;
         }
       });
   }
   
-
-  
-
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
       <View style={styles.titleContainer}>
-        <Text h1>Login</Text>
-        <Text h2>Lorem ipsum dolor sit amet</Text>
+        <Text h1>Reset</Text>
+        <Text h2>Enter your email below</Text>
         <Text h4 style={{ color: "red", marginTop: 10, marginBottom: 10 }}>
-        {invalidAccount? "Invalid Password Or Email" : ""}
         </Text>
       </View>
       <Input
@@ -69,7 +63,7 @@ export default function ForgotPassword({ navigation }) {
         title="Reset"
         buttonStyle={{ width: 330, height: 50 }}
         containerStyle={{ marginTop: 10 }}
-        onPress={handleReset()}
+        onPress={() => handleReset()}
       ></Button>
       <Text h4 style={{ marginTop: 20 }}>
         <Text

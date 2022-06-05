@@ -38,6 +38,11 @@ export default function Homepage ({ navigation }) {
     <SafeAreaView
       style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
     >
+    <Button 
+    title="ChatBot"
+    onPress={() => {navigation.navigate("Home")}} >
+
+    </Button>
       <Text>{userData!==null ? userData.get("phone") : "placeholder"}</Text>
       <Text>{userData!==null ? userData.get("fname") + " " + userData.get("lname") : "fname lname"}</Text>
           <Text style={{color:"gray", fontSize:15, marginTop:50, width:"80%", textAlign:"center"}}>Note that features here are still a work in progress</Text>

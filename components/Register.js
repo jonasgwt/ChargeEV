@@ -99,6 +99,7 @@ export default function Register({ navigation }) {
       </View>
       <Input
         placeholder="Phone"
+        keyboardType="number-pad"
         onChangeText={setPhone}
       />
       <Input

@@ -16,6 +16,8 @@ import * as SplashScreen from "expo-splash-screen";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import ForgotPassword from "./components/ForgotPassword.js";
 
+
+
 const Stack = createNativeStackNavigator();
 const theme = createTheme(themeConfig);
 
