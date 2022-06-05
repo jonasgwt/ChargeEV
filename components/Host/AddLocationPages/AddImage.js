@@ -19,11 +19,8 @@ export default function AddImage({pickedImagePath, setPickedImagePath}) {
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync();
-    // Explore the result
-    console.log(result);
     if (!result.cancelled) {
       setPickedImagePath(result.uri);
-      console.log(result.uri);
     }
   };
 

@@ -15,6 +15,8 @@ import * as Font from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import HostAddLocation from "./components/Host/HostAddLocation.js";
+import Loading from "./components/resources/Loading.js";
+import Success from "./components/resources/Success.js";
 
 const Stack = createNativeStackNavigator();
 const theme = createTheme(themeConfig);
@@ -75,6 +77,10 @@ export default function App() {
 
           {/*Hosts*/}
           <Stack.Screen name="HostAddLocation" component={HostAddLocation} />
+
+          {/*Loading & Success*/}
+          <Stack.Screen name="Loading" component={Loading} options={{gestureEnabled: false}}/>
+          <Stack.Screen name="Success" component={Success} options={{gestureEnabled: false}}/>
         </Stack.Navigator>
       </NavigationContainer>
     </ThemeProvider>

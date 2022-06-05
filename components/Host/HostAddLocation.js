@@ -8,12 +8,13 @@ import {
   Alert,
 } from "react-native";
 import {
-  getDocs,
+  getDoc,
   addDoc,
   collection,
-  GeoPoint,
-  query,
-  where,
+  doc,
+  updateDoc,
+  arrayUnion,
+  setDoc,
 } from "firebase/firestore";
 import {
   authentication,
@@ -50,7 +51,6 @@ export default function HostAddLocation({ navigation }) {
   ];
   const [numPagesCompleted, setNumPagesCompleted] = useState(0);
   const [disabledStatus, setDisabledStatus] = useState(true);
-  const [isValidAddress, setIsValidAddress] = useState(false);
   const progressAnim = useRef(new Animated.Value(0)).current;
 
   // Data
@@ -166,43 +166,38 @@ export default function HostAddLocation({ navigation }) {
       checkAddress();
     } else if (page < 5) setPage((page) => page + 1);
     else if (page == 5) {
-      console.log("uploading");
       await uploadData();
     }
   };
   // Navigate back to page before
   const back = () => {
     if (page != 0) setPage((page) => page - 1);
-    else navigation.goBack();
+    else {
+      navigation.goBack();
+    }
   };
 
   // Check address validity
   const checkAddress = () => {
     Location.geocodeAsync(address + " " + city)
       .then((coords) => {
-        setCoords([coords[0].latitude, coords[0].latitude]);
+        if (coords.length == 0) {
+          Alert.alert("Invalid Address");
+          return;
+        }
         Location.reverseGeocodeAsync(coords[0]).then((locations) => {
           const check =
             locations[0].postalCode == postalCode &&
             locations[0].isoCountryCode == country &&
             locations[0].city == city;
-          if (isValidAddress && check) setPage((page) => page + 1);
-          else setIsValidAddress(check);
+          if (check) {
+            setCoords([coords[0].latitude, coords[0].latitude]);
+            setPage((page) => page + 1);
+          } else Alert.alert("Invalid Address");
         });
       })
       .catch((err) => console.log(err));
   };
-
-  // Navigate next page if address is valid else alert
-  useEffect(() => {
-    if (page == 1) {
-      if (isValidAddress) {
-        setPage((page) => page + 1);
-      } else {
-        Alert.alert("Invalid Address");
-      }
-    }
-  }, [isValidAddress]);
 
   // Updates placeID when coords change
   useEffect(() => {
@@ -227,7 +222,16 @@ export default function HostAddLocation({ navigation }) {
 
   // Uploade to firestore
   const uploadData = async () => {
-    const docRef = await addDoc(collection(firestore, "HostedLocations"), {
+    // Checks if there is a similar address in dataabse
+    const docSnap = await getDoc(doc(firestore, "HostedLocations", placeID));
+    if (docSnap.exists()) {
+      Alert.alert("We already have that location in database!");
+      return;
+    }
+    // Navigate to loading page
+    navigation.navigate("Loading");
+    // Add location to database
+    await setDoc(doc(firestore, "HostedLocations", placeID), {
       address: address,
       chargerType: chargerTypes,
       city: city,
@@ -241,11 +245,33 @@ export default function HostAddLocation({ navigation }) {
       postalCode: postalCode,
       unitNumber: unitNumber,
     });
-    console.log("Location added with ID: ", docRef.id);
+    const userRef = doc(firestore, "users", authentication.currentUser.uid);
+    const userDoc = await getDoc(userRef);
+    if (userDoc.exists()) {
+      // if no record of hosting in user, create one
+      if (userDoc.data().hostID == undefined) {
+        const hostRef = await addDoc(collection(firestore, "Host"), {
+          userID: authentication.currentUser.uid,
+          rating: 0,
+          bookings: [],
+          locations: [placeID],
+        });
+        await updateDoc(userRef, {
+          hostID: hostRef.id,
+        });
+      } else {
+        // else append new placeID to array of locations hosted
+        const hostDoc = doc(firestore, "Host", userDoc.data().hostID);
+        await updateDoc(hostDoc, {
+          locations: arrayUnion(placeID),
+        });
+      }
+    } else {
+      console.warn("No data found");
+    }
+    // Navigate to success page
+    navigation.navigate("Success");
   };
-
-  // Test
-  useEffect(() => {}, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -264,10 +290,12 @@ export default function HostAddLocation({ navigation }) {
       <Animated.View
         style={[
           styles.progressBar,
-          { transform: [{ translateX: progressAnim }] },
+          {
+            transform: [{ translateX: progressAnim }],
+          },
         ]}
       >
-        <View style={styles.inside}></View>
+        <View style={styles.inside} />
       </Animated.View>
 
       {page == 0 ? (
