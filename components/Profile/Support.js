@@ -1,6 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native'
-import React , { useEffect, useCallback, useState, useLayoutEffect } from 'react'
-
+import React from 'react'
 
 const Support = () => {
   return (

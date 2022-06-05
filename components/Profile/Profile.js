@@ -18,8 +18,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Stack = createNativeStackNavigator();
 
-
-
 export default function Profile ({navigation})  {
   const [userData, setUserData] = useState(null);
 
