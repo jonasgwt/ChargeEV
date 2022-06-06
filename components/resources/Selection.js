@@ -1,20 +1,32 @@
 import { Icon } from "@rneui/themed";
 import React from "react";
-import { View, SafeAreaView, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  SafeAreaView,
+  StyleSheet,
+  TouchableHighlight,
+  Animated,
+} from "react-native";
 import { Button, Text, Input, Divider } from "@rneui/themed";
 
 export default function Selection({ logoName, logoType, title, onPress }) {
   return (
-    <View style={{width:"95%", paddingTop: "5%",}}>
-      <TouchableOpacity style={styles.container} onPress={onPress}>
-        <Icon name={logoName} type={logoType} style={{ marginRight: 10 }} />
-        <Text h4 style={{ flex: 1 }}>
-          {title}
-        </Text>
-        <Icon type="MaterialIcons" name="arrow-forward-ios" />
-      </TouchableOpacity>
-          <Divider style={{width:"100%", marginTop:"3%"}} color="black" />
-    </View>
+    <TouchableHighlight
+      underlayColor="#7777"
+      style={{ width: "111%", paddingTop: "5%"}}
+      onPress={onPress}
+    >
+      <>
+        <View style={styles.container}>
+          <Icon name={logoName} type={logoType} style={{ marginRight: 10 }} />
+          <Text h4 style={{ flex: 1 }} h4Style={{fontFamily: "Inter-Regular"}}>
+            {title}
+          </Text>
+          <Icon type="MaterialIcons" name="arrow-forward-ios" />
+        </View>
+        <Divider style={{ width: "90%", marginTop: "3%", marginLeft:"5%" }} color="#7777" />
+      </>
+    </TouchableHighlight>
   );
 }
 
@@ -24,5 +36,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    width: "90%",
+    marginLeft:"5%"
   },
 });
