@@ -11,41 +11,45 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { signInWithEmailAndPassword, sendPasswordResetEmail , getAuth } from "firebase/auth";
 
 
-export default function Login({ navigation }) {
+export default function ForgotPassword({ navigation }) {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [invalidAccount, setInvalidAccount] = useState(false);
 
+  //reset password code
+  const auth = getAuth();
 
-  
-  // Login user
-  const handleLogin = () => {
-    signInWithEmailAndPassword(authentication, email, password)
-      .then((re) => {
-        setInvalidAccount(false);
-        AsyncStorage.setItem('email', email);
-        AsyncStorage.setItem('password', password);
-        navigation.navigate("Home");
+  const handleReset = () => {
+    sendPasswordResetEmail(auth, email)
+      .then(() => {
+        // Password reset email sent!
+        console.log("Reset Email Sent")
+        Alert.alert("Reset email sent. Check spam and junk for email")
+        navigation.navigate("Login")
       })
-      .catch((err) => {
-        console.log(err);
-        setInvalidAccount(true);
-        Alert.alert("Invalid Password Or Email")
-      })
-  };
-
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode)
+        switch (errorCode) {
+          case "auth/missing-email":
+            Alert.alert("Please fill in the field");
+            break;
+          case "auth/user-not-found":
+            console.log("err type 2")
+            Alert.alert("Email not registered");
+            break;
+        }
+      });
+  }
   
-
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
       <View style={styles.titleContainer}>
-        <Text h1>Login</Text>
-        <Text h2>Lorem ipsum dolor sit amet</Text>
+        <Text h1>Reset</Text>
+        <Text h2>Enter your email below</Text>
         <Text h4 style={{ color: "red", marginTop: 10, marginBottom: 10 }}>
-        {invalidAccount? "Invalid Password Or Email" : ""}
         </Text>
       </View>
       <Input
@@ -55,33 +59,18 @@ export default function Login({ navigation }) {
         autoCapitalize='none'
         autoComplete={false}
       ></Input>
-      <Input
-        placeholder="Password"
-        secureTextEntry={true}
-        onChangeText={setPassword}
-      ></Input>
       <Button
-        title="Login"
+        title="Reset"
         buttonStyle={{ width: 330, height: 50 }}
         containerStyle={{ marginTop: 10 }}
-        onPress={handleLogin}
+        onPress={() => handleReset()}
       ></Button>
       <Text h4 style={{ marginTop: 20 }}>
-        Don't have an account?{" "}
         <Text
           style={{ color: "#1BB530", textDecorationLine: "underline" }}
-          onPress={() => navigation.navigate("Register")}
+          onPress={() => navigation.navigate("Login")}
         >
-          Register
-        </Text>
-      </Text>
-      <Text h4 style={{ marginTop: 30 }}>
-        Forgot password?{" "}
-        <Text
-          style={{ color: "red", textDecorationLine: "underline" }}
-          onPress={() => navigation.navigate("Reset")}
-        >
-          Reset
+          Return
         </Text>
       </Text>
     </KeyboardAvoidingView>

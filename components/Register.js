@@ -11,6 +11,7 @@ export default function Register({ navigation }) {
   const [email, setEmail] = useState("");
   const [firstName, setfirstName] = useState("");
   const [lastName, setlastName] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [error, setErrorMessage] = useState("");
 
@@ -30,6 +31,7 @@ export default function Register({ navigation }) {
           fname: firstName,
           lname: lastName,
           userImg: null,
+          phone: phone,
         });
         console.log(`User ${user.uid} created`);
         await updateProfile(user, {
@@ -95,6 +97,11 @@ export default function Register({ navigation }) {
           autoCompleteType="name"
         />
       </View>
+      <Input
+        placeholder="Phone"
+        keyboardType="number-pad"
+        onChangeText={setPhone}
+      />
       <Input
         placeholder="Password"
         secureTextEntry={true}

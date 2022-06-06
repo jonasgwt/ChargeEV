@@ -7,6 +7,7 @@ import {
   ImageBackground,
   KeyboardAvoidingView,
   Image,
+  Alert,
 } from "react-native";
 import { React, useEffect, useState } from "react";
 import { Input } from "react-native-elements";
@@ -15,10 +16,13 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import {
   doc,
   getDoc,
+  setDoc
 } from "firebase/firestore";
 import { authentication, firestore } from "../../firebase/firebase-config";
 import * as ImagePicker from "expo-image-picker";
 import { signOut } from "firebase/auth";
+import { getStorage, ref, uploadBytes, getDownloadURL, uploadBytesResumable } from "firebase/storage";
+import { updateProfile } from "firebase/auth";
 
 
 
@@ -30,6 +34,75 @@ const EditProfile = ({ navigation }) => {
   const [transferred, setTransferred] = useState(0);
   const [userData, setUserData] = useState(null);
   const [pickedImagePath, setPickedImagePath] = useState("");
+  const [firstName, setfirstName] = useState("");
+  const [lastName, setlastName] = useState("");
+  const [phone, setPhone] = useState("");
+
+  const uploadImage = async () => {
+    console.log("Starting upload")
+    console.log(image)
+    if( image == null ) {
+      console.log("No image uploaded")
+      return null;
+    }
+    const uploadUri = image;
+    console.log("Uploading image")
+    console.log(image)
+    let filename = uploadUri.substring(uploadUri.lastIndexOf('/') + 1);
+
+    // Add timestamp to File Name
+    const extension = filename.split('.').pop(); 
+    const name = filename.split('.').slice(0, -1).join('.');
+    filename = name + Date.now() + '.' + extension;
+
+    setUploading(true);
+    setTransferred(0);
+
+    const storage = getStorage();
+    const storageRef = ref(storage, `photos/${filename}`);
+
+    let uri = image
+    const blob = await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = function () {
+        resolve(xhr.response);
+      };
+      xhr.onerror = function (e) {
+        console.log(e);
+        reject(new TypeError("Network request failed"));
+      };
+      xhr.responseType = "blob";
+      xhr.open("GET", uri, true);
+      xhr.send(null);
+    });
+
+    const task = uploadBytesResumable(storageRef, blob).then((snapshot) => {
+      console.log('Uploaded a blob or file!');
+    });
+    
+
+    try {
+      await task;
+
+      const url = await getDownloadURL(storageRef);
+
+      setUploading(false);
+      setImage(null);
+
+      // Alert.alert(
+      //   'Image uploaded!',
+      //   'Your image has been uploaded to the Firebase Cloud Storage Successfully!',
+      // );
+      return url;
+
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+
+  };
+
+
 
   const getUser = async () => {
     const docRef = doc(firestore, "users", authentication.currentUser.uid);
@@ -43,7 +116,29 @@ const EditProfile = ({ navigation }) => {
     }
   };
 
-  const handleUpdate = () => {};
+  const handleUpdate = async() => {
+    console.log("Handling update");
+    let imgUrl = await uploadImage();
+    console.log("Image has been uploaded")
+    if( imgUrl == null && userData.userImg ) {
+      imgUrl = userData.userImg;
+    }
+    console.log(authentication.currentUser.uid)
+    console.log(imgUrl)
+    await setDoc(doc(firestore, "users", authentication.currentUser.uid), {
+      email: authentication.currentUser.email,
+      fname: firstName !=="" ? firstName : userData.get("fname"),
+      lname: lastName !=="" ? lastName : userData.get("lname"),
+      phone: phone !=="" ? phone : userData.get('phone'),
+      userImg: imgUrl,
+    });
+    await updateProfile(authentication.currentUser, {
+      displayName: firstName + " " + lastName,
+      photoURL: imgUrl,
+    });
+    Alert.alert("Update done")
+    navigation.navigate("ProfileHomeScreen")
+  }
 
   useEffect(() => {
     getUser();
@@ -65,8 +160,10 @@ const EditProfile = ({ navigation }) => {
     console.log(result);
 
     if (!result.cancelled) {
+      setImage(result.uri);
       setPickedImagePath(result.uri);
-      console.log(result.uri);
+      console.log("Image is set to " + result.uri);
+      setIsVisible(false);
     }
   };
 
@@ -131,13 +228,16 @@ const EditProfile = ({ navigation }) => {
                 }}
               >
                 <ImageBackground
-                  source={require("../../assets/adaptive-icon.png")}
+                  source={{
+                    uri: userData!=null ? userData.get("userImg") : 
+              'https://firebasestorage.googleapis.com/v0/b/chargeev-986bd.appspot.com/o/photos%2F1B2C5C85-6253-4C85-9355-BE0AEC1B9A921654325573980.png?alt=media&token=3a176203-5203-403f-b63e-d0aa37912875'
+                }}
                   style={{
                     height: 100,
                     width: 100,
-                    backgroundColor: "black",
                     borderRadius: 15,
                   }}
+                  imageStyle= {{borderRadius : 15}}
                 >
                   <View
                     style={{
@@ -163,25 +263,32 @@ const EditProfile = ({ navigation }) => {
                 </ImageBackground>
               </View>
             </TouchableOpacity>
-            <Text>username</Text>
+            <Text style={{
+              marginTop: 20,
+              color: '#777777',
+              fontSize: 20
+              }}>{authentication.currentUser.displayName}</Text>
             <Input
               style={{ marginTop: 50 }}
               placeholder="First Name"
               autoCorrect={false}
+              onChangeText={setfirstName}
             ></Input>
             <Input
               style={styles.action}
               placeholder="Last Name"
               autoCorrect={false}
+              onChangeText={setlastName}
             ></Input>
             <Input
               style={styles.action}
               placeholder="Phone"
               keyboardType="phone-pad"
+              onChangeText={setPhone}
             ></Input>
           </View>
           <View>
-            <Button title="Confirm" color="#1BB530" onPress={() => {}}></Button>
+            <Button title="Confirm" color="#1BB530" onPress={() => handleUpdate()}></Button>
             <Text></Text>
             <Button
               title="Cancel"

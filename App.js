@@ -17,6 +17,9 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import HostAddLocation from "./components/Host/HostAddLocation.js";
 import Loading from "./components/resources/Loading.js";
 import Success from "./components/resources/Success.js";
+import ForgotPassword from "./components/ForgotPassword.js";
+
+
 
 const Stack = createNativeStackNavigator();
 const theme = createTheme(themeConfig);
@@ -81,6 +84,7 @@ export default function App() {
           {/*Loading & Success*/}
           <Stack.Screen name="Loading" component={Loading} options={{gestureEnabled: false}}/>
           <Stack.Screen name="Success" component={Success} options={{gestureEnabled: false}}/>
+          <Stack.Screen name="Reset" component={ForgotPassword} />
         </Stack.Navigator>
       </NavigationContainer>
     </ThemeProvider>
