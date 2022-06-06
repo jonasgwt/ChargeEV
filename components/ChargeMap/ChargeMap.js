@@ -12,7 +12,6 @@ export default function ChargeMap({ navigation }) {
   const [status, requestPermission] = Location.useForegroundPermissions();
   const mapRef = useRef(null);
   const [origin, setOrigin] = useState([null, null]);
-  const API_KEY = "AIzaSyDF8ECR3O5QiEaTRLms1fmu5HRW_K_G_xM";
 
   // Get initial location and zooms to that region
   useEffect(() => {
