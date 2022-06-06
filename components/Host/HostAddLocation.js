@@ -52,6 +52,7 @@ export default function HostAddLocation({ navigation }) {
   const [numPagesCompleted, setNumPagesCompleted] = useState(0);
   const [disabledStatus, setDisabledStatus] = useState(true);
   const progressAnim = useRef(new Animated.Value(0)).current;
+  const [loading, setLoading] = useState(false);
 
   // Data
   const [locationType, setLocationType] = useState("");
@@ -163,6 +164,7 @@ export default function HostAddLocation({ navigation }) {
   // Navigate to Next page
   const move = async () => {
     if (page == 1) {
+      setLoading(true);
       checkAddress();
     } else if (page < 5) setPage((page) => page + 1);
     else if (page == 5) {
@@ -183,6 +185,7 @@ export default function HostAddLocation({ navigation }) {
       .then((coords) => {
         if (coords.length == 0) {
           Alert.alert("Invalid Address");
+          setLoading(false);
           return;
         }
         Location.reverseGeocodeAsync(coords[0]).then((locations) => {
@@ -192,8 +195,12 @@ export default function HostAddLocation({ navigation }) {
             locations[0].city == city;
           if (check) {
             setCoords([coords[0].latitude, coords[0].latitude]);
+            setLoading(false);
             setPage((page) => page + 1);
-          } else Alert.alert("Invalid Address");
+          } else {
+            Alert.alert("Invalid Address");
+            setLoading(false);
+          }
         });
       })
       .catch((err) => console.log(err));
@@ -325,6 +332,7 @@ export default function HostAddLocation({ navigation }) {
         <AddImage
           pickedImagePath={pickedImagePath}
           setPickedImagePath={setPickedImagePath}
+          setLoading={setLoading}
         />
       ) : page == 4 ? (
         <Price price={price} setPrice={setPrice} />
@@ -350,6 +358,7 @@ export default function HostAddLocation({ navigation }) {
           disabled={disabledStatus}
           disabledStyle={{ backgroundColor: "gray" }}
           disabledTitleStyle={{ color: "white" }}
+          loading={loading}
         >
           {page == 5 ? "Done" : "Next"}
           <Icon name="east" color="white" />

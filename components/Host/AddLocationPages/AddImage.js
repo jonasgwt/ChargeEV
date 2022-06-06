@@ -5,10 +5,42 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
+  Alert,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 
-export default function AddImage({pickedImagePath, setPickedImagePath}) {
+export default function AddImage({
+  pickedImagePath,
+  setPickedImagePath,
+  setLoading,
+}) {
+  const showChoice = () => {
+    Alert.alert("Hosting", "Select an image of your hosting location", [
+      {
+        text: "Select from Photos",
+        onPress: showImagePicker,
+      },
+      {
+        text: "Take a Photo",
+        onPress: openCamera,
+      },
+      {
+        text: "Cancel",
+      },
+    ]);
+  };
+
+  const openCamera = async () => {
+    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+    if (permissionResult.granted === false) {
+      alert("You've refused to allow this app to access your camera!");
+      return;
+    }
+    setLoading(true);
+    const result = await ImagePicker.launchCameraAsync();
+    if (!result.cancelled) setPickedImagePath(result.uri);
+    setLoading(false);
+  };
 
   const showImagePicker = async () => {
     // Ask the user for the permission to access the media library
@@ -18,10 +50,10 @@ export default function AddImage({pickedImagePath, setPickedImagePath}) {
       alert("You've refused to allow this app to access your photos!");
       return;
     }
+    setLoading(true);
     const result = await ImagePicker.launchImageLibraryAsync();
-    if (!result.cancelled) {
-      setPickedImagePath(result.uri);
-    }
+    if (!result.cancelled) setPickedImagePath(result.uri);
+    setLoading(false);
   };
 
   return (
@@ -29,7 +61,7 @@ export default function AddImage({pickedImagePath, setPickedImagePath}) {
       <TouchableOpacity
         style={styles.image}
         activeOpacity={1}
-        onPress={showImagePicker}
+        onPress={showChoice}
       >
         {pickedImagePath != "" ? (
           <>
