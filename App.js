@@ -77,6 +77,7 @@ export default function App() {
           <Stack.Screen name="Register" component={Register} />
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="Reset" component={ForgotPassword} />
 
           {/*Hosts*/}
           <Stack.Screen name="HostAddLocation" component={HostAddLocation} />
@@ -84,7 +85,6 @@ export default function App() {
           {/*Loading & Success*/}
           <Stack.Screen name="Loading" component={Loading} options={{gestureEnabled: false}}/>
           <Stack.Screen name="Success" component={Success} options={{gestureEnabled: false}}/>
-          <Stack.Screen name="Reset" component={ForgotPassword} />
         </Stack.Navigator>
       </NavigationContainer>
     </ThemeProvider>

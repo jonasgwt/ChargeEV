@@ -22,7 +22,6 @@ export default function Homepage ({ navigation }) {
     const docRef = doc(firestore, "users", authentication.currentUser.uid);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
-      console.log("Document data:", docSnap.data());
       setUserData(docSnap);
     } else {
       // doc.data() will be undefined in this case
