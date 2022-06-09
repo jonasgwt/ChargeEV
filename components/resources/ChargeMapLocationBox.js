@@ -2,10 +2,12 @@ import React from "react";
 import { StyleSheet, TouchableOpacity, Image, View } from "react-native";
 import { Text, Divider } from "@rneui/themed";
 
-export default function ChargeMapLocationBox({ location }) {
+export default function ChargeMapLocationBox({ location, onPress }) {
   return (
-    <TouchableOpacity style={styles.locationBox}>
-      <Image source={{ url: location.locationImage }} style={styles.image} />
+    <TouchableOpacity style={styles.locationBox} onPress={onPress}>
+      {/* Remove "" in image source when deploy */}
+      {/* Rendering images burn through Firestore bandwidth */}
+      <Image source={{ url: "location.locationImage" }} style={styles.image} />
       <View style={{ width: "50%" }}>
         <Text h4 h4Style={{ fontFamily: "Inter-Black" }}>
           {location.address}
@@ -20,8 +22,8 @@ export default function ChargeMapLocationBox({ location }) {
           style={{ marginTop: "2%", marginBottom: "2%" }}
           color="black"
         />
-        <Text h3 h3Style={{ fontSize: 10 }}>
-          {location.rating} ⭐
+        <Text h3 h3Style={{ fontSize: 10 }} style={{marginBottom: "2%"}}>
+          {location.rating != 0 ? location.rating + "⭐" : "No Reviews"}
         </Text>
         <Text h3 h3Style={{ fontSize: 12 }}>
           {location.chargerType.join()} Charger

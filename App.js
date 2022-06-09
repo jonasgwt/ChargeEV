@@ -75,8 +75,8 @@ export default function App() {
         >
           <Stack.Screen name="Welcome" component={Welcome} />
           <Stack.Screen name="Register" component={Register} />
-          <Stack.Screen name="Login" component={Login} />
-          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="Login" component={Login} options={{gestureEnabled: false}}/>
+          <Stack.Screen name="Home" component={HomeScreen} options={{gestureEnabled: false}}/>
           <Stack.Screen name="Reset" component={ForgotPassword} />
 
           {/*Hosts*/}
