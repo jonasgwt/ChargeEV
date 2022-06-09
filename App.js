@@ -18,7 +18,7 @@ import HostAddLocation from "./components/Host/HostAddLocation.js";
 import Loading from "./components/resources/Loading.js";
 import Success from "./components/resources/Success.js";
 import ForgotPassword from "./components/ForgotPassword.js";
-
+import ProfileHomeScreen from "./components/Profile/Profile"
 
 
 const Stack = createNativeStackNavigator();
