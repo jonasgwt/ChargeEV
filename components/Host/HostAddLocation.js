@@ -252,6 +252,8 @@ export default function HostAddLocation({ navigation }) {
         const hostRef = await addDoc(collection(firestore, "Host"), {
           userID: authentication.currentUser.uid,
           rating: 0,
+          totalRatings: 0,
+          reviewCount: 0,
           bookings: [],
           locations: [placeID],
         });

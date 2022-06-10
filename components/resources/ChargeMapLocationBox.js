@@ -23,7 +23,7 @@ export default function ChargeMapLocationBox({ location, onPress }) {
           color="black"
         />
         <Text h3 h3Style={{ fontSize: 10 }} style={{marginBottom: "2%"}}>
-          {location.rating != 0 ? location.rating + "⭐" : "No Reviews"}
+          {location.rating != 0 ? Math.round(location.rating*10)/10 + "⭐" : "No Reviews"}
         </Text>
         <Text h3 h3Style={{ fontSize: 12 }}>
           {location.chargerType.join()} Charger

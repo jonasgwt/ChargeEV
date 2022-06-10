@@ -41,6 +41,7 @@ import {
   arrayRemove,
   deleteDoc,
 } from "firebase/firestore";
+import sendNotification from "../resources/sendNotifications";
 
 export default function ChargeMap({ navigation }) {
   const { width, height } = Dimensions.get("window");
@@ -60,6 +61,7 @@ export default function ChargeMap({ navigation }) {
   const [locationSelected, setLocationSelected] = useState(false);
   const [locationBooked, setLocationBooked] = useState(false);
   const [userNearLocation, setUserNearLocation] = useState(false);
+  const [hostNotiToken, setHostNotiToken] = useState("");
   const heightAnim = useRef(new Animated.Value(0)).current;
   const heightAnimInter = heightAnim.interpolate({
     inputRange: [0, 1],
@@ -124,20 +126,26 @@ export default function ChargeMap({ navigation }) {
   };
 
   // Tracks user location when location is booked
+  // TODO: Buggy
   useEffect(() => {
     if (locationBooked) {
-      Location.watchPositionAsync({}, (position) => {
-        // TODO: If user has no clicked done, and left location send alert
+      Location.watchPositionAsync({}, async (position) => {
+        // TODO: If user has not clicked done, and left location send alert
         if (
           distanceBetween(
             [position.coords.latitude, position.coords.longitude],
             [locations[0].coords.latitude, locations[0].coords.longitude]
           ) *
-          1000 <
+            1000 <
           100
         ) {
           setUserNearLocation(true);
-          setDestination([null,null])
+          setDestination([null, null]);
+          await sendNotification(
+            hostNotiToken,
+            authentication.currentUser.displayName + " has arrived!",
+            "Your hosted location " + locations[0].address + " is now in use."
+          );
         }
       });
     }
@@ -400,6 +408,12 @@ export default function ChargeMap({ navigation }) {
               bookings: arrayUnion(bookingRef.id),
             });
             const hostRef = doc(firestore, "Host", location.hostedBy);
+            const hostDoc = await getDoc(hostRef);
+            const hostUserDoc = await getDoc(
+              doc(firestore, "users", hostDoc.data().userID)
+            );
+            const notiToken = hostUserDoc.data().notificationToken;
+            setHostNotiToken(notiToken);
             await updateDoc(hostRef, {
               bookings: arrayUnion(bookingRef.id),
             });
@@ -412,11 +426,35 @@ export default function ChargeMap({ navigation }) {
               bookings: arrayUnion(bookingRef.id),
               available: false,
             });
+            const locationDoc = await getDoc(locationRef);
+            await sendNotification(
+              notiToken,
+              "Your Location has been booked",
+              authentication.currentUser.displayName +
+                " is " +
+                locations[0].travelTime +
+                " min away from " +
+                locationDoc.data().address
+            );
             setSearching(false);
           },
         },
       ]
     );
+  };
+
+  // User done with charging and wants to pay
+  const proceedToPayment = async () => {
+    setSearching(true);
+    navigation.navigate("Payment", { hostNotiToken: hostNotiToken });
+    setLocationBooked(false);
+    setDestination([null, null]);
+    setLocationSelected(false);
+    setChargerIndex(0);
+    setFilterCharger("");
+    setSortOption("Nearest");
+    await getChargers(origin);
+    setSearching(false);
   };
 
   // User cancelled current booking
@@ -460,12 +498,21 @@ export default function ChargeMap({ navigation }) {
               bookings: arrayRemove(bookingID),
               available: true,
             });
+            await sendNotification(
+              hostNotiToken,
+              "User has cancelled their booking",
+              "Sorry! " +
+                authentication.currentUser.displayName +
+                " has cancelled their booking"
+            );
             await deleteDoc(bookingRef);
             setSearching(false);
             setLocationBooked(false);
             setDestination([null, null]);
             setLocationSelected(false);
             setChargerIndex(0);
+            setFilterCharger("");
+            setSortOption("Nearest");
             await getChargers(origin);
           },
         },
@@ -659,7 +706,10 @@ export default function ChargeMap({ navigation }) {
             <Text style={{ color: "white" }}>Open in Maps</Text>
           </TouchableOpacity>
         ) : (
-          <TouchableOpacity style={[styles.bookButton, { padding: "1%" }]}>
+          <TouchableOpacity
+            style={[styles.bookButton, { padding: "1%" }]}
+            onPress={proceedToPayment}
+          >
             <Icon name="electrical-services" color="white" />
             <Text style={{ color: "white" }}>I'm Charged Up!</Text>
           </TouchableOpacity>
@@ -697,8 +747,8 @@ export default function ChargeMap({ navigation }) {
           </Text>
           <Text h4>{locations[0].postalCode}</Text>
           <Text h4>
-            {Math.round(locations[0].distance*10)/10} km
-            , {Math.round(locations[0].travelTime)} min
+            {Math.round(locations[0].distance * 10) / 10} km ,{" "}
+            {Math.round(locations[0].travelTime)} min
           </Text>
         </View>
         <View
@@ -725,7 +775,7 @@ export default function ChargeMap({ navigation }) {
             <Text h5>{locations[0].hostName}</Text>
             <Text h5>
               {locations[0].rating != 0
-                ? locations[0].rating + "⭐"
+                ? Math.round(locations[0].rating * 10) / 10 + "⭐"
                 : "No Reviews"}
             </Text>
           </View>

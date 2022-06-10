@@ -19,7 +19,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "simulator",
       "config": {
-        "googleMapsApiKey": "hidden"
+        "googleMapsApiKey": "AIzaSyDF8ECR3O5QiEaTRLms1fmu5HRW_K_G_xM"
       }
     },
     "android": {
