@@ -42,11 +42,16 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 import sendNotification from "../resources/sendNotifications";
+import { GeofencingEventType } from "expo-location";
+import * as TaskManager from "expo-task-manager";
 
 export default function ChargeMap({ navigation }) {
   const { width, height } = Dimensions.get("window");
   const ASPECT_RATIO = width / height;
-  const [status, requestPermission] = Location.useForegroundPermissions();
+  const [statusBackground, requestBackgroundPermission] =
+    Location.useBackgroundPermissions();
+  const [statusForeground, requestForegroundPermission] =
+    Location.useForegroundPermissions();
   const mapRef = useRef(null);
   const [origin, setOrigin] = useState([null, null]);
   const [locations, setLocations] = useState([]);
@@ -62,31 +67,35 @@ export default function ChargeMap({ navigation }) {
   const [locationBooked, setLocationBooked] = useState(false);
   const [userNearLocation, setUserNearLocation] = useState(false);
   const [hostNotiToken, setHostNotiToken] = useState("");
+  const [userNotiToken, setUserNotiToken] = useState("");
   const heightAnim = useRef(new Animated.Value(0)).current;
   const heightAnimInter = heightAnim.interpolate({
     inputRange: [0, 1],
     outputRange: ["30%", "80%"],
   });
 
+  // Geofence Tasks
+  TaskManager.defineTask(
+    "GEOFENCE_BOOKED_LOCATION",
+    async ({ data: { eventType, region }, error }) => {
+      if (error) {
+        console.log(error.message);
+        return;
+      }
+      if (eventType === GeofencingEventType.Enter) await userReached();
+      else if (eventType === GeofencingEventType.Exit) await userLeft();
+    }
+  );
+
   // Get initial location and checks if user is currently in an active booking
   // else search for chargers
   useEffect(() => {
-    const getLocation = async () => {
-      await requestPermission();
-      await Location.enableNetworkProviderAsync();
-      const position = await Location.getCurrentPositionAsync();
-      setOrigin([position.coords.latitude, position.coords.longitude]);
-      return [position.coords.latitude, position.coords.longitude];
-    };
-    const checkIfInBooking = async (currLocation) => {
-      const userDoc = await getDoc(
-        doc(firestore, "users", authentication.currentUser.uid)
-      );
-      if (userDoc.data().activeBooking == undefined) return ["", currLocation];
-      return [userDoc.data().activeBooking, currLocation];
-    };
     setSearching(true);
-    getLocation()
+    Location.watchPositionAsync({}, (location) => {
+      setOrigin([location.coords.latitude, location.coords.longitude]);
+    });
+    getUserNotiToken()
+      .then(async () => await getLocation())
       .then(async (currLocation) => await checkIfInBooking(currLocation))
       .then(async (x) =>
         x[0] != "" ? await setBookedLocation(x) : await getChargers(x[1])
@@ -118,59 +127,107 @@ export default function ChargeMap({ navigation }) {
         hostName: hostData[0],
       },
     ]);
-    setDestination([
-      locationDoc.data().coords.latitude,
-      locationDoc.data().coords.longitude,
-    ]);
+    if (bookingDoc.data().userReached) {
+      setUserNearLocation(true);
+      setDestination([null, null]);
+    } else {
+      setDestination([
+        locationDoc.data().coords.latitude,
+        locationDoc.data().coords.longitude,
+      ]);
+    }
     setLocationBooked(true);
   };
 
+  // Gets user notification token
+  const getUserNotiToken = async () => {
+    const userDoc = await getDoc(
+      doc(firestore, "users", authentication.currentUser.uid)
+    );
+    setUserNotiToken(userDoc.data().notificationToken);
+  };
+
+  // Asks and gets user current location
+  const getLocation = async () => {
+    await requestForegroundPermission().then((status) => {
+      if (!status.granted) {
+        Alert.alert(
+          "Enable Background Locations",
+          "Open Settings > ChargeEV > Location > Always",
+          [
+            {
+              text: "Open Settings",
+              onPress: () => Linking.openSettings(),
+            },
+          ]
+        );
+      }
+    });
+    Location.getBackgroundPermissionsAsync().then(async (res) => {
+      if (!res.granted) 
+      await requestBackgroundPermission().then(status => {
+        if (!status.granted) {
+        Alert.alert(
+          "Enable Background Locations",
+          "Open Settings > ChargeEV > Location > Always",
+          [
+            {
+              text: "Open Settings",
+              onPress: () => Linking.openSettings(),
+            },
+          ]
+        );
+      }
+      })
+      
+    });
+    await Location.enableNetworkProviderAsync();
+    const position = await Location.getCurrentPositionAsync();
+    setOrigin([position.coords.latitude, position.coords.longitude]);
+    return [position.coords.latitude, position.coords.longitude];
+  };
+
+  // Upon render checks if user is in a current booking
+  const checkIfInBooking = async (currLocation) => {
+    const userDoc = await getDoc(
+      doc(firestore, "users", authentication.currentUser.uid)
+    );
+    if (userDoc.data().activeBooking == undefined) return ["", currLocation];
+    return [userDoc.data().activeBooking, currLocation];
+  };
+
   // Tracks user location when location is booked
-  // TODO: Buggy
   useEffect(() => {
     if (locationBooked) {
-      Location.watchPositionAsync({}, async (position) => {
-        // TODO: If user has not clicked done, and left location send alert
-        if (
-          distanceBetween(
-            [position.coords.latitude, position.coords.longitude],
-            [locations[0].coords.latitude, locations[0].coords.longitude]
-          ) *
-            1000 <
-          100
-        ) {
-          setUserNearLocation(true);
-          setDestination([null, null]);
-          await sendNotification(
-            hostNotiToken,
-            authentication.currentUser.displayName + " has arrived!",
-            "Your hosted location " + locations[0].address + " is now in use."
-          );
+      // For background tracking
+      Location.startGeofencingAsync("GEOFENCE_BOOKED_LOCATION", [
+        {
+          latitude: locations[0].coords.latitude,
+          longitude: locations[0].coords.longitude,
+          radius: 100,
+        },
+      ]).catch((err) => {
+        if (err.code == "E_NO_PERMISSIONS") {
+          // For foreground tracking
+          Location.watchPositionAsync({}, async (position) => {
+            setOrigin([position.coords.latitude, position.coords.longitude]);
+            if (
+              distanceBetween(
+                [position.coords.latitude, position.coords.longitude],
+                [locations[0].coords.latitude, locations[0].coords.longitude]
+              ) *
+                1000 <
+              100
+            ) {
+              await userReached();
+            } else {
+              if (userNearLocation) await userLeft();
+            }
+          });
         }
       });
     }
   }, [locationBooked]);
-
-  // Updates map zoom and position according to curr location
-  const updateLocation = (position) => {
-    // Animate without camera rotation
-    const region = {
-      latitude: position.coords.latitude,
-      longitude: position.coords.longitude,
-      latitudeDelta: position.coords.speed * 0.0009 + 0.002,
-      longitudeDelta: ASPECT_RATIO * (position.coords.speed * 0.0009 + 0.002),
-    };
-    // Animate with camera rotation
-    const camera = {
-      center: {
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude,
-      },
-      heading: position.coords.heading,
-      zoom: -position.coords.speed * 0.1 + 18,
-    };
-    mapRef.current.animateCamera(camera, {});
-  };
 
   // Gets nearby chargers in a 50km radius
   const getChargers = async (currLocation) => {
@@ -223,6 +280,56 @@ export default function ChargeMap({ navigation }) {
     }
   };
 
+  // when user reached location
+  const userReached = async () => {
+    if (!userNearLocation) {
+      Alert.alert(
+        "You have reached charger location",
+        "You are not allowed to cancel the booking from now"
+      );
+      setUserNearLocation(true);
+      setDestination([null, null]);
+      const userDoc = await getDoc(
+        doc(firestore, "users", authentication.currentUser.uid)
+      );
+      const bookingRef = doc(
+        firestore,
+        "Bookings",
+        userDoc.data().activeBooking
+      );
+      await updateDoc(bookingRef, {
+        userReached: true,
+      });
+      await sendNotification(
+        userNotiToken,
+        "You have reached the charging station",
+        "You are not allowed to cancel the booking from now"
+      );
+      await sendNotification(hostNotiToken, "User has reached", "");
+    }
+  };
+
+  // when user leave location
+  const userLeft = async () => {
+    if (userNearLocation) {
+      Alert.alert(
+        "Thank you for using ChargeEV",
+        "We have detected that you have left the charging location, please make your payment and verify with us.",
+        [
+          {
+            text: "Proceed to Payment",
+            onPress: async () => await proceedToPayment(),
+          },
+        ]
+      );
+      await sendNotification(
+        userNotiToken,
+        "Please confirm your payment",
+        "We have detected that you have left the charging location, please make your payment and verify with us."
+      );
+    }
+  };
+
   // Get ratings of host
   const getRatings = async (data) => {
     const hostRef = await getDoc(doc(firestore, "Host", data.hostedBy));
@@ -246,8 +353,7 @@ export default function ChargeMap({ navigation }) {
     if (origin[0] != null && locations.length != 0) {
       fitElements();
       firstCharger.current.showCallout();
-    } else if (locations.length == 0)
-      Location.watchPositionAsync({}, (position) => updateLocation(position));
+    }
   }, [locations]);
 
   // Fits elements in map to viewport
@@ -268,6 +374,7 @@ export default function ChargeMap({ navigation }) {
         userInterfaceStyle: "light",
       },
       (index) => {
+        setSearching(true);
         if (index == 1)
           ActionSheetIOS.showActionSheetWithOptions(
             {
@@ -278,16 +385,32 @@ export default function ChargeMap({ navigation }) {
             (option) => {
               if (option == 1) {
                 setLocations(
-                  originalLocations.filter((x) =>
-                    x.chargerType.includes("CCS2")
-                  )
+                  originalLocations
+                    .filter((x) => x.chargerType.includes("CCS2"))
+                    .sort(
+                      sortOption == "Nearest"
+                        ? (a, b) => a.distance > b.distance
+                        : (x, y) => {
+                            if (x.costPerCharge != y.costPerCharge)
+                              return x.costPerCharge > y.costPerCharge;
+                            else return x.distance > y.distance;
+                          }
+                    )
                 );
                 setFilterCharger("CCS2");
               } else if (option == 2) {
                 setLocations(
-                  originalLocations.filter((x) =>
-                    x.chargerType.includes("Type 2")
-                  )
+                  originalLocations
+                    .filter((x) => x.chargerType.includes("Type 2"))
+                    .sort(
+                      sortOption == "Nearest"
+                        ? (a, b) => a.distance > b.distance
+                        : (x, y) => {
+                            if (x.costPerCharge != y.costPerCharge)
+                              return x.costPerCharge > y.costPerCharge;
+                            else return x.distance > y.distance;
+                          }
+                    )
                 );
                 setFilterCharger("Type 2");
               } else null;
@@ -297,6 +420,7 @@ export default function ChargeMap({ navigation }) {
           setLocations(originalLocations);
           setFilterCharger("");
         }
+        setSearching(false);
       }
     );
   };
@@ -310,29 +434,37 @@ export default function ChargeMap({ navigation }) {
         userInterfaceStyle: "light",
       },
       (option) => {
+        setSearching(true);
         if (option == 1) {
           if (sortOption == "Nearest") return;
-          else {
-            setSortOption("Nearest");
-            const locationsCopy = [...locations];
-            locationsCopy.sort((a, b) => a.distance > b.distance);
-            setLocations(locationsCopy);
-          }
-        } else {
+          sortNearest();
+          setSortOption("Nearest");
+        } else if (option == 2) {
           if (sortOption == "Cheapest") return;
-          else {
-            setSortOption("Cheapest");
-            const locationsCopy = [...locations];
-            locationsCopy.sort((x, y) => {
-              if (x.costPerCharge != y.costPerCharge)
-                return x.costPerCharge > y.costPerCharge;
-              else return x.distance > y.distance;
-            });
-            setLocations(locationsCopy);
-          }
+          sortCheapest();
+          setSortOption("Cheapest");
         }
+        setSearching(false);
       }
     );
+  };
+
+  // Sort given locations by nearest
+  const sortNearest = () => {
+    const locationsCopy = [...locations];
+    locationsCopy.sort((a, b) => a.distance > b.distance);
+    setLocations(locationsCopy);
+  };
+
+  // sort given locations by cheapest
+  const sortCheapest = () => {
+    const locationsCopy = [...locations];
+    locationsCopy.sort((x, y) => {
+      if (x.costPerCharge != y.costPerCharge)
+        return x.costPerCharge > y.costPerCharge;
+      else return x.distance > y.distance;
+    });
+    setLocations(locationsCopy);
   };
 
   // Animate closing of bottom container
@@ -362,6 +494,7 @@ export default function ChargeMap({ navigation }) {
       locations[index].coords.longitude,
     ]);
     setLocations([locations[index]]);
+    setChargerIndex(0);
     setLocationSelected(true);
   };
 
@@ -396,6 +529,7 @@ export default function ChargeMap({ navigation }) {
               active: true,
               userPaid: false,
               hostVerified: false,
+              userReached: false,
               time: serverTimestamp(),
             });
             const userRef = doc(
@@ -432,7 +566,7 @@ export default function ChargeMap({ navigation }) {
               "Your Location has been booked",
               authentication.currentUser.displayName +
                 " is " +
-                locations[0].travelTime +
+                Math.round(locations[0].travelTime) +
                 " min away from " +
                 locationDoc.data().address
             );
@@ -453,6 +587,7 @@ export default function ChargeMap({ navigation }) {
     setChargerIndex(0);
     setFilterCharger("");
     setSortOption("Nearest");
+    setUserNearLocation(false);
     await getChargers(origin);
     setSearching(false);
   };
@@ -1080,7 +1215,10 @@ export default function ChargeMap({ navigation }) {
 
       {/* Refresh Button */}
       {!locationSelected && !locationBooked ? (
-        <TouchableOpacity style={styles.refreshButton} onPress={getChargers}>
+        <TouchableOpacity
+          style={styles.refreshButton}
+          onPress={() => getChargers(origin)}
+        >
           <Icon name="refresh" />
         </TouchableOpacity>
       ) : null}

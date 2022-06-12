@@ -57,7 +57,7 @@ export default function Payment({ navigation, route }) {
         </Text>
       </LinearGradient>
       <View style={styles.optionContainer}>
-        <TouchableOpacity style={styles.option} onPress={() => paid("Cash")}>
+        <TouchableOpacity style={styles.option} onPress={async () => await paid("Cash")}>
           <View
             style={{
               display: "flex",
