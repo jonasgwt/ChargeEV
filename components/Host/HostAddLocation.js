@@ -15,6 +15,7 @@ import {
   updateDoc,
   arrayUnion,
   setDoc,
+  GeoPoint,
 } from "firebase/firestore";
 import {
   authentication,
@@ -30,6 +31,9 @@ import AddImage from "./AddLocationPages/AddImage";
 import Price from "./AddLocationPages/Price";
 import PaymentMethod from "./AddLocationPages/PaymentMethod";
 import { uploadImage } from "../resources/uploadImage";
+import { geohashForLocation } from "geofire-common";
+
+
 
 export default function HostAddLocation({ navigation }) {
   const [page, setPage] = useState(0);
@@ -63,6 +67,7 @@ export default function HostAddLocation({ navigation }) {
   const [placeID, setPlaceID] = useState("");
   const [unitNumber, setUnitNumber] = useState("");
   const [postalCode, setPostalCode] = useState("");
+  const [locationHash, setLocationHash] = useState("");
   const [chargerTypes, setChargerTypes] = useState([]);
   const [pickedImagePath, setPickedImagePath] = useState("");
   const [price, setPrice] = useState("");
@@ -194,7 +199,8 @@ export default function HostAddLocation({ navigation }) {
             locations[0].isoCountryCode == country &&
             locations[0].city == city;
           if (check) {
-            setCoords([coords[0].latitude, coords[0].latitude]);
+            setCoords([coords[0].latitude, coords[0].longitude]);
+            setLocationHash(geohashForLocation([coords[0].latitude, coords[0].longitude]));
             setLoading(false);
             setPage((page) => page + 1);
           } else {
@@ -237,21 +243,7 @@ export default function HostAddLocation({ navigation }) {
     }
     // Navigate to loading page
     navigation.navigate("Loading");
-    // Add location to database
-    await setDoc(doc(firestore, "HostedLocations", placeID), {
-      address: address,
-      chargerType: chargerTypes,
-      city: city,
-      placeID: placeID,
-      costPerCharge: price,
-      country: country,
-      hostedBy: authentication.currentUser.uid,
-      housingType: locationType,
-      locationImage: await uploadImage(pickedImagePath),
-      paymentMethod: paymentMethods,
-      postalCode: postalCode,
-      unitNumber: unitNumber,
-    });
+    // Get user
     const userRef = doc(firestore, "users", authentication.currentUser.uid);
     const userDoc = await getDoc(userRef);
     if (userDoc.exists()) {
@@ -260,6 +252,8 @@ export default function HostAddLocation({ navigation }) {
         const hostRef = await addDoc(collection(firestore, "Host"), {
           userID: authentication.currentUser.uid,
           rating: 0,
+          totalRatings: 0,
+          reviewCount: 0,
           bookings: [],
           locations: [placeID],
         });
@@ -276,6 +270,25 @@ export default function HostAddLocation({ navigation }) {
     } else {
       console.warn("No data found");
     }
+    // Add location to database
+    await setDoc(doc(firestore, "HostedLocations", placeID), {
+      address: address,
+      chargerType: chargerTypes,
+      city: city,
+      placeID: placeID,
+      costPerCharge: price,
+      country: country,
+      hostedBy: userDoc.data().hostID,
+      housingType: locationType,
+      locationImage: await uploadImage(pickedImagePath),
+      paymentMethod: paymentMethods,
+      postalCode: postalCode,
+      unitNumber: unitNumber,
+      coords: new GeoPoint(coords[0], coords[1]),
+      locationHash: locationHash,
+      bookings: [],
+      available: true,
+    });
     // Navigate to success page
     navigation.navigate("Success");
   };

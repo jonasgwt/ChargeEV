@@ -16,10 +16,17 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
       "bundleIdentifier": "simulator",
       "config": {
-        "googleMapsApiKey": "hidden"
+        "googleMapsApiKey": "AIzaSyDF8ECR3O5QiEaTRLms1fmu5HRW_K_G_xM"
+      },
+      "infoPlist": {
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "App requires geolocation to improve the quality of the service",
+        "NSLocationAlwaysUsageDescription": "App requires geolocation to improve the quality of the service",
+        "NSLocationWhenInUseUsageDescription": "App requires geolocation to improve the quality of the service",
+        "NSCameraUsageDescription": "The picture will be used to inform the state of the packages during delivery",
+        "UIBackgroundModes": ["location", "fetch"]
       }
     },
     "android": {

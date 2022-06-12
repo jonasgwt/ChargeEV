@@ -1,49 +1,1066 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { View, StyleSheet, Dimensions } from "react-native";
-import { Button } from "@rneui/themed";
-import MapView from "react-native-maps";
+import {
+  View,
+  StyleSheet,
+  Dimensions,
+  TouchableOpacity,
+  ActionSheetIOS,
+  Image,
+  Animated,
+  Alert,
+  Linking,
+} from "react-native";
+import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import { PROVIDER_GOOGLE } from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
+import { geohashQueryBounds, distanceBetween } from "geofire-common";
+import {
+  authentication,
+  firestore,
+  googleMapsAPIKey,
+} from "../../firebase/firebase-config";
+import { Divider, Icon, Text } from "@rneui/themed";
+import ChargeMapLocationBox from "../resources/ChargeMapLocationBox";
+import {
+  collection,
+  startAt,
+  endAt,
+  orderBy,
+  query,
+  getDocs,
+  where,
+  getDoc,
+  doc,
+  setDoc,
+  addDoc,
+  Timestamp,
+  serverTimestamp,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+  deleteDoc,
+} from "firebase/firestore";
+import sendNotification from "../resources/sendNotifications";
+import { GeofencingEventType } from "expo-location";
+import * as TaskManager from "expo-task-manager";
 
 export default function ChargeMap({ navigation }) {
   const { width, height } = Dimensions.get("window");
   const ASPECT_RATIO = width / height;
-  const [status, requestPermission] = Location.useForegroundPermissions();
+  const [statusBackground, requestBackgroundPermission] =
+    Location.useBackgroundPermissions();
+  const [statusForeground, requestForegroundPermission] =
+    Location.useForegroundPermissions();
   const mapRef = useRef(null);
   const [origin, setOrigin] = useState([null, null]);
+  const [locations, setLocations] = useState([]);
+  const [originalLocations, setOriginalLocations] = useState([]);
+  const [destination, setDestination] = useState([null, null]);
+  const [searching, setSearching] = useState(true);
+  const firstCharger = useRef(null);
+  const [chargerIndex, setChargerIndex] = useState(0);
+  const [expanded, setExpanded] = useState(false);
+  const [filterCharger, setFilterCharger] = useState("");
+  const [sortOption, setSortOption] = useState("Nearest");
+  const [locationSelected, setLocationSelected] = useState(false);
+  const [locationBooked, setLocationBooked] = useState(false);
+  const [userNearLocation, setUserNearLocation] = useState(false);
+  const [hostNotiToken, setHostNotiToken] = useState("");
+  const [userNotiToken, setUserNotiToken] = useState("");
+  const heightAnim = useRef(new Animated.Value(0)).current;
+  const heightAnimInter = heightAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["30%", "80%"],
+  });
 
-  // Get initial location and zooms to that region
+  // Geofence Tasks
+  TaskManager.defineTask(
+    "GEOFENCE_BOOKED_LOCATION",
+    async ({ data: { eventType, region }, error }) => {
+      if (error) {
+        console.log(error.message);
+        return;
+      }
+      if (eventType === GeofencingEventType.Enter) await userReached();
+      else if (eventType === GeofencingEventType.Exit) await userLeft();
+    }
+  );
+
+  // Get initial location and checks if user is currently in an active booking
+  // else search for chargers
   useEffect(() => {
-    const getLocation = async () => {
-      await requestPermission();
-      await Location.enableNetworkProviderAsync();
-      const position = await Location.getCurrentPositionAsync();
-      setOrigin([position.coords.latitude, position.coords.longitude]);
-      Location.watchPositionAsync({}, (position) => updateLocation(position));
-    };
-    getLocation();
+    setSearching(true);
+    Location.watchPositionAsync({}, (location) => {
+      setOrigin([location.coords.latitude, location.coords.longitude]);
+    });
+    getUserNotiToken()
+      .then(async () => await getLocation())
+      .then(async (currLocation) => await checkIfInBooking(currLocation))
+      .then(async (x) =>
+        x[0] != "" ? await setBookedLocation(x) : await getChargers(x[1])
+      )
+      .then(() => setSearching(false));
   }, []);
 
-  // Updates map zoom and position according to curr location
-  const updateLocation = (position) => {
-    // Animate without camera rotation
-    const region = {
-      latitude: position.coords.latitude,
-      longitude: position.coords.longitude,
-      latitudeDelta: position.coords.speed * 0.0009 + 0.002,
-      longitudeDelta: ASPECT_RATIO * (position.coords.speed * 0.0009 + 0.002),
-    };
-    // Animate with camera rotation
-    const camera = {
-      center: {
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude,
+  // If user is in a booking get and add booking info
+  const setBookedLocation = async (params) => {
+    const bookingDoc = await getDoc(doc(firestore, "Bookings", params[0]));
+    const locationRef = doc(
+      firestore,
+      "HostedLocations",
+      bookingDoc.data().location
+    );
+    const locationDoc = await getDoc(locationRef);
+    const hostData = await getDPHost(locationDoc.data());
+    const distanceInKm = distanceBetween(
+      [locationDoc.data().coords.latitude, locationDoc.data().coords.longitude],
+      params[1]
+    );
+    const distanceInM = distanceInKm * 1000;
+    setLocations([
+      {
+        ...locationDoc.data(),
+        distance: distanceInM,
+        rating: await getRatings(locationDoc.data()),
+        hostDP: hostData[1],
+        hostName: hostData[0],
       },
-      heading: position.coords.heading,
-      zoom: -position.coords.speed * 0.1 + 18,
-    };
-    mapRef.current.animateCamera(camera, {});
+    ]);
+    if (bookingDoc.data().userReached) {
+      setUserNearLocation(true);
+      setDestination([null, null]);
+    } else {
+      setDestination([
+        locationDoc.data().coords.latitude,
+        locationDoc.data().coords.longitude,
+      ]);
+    }
+    setLocationBooked(true);
+  };
+
+  // Gets user notification token
+  const getUserNotiToken = async () => {
+    const userDoc = await getDoc(
+      doc(firestore, "users", authentication.currentUser.uid)
+    );
+    setUserNotiToken(userDoc.data().notificationToken);
+  };
+
+  // Asks and gets user current location
+  const getLocation = async () => {
+    await requestForegroundPermission().then((status) => {
+      if (!status.granted) {
+        Alert.alert(
+          "Enable Background Locations",
+          "Open Settings > ChargeEV > Location > Always",
+          [
+            {
+              text: "Open Settings",
+              onPress: () => Linking.openSettings(),
+            },
+          ]
+        );
+      }
+    });
+    Location.getBackgroundPermissionsAsync().then(async (res) => {
+      if (!res.granted) 
+      await requestBackgroundPermission().then(status => {
+        if (!status.granted) {
+        Alert.alert(
+          "Enable Background Locations",
+          "Open Settings > ChargeEV > Location > Always",
+          [
+            {
+              text: "Open Settings",
+              onPress: () => Linking.openSettings(),
+            },
+          ]
+        );
+      }
+      })
+      
+    });
+    await Location.enableNetworkProviderAsync();
+    const position = await Location.getCurrentPositionAsync();
+    setOrigin([position.coords.latitude, position.coords.longitude]);
+    return [position.coords.latitude, position.coords.longitude];
+  };
+
+  // Upon render checks if user is in a current booking
+  const checkIfInBooking = async (currLocation) => {
+    const userDoc = await getDoc(
+      doc(firestore, "users", authentication.currentUser.uid)
+    );
+    if (userDoc.data().activeBooking == undefined) return ["", currLocation];
+    return [userDoc.data().activeBooking, currLocation];
+  };
+
+  // Tracks user location when location is booked
+  useEffect(() => {
+    if (locationBooked) {
+      // For background tracking
+      Location.startGeofencingAsync("GEOFENCE_BOOKED_LOCATION", [
+        {
+          latitude: locations[0].coords.latitude,
+          longitude: locations[0].coords.longitude,
+          radius: 100,
+        },
+      ]).catch((err) => {
+        if (err.code == "E_NO_PERMISSIONS") {
+          // For foreground tracking
+          Location.watchPositionAsync({}, async (position) => {
+            setOrigin([position.coords.latitude, position.coords.longitude]);
+            if (
+              distanceBetween(
+                [position.coords.latitude, position.coords.longitude],
+                [locations[0].coords.latitude, locations[0].coords.longitude]
+              ) *
+                1000 <
+              100
+            ) {
+              await userReached();
+            } else {
+              if (userNearLocation) await userLeft();
+            }
+          });
+        }
+      });
+    }
+  }, [locationBooked]);
+
+  // Gets nearby chargers in a 50km radius
+  const getChargers = async (currLocation) => {
+    if (currLocation[0] != null) {
+      const radiusInM = 50 * 1000;
+      const bounds = geohashQueryBounds(currLocation, radiusInM);
+      const promises = [];
+      for (const b of bounds) {
+        const q = await getDocs(
+          query(
+            collection(firestore, "HostedLocations"),
+            where("available", "==", true),
+            orderBy("locationHash"),
+            startAt(b[0]),
+            endAt(b[1])
+          )
+        );
+        promises.push(q);
+      }
+      Promise.all(promises)
+        .then(async (snapshots) => {
+          const matchingDocs = [];
+          for (const snap of snapshots) {
+            for (const doc of snap.docs) {
+              const coords = doc.get("coords");
+              const lat = coords.latitude;
+              const lng = coords.longitude;
+              const distanceInKm = distanceBetween([lat, lng], currLocation);
+              const distanceInM = distanceInKm * 1000;
+              if (distanceInM <= radiusInM) {
+                const hostData = await getDPHost(doc.data());
+                matchingDocs.push({
+                  ...doc.data(),
+                  distance: distanceInM,
+                  rating: await getRatings(doc.data()),
+                  hostDP: hostData[1],
+                  hostName: hostData[0],
+                });
+              }
+            }
+          }
+          return matchingDocs;
+        })
+        .then((locations) => {
+          // Process the matching documents
+          locations.sort((a, b) => a.distance > b.distance);
+          setLocations(locations);
+          setOriginalLocations(locations);
+        });
+    }
+  };
+
+  // when user reached location
+  const userReached = async () => {
+    if (!userNearLocation) {
+      Alert.alert(
+        "You have reached charger location",
+        "You are not allowed to cancel the booking from now"
+      );
+      setUserNearLocation(true);
+      setDestination([null, null]);
+      const userDoc = await getDoc(
+        doc(firestore, "users", authentication.currentUser.uid)
+      );
+      const bookingRef = doc(
+        firestore,
+        "Bookings",
+        userDoc.data().activeBooking
+      );
+      await updateDoc(bookingRef, {
+        userReached: true,
+      });
+      await sendNotification(
+        userNotiToken,
+        "You have reached the charging station",
+        "You are not allowed to cancel the booking from now"
+      );
+      await sendNotification(hostNotiToken, "User has reached", "");
+    }
+  };
+
+  // when user leave location
+  const userLeft = async () => {
+    if (userNearLocation) {
+      Alert.alert(
+        "Thank you for using ChargeEV",
+        "We have detected that you have left the charging location, please make your payment and verify with us.",
+        [
+          {
+            text: "Proceed to Payment",
+            onPress: async () => await proceedToPayment(),
+          },
+        ]
+      );
+      await sendNotification(
+        userNotiToken,
+        "Please confirm your payment",
+        "We have detected that you have left the charging location, please make your payment and verify with us."
+      );
+    }
+  };
+
+  // Get ratings of host
+  const getRatings = async (data) => {
+    const hostRef = await getDoc(doc(firestore, "Host", data.hostedBy));
+    return hostRef.data().rating;
+  };
+
+  // Get profile picture of host and name
+  const getDPHost = async (data) => {
+    const hostRef = await getDoc(doc(firestore, "Host", data.hostedBy));
+    const userRef = await getDoc(
+      doc(firestore, "users", hostRef.data().userID)
+    );
+    return [
+      userRef.data().fname + " " + userRef.data().lname,
+      userRef.data().userImg,
+    ];
+  };
+
+  // Sets the zoom
+  useEffect(() => {
+    if (origin[0] != null && locations.length != 0) {
+      fitElements();
+      firstCharger.current.showCallout();
+    }
+  }, [locations]);
+
+  // Fits elements in map to viewport
+  const fitElements = () => {
+    mapRef.current.fitToElements({
+      animated: true,
+      edgePadding: { top: 20, left: 70, right: 70, bottom: 100 },
+    });
+  };
+
+  // Select Filter
+  const selectFilter = () => {
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options: ["Cancel", "Charger Type", "Clear Filters"],
+        destructiveButtonIndex: 2,
+        cancelButtonIndex: 0,
+        userInterfaceStyle: "light",
+      },
+      (index) => {
+        setSearching(true);
+        if (index == 1)
+          ActionSheetIOS.showActionSheetWithOptions(
+            {
+              options: ["Cancel", "CCS2", "Type 2"],
+              cancelButtonIndex: 0,
+              userInterfaceStyle: "light",
+            },
+            (option) => {
+              if (option == 1) {
+                setLocations(
+                  originalLocations
+                    .filter((x) => x.chargerType.includes("CCS2"))
+                    .sort(
+                      sortOption == "Nearest"
+                        ? (a, b) => a.distance > b.distance
+                        : (x, y) => {
+                            if (x.costPerCharge != y.costPerCharge)
+                              return x.costPerCharge > y.costPerCharge;
+                            else return x.distance > y.distance;
+                          }
+                    )
+                );
+                setFilterCharger("CCS2");
+              } else if (option == 2) {
+                setLocations(
+                  originalLocations
+                    .filter((x) => x.chargerType.includes("Type 2"))
+                    .sort(
+                      sortOption == "Nearest"
+                        ? (a, b) => a.distance > b.distance
+                        : (x, y) => {
+                            if (x.costPerCharge != y.costPerCharge)
+                              return x.costPerCharge > y.costPerCharge;
+                            else return x.distance > y.distance;
+                          }
+                    )
+                );
+                setFilterCharger("Type 2");
+              } else null;
+            }
+          );
+        else if (index == 2) {
+          setLocations(originalLocations);
+          setFilterCharger("");
+        }
+        setSearching(false);
+      }
+    );
+  };
+
+  // Select Sorting
+  const selectSort = () => {
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options: ["Cancel", "Nearest", "Cheapest"],
+        cancelButtonIndex: 0,
+        userInterfaceStyle: "light",
+      },
+      (option) => {
+        setSearching(true);
+        if (option == 1) {
+          if (sortOption == "Nearest") return;
+          sortNearest();
+          setSortOption("Nearest");
+        } else if (option == 2) {
+          if (sortOption == "Cheapest") return;
+          sortCheapest();
+          setSortOption("Cheapest");
+        }
+        setSearching(false);
+      }
+    );
+  };
+
+  // Sort given locations by nearest
+  const sortNearest = () => {
+    const locationsCopy = [...locations];
+    locationsCopy.sort((a, b) => a.distance > b.distance);
+    setLocations(locationsCopy);
+  };
+
+  // sort given locations by cheapest
+  const sortCheapest = () => {
+    const locationsCopy = [...locations];
+    locationsCopy.sort((x, y) => {
+      if (x.costPerCharge != y.costPerCharge)
+        return x.costPerCharge > y.costPerCharge;
+      else return x.distance > y.distance;
+    });
+    setLocations(locationsCopy);
+  };
+
+  // Animate closing of bottom container
+  const animateCloseBottomContainer = () => {
+    Animated.timing(heightAnim, {
+      toValue: 0,
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
+    setExpanded(false);
+  };
+
+  // Animate expanding of bottom container
+  const animateExpandBottomContainer = () => {
+    Animated.timing(heightAnim, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
+    setExpanded(true);
+  };
+
+  // User selected a location
+  const selectLocation = (index) => {
+    setDestination([
+      locations[index].coords.latitude,
+      locations[index].coords.longitude,
+    ]);
+    setLocations([locations[index]]);
+    setChargerIndex(0);
+    setLocationSelected(true);
+  };
+
+  // User goes back from a selected location
+  const otherLocations = () => {
+    setLocations(originalLocations);
+    setDestination([null, null]);
+    setLocationSelected(false);
+  };
+
+  // User Booked the location
+  const bookLocation = (location) => {
+    Alert.alert(
+      "Book Location?",
+      "Host will be informed. \n Cancellation is not allowed when you are near the location.",
+      [
+        {
+          text: "Cancel",
+          onPress: () => null,
+          style: "cancel",
+        },
+        {
+          text: "Book",
+          onPress: async () => {
+            // TODO: Notify Hosts
+            setSearching(true);
+            setLocationBooked(true);
+            const bookingRef = await addDoc(collection(firestore, "Bookings"), {
+              user: authentication.currentUser.uid,
+              host: location.hostedBy,
+              location: location.placeID,
+              active: true,
+              userPaid: false,
+              hostVerified: false,
+              userReached: false,
+              time: serverTimestamp(),
+            });
+            const userRef = doc(
+              firestore,
+              "users",
+              authentication.currentUser.uid
+            );
+            await updateDoc(userRef, {
+              activeBooking: bookingRef.id,
+              bookings: arrayUnion(bookingRef.id),
+            });
+            const hostRef = doc(firestore, "Host", location.hostedBy);
+            const hostDoc = await getDoc(hostRef);
+            const hostUserDoc = await getDoc(
+              doc(firestore, "users", hostDoc.data().userID)
+            );
+            const notiToken = hostUserDoc.data().notificationToken;
+            setHostNotiToken(notiToken);
+            await updateDoc(hostRef, {
+              bookings: arrayUnion(bookingRef.id),
+            });
+            const locationRef = doc(
+              firestore,
+              "HostedLocations",
+              location.placeID
+            );
+            await updateDoc(locationRef, {
+              bookings: arrayUnion(bookingRef.id),
+              available: false,
+            });
+            const locationDoc = await getDoc(locationRef);
+            await sendNotification(
+              notiToken,
+              "Your Location has been booked",
+              authentication.currentUser.displayName +
+                " is " +
+                Math.round(locations[0].travelTime) +
+                " min away from " +
+                locationDoc.data().address
+            );
+            setSearching(false);
+          },
+        },
+      ]
+    );
+  };
+
+  // User done with charging and wants to pay
+  const proceedToPayment = async () => {
+    setSearching(true);
+    navigation.navigate("Payment", { hostNotiToken: hostNotiToken });
+    setLocationBooked(false);
+    setDestination([null, null]);
+    setLocationSelected(false);
+    setChargerIndex(0);
+    setFilterCharger("");
+    setSortOption("Nearest");
+    setUserNearLocation(false);
+    await getChargers(origin);
+    setSearching(false);
+  };
+
+  // User cancelled current booking
+  const cancelBooking = () => {
+    Alert.alert(
+      "Cancel Booking?",
+      "Are you sure you want to cancel your booking?",
+      [
+        {
+          text: "Don't Cancel",
+          onPress: () => null,
+          style: "cancel",
+        },
+        {
+          text: "Cancel Booking",
+          onPress: async () => {
+            setSearching(true);
+            const userRef = doc(
+              firestore,
+              "users",
+              authentication.currentUser.uid
+            );
+            const userDoc = await getDoc(userRef);
+            const bookingID = userDoc.data().activeBooking;
+            await updateDoc(userRef, {
+              activeBooking: "",
+              bookings: arrayRemove(bookingID),
+            });
+            const bookingRef = doc(firestore, "Bookings", bookingID);
+            const bookingDoc = await getDoc(bookingRef);
+            const hostRef = doc(firestore, "Host", bookingDoc.data().host);
+            await updateDoc(hostRef, {
+              bookings: arrayRemove(bookingID),
+            });
+            const locationRef = doc(
+              firestore,
+              "HostedLocations",
+              bookingDoc.data().location
+            );
+            await updateDoc(locationRef, {
+              bookings: arrayRemove(bookingID),
+              available: true,
+            });
+            await sendNotification(
+              hostNotiToken,
+              "User has cancelled their booking",
+              "Sorry! " +
+                authentication.currentUser.displayName +
+                " has cancelled their booking"
+            );
+            await deleteDoc(bookingRef);
+            setSearching(false);
+            setLocationBooked(false);
+            setDestination([null, null]);
+            setLocationSelected(false);
+            setChargerIndex(0);
+            setFilterCharger("");
+            setSortOption("Nearest");
+            await getChargers(origin);
+          },
+        },
+      ]
+    );
+  };
+
+  // Below are all components to be rendered
+  // seperated for readability
+
+  // Open Location in phone native maps
+  const openLocation = (location) => {
+    const scheme = Platform.select({
+      ios: "maps:0,0?q=",
+      android: "geo:0,0?q=",
+    });
+    const latLng = `${location.coords.latitude},${location.coords.longitude}`;
+    const label = location.address;
+    const url = Platform.select({
+      ios: `${scheme}${label}@${latLng}`,
+      android: `${scheme}${latLng}(${label})`,
+    });
+    Linking.openURL(url);
+  };
+
+  // No chargers found view
+  const NoChargersFound = () => {
+    return (
+      <View style={{ marginTop: "15%", width: "80%" }}>
+        <Text h1 style={{ textAlign: "center" }}>
+          Uh oh!
+        </Text>
+        <Text
+          h3
+          h3Style={{ fontSize: 17 }}
+          style={{ textAlign: "center", color: "gray", marginTop: "2%" }}
+        >
+          There are no ChargeEV locations near you.
+        </Text>
+      </View>
+    );
+  };
+
+  // Loading Screen
+  const LoadingView = () => {
+    return (
+      <View>
+        <Image
+          source={require("../../assets/logo_nobg_black.png")}
+          style={styles.loadingImage}
+        />
+      </View>
+    );
+  };
+
+  // Items displayed when user books a location
+  const BookedLocationView = () => {
+    return (
+      <View style={styles.locationSelectedContainer}>
+        <View
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Text h2 h2Style={{ fontFamily: "Inter-Bold" }}>
+            {locations[0].address + " " + locations[0].unitNumber}
+          </Text>
+          <Text h4>{locations[0].postalCode}</Text>
+        </View>
+        <View style={styles.bookedIcon}>
+          <Icon name="check" color="#1BB530" />
+          <Text style={{ color: "#1BB530" }}>Booked</Text>
+        </View>
+        <View
+          style={{
+            backgroundColor: "black",
+            width: 300,
+            height: "0.3%",
+            marginTop: "2%",
+            marginBottom: "2%",
+          }}
+        />
+        {/* Reviews */}
+        <View style={styles.reviewsContainer}>
+          <Image
+            source={{ url: "locations[0].hostDP" }}
+            style={{
+              width: 50,
+              height: 50,
+              borderRadius: 50,
+              borderWidth: 1,
+            }}
+          />
+          <View style={{ marginLeft: "2%" }}>
+            <Text h4 h4Style={{ fontFamily: "Inter-Regular" }}>
+              {locations[0].hostName}
+            </Text>
+            <TouchableOpacity style={styles.bookedIcon}>
+              <Icon name="phone-in-talk" color="#1BB530" />
+              <Text style={{ color: "#1BB530" }}>Contact</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* More Info that will be showed when user expands bottom container */}
+        {expanded ? (
+          <View style={styles.extraInfoParentContainer}>
+            {/* Charger Type */}
+            <View style={styles.infoContainer}>
+              <Text
+                style={{
+                  fontFamily: "Inter-Bold",
+                  marginBottom: "2%",
+                  fontSize: 17,
+                }}
+              >
+                Charger Type
+              </Text>
+              {locations[0].chargerType.map((charger, index) => (
+                <View
+                  key={index}
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    marginBottom: "1%",
+                  }}
+                >
+                  <Image
+                    source={
+                      charger == "CCS2"
+                        ? require("../../assets/chargers/CCS.png")
+                        : require("../../assets/chargers/type2.png")
+                    }
+                    style={{ width: 20, height: 20 }}
+                  />
+                  <Text>{charger}</Text>
+                </View>
+              ))}
+            </View>
+            {/* Housing Type */}
+            <View style={styles.infoContainer}>
+              <Text
+                style={{
+                  fontFamily: "Inter-Bold",
+                  marginBottom: "2%",
+                  fontSize: 17,
+                }}
+              >
+                Housing Type
+              </Text>
+              <Text>{locations[0].housingType}</Text>
+            </View>
+            {/* Price */}
+            <View style={styles.infoContainer}>
+              <Text
+                style={{
+                  fontFamily: "Inter-Bold",
+                  marginBottom: "2%",
+                  fontSize: 17,
+                }}
+              >
+                Amount Payable
+              </Text>
+              <Text>${locations[0].costPerCharge}</Text>
+            </View>
+            {/* Payment Method */}
+            <View style={styles.infoContainer}>
+              <Text
+                style={{
+                  fontFamily: "Inter-Bold",
+                  marginBottom: "2%",
+                  fontSize: 17,
+                }}
+              >
+                Payment Method(s)
+              </Text>
+              <Text>{locations[0].paymentMethod.join()}</Text>
+            </View>
+          </View>
+        ) : null}
+
+        {!userNearLocation ? (
+          <TouchableOpacity
+            style={[styles.bookButton, { padding: "1%" }]}
+            onPress={() => openLocation(locations[0])}
+          >
+            <Icon name="place" color="white" />
+            <Text style={{ color: "white" }}>Open in Maps</Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            style={[styles.bookButton, { padding: "1%" }]}
+            onPress={proceedToPayment}
+          >
+            <Icon name="electrical-services" color="white" />
+            <Text style={{ color: "white" }}>I'm Charged Up!</Text>
+          </TouchableOpacity>
+        )}
+
+        {expanded && !userNearLocation ? (
+          <TouchableOpacity
+            style={[
+              styles.bookButton,
+              { padding: "1%", backgroundColor: "#ff4a4a" },
+            ]}
+            onPress={cancelBooking}
+          >
+            <Icon name="cancel" color="white" />
+            <Text style={{ color: "white" }}>Cancel Booking</Text>
+          </TouchableOpacity>
+        ) : null}
+      </View>
+    );
+  };
+
+  // View when user selected a location
+  const SelectedLocation = () => {
+    return (
+      <View style={styles.locationSelectedContainer}>
+        <View
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Text h2 h2Style={{ fontFamily: "Inter-Bold" }}>
+            {locations[0].address + " " + locations[0].unitNumber}
+          </Text>
+          <Text h4>{locations[0].postalCode}</Text>
+          <Text h4>
+            {Math.round(locations[0].distance * 10) / 10} km ,{" "}
+            {Math.round(locations[0].travelTime)} min
+          </Text>
+        </View>
+        <View
+          style={{
+            backgroundColor: "black",
+            width: 300,
+            height: "0.3%",
+            marginTop: "2%",
+            marginBottom: "2%",
+          }}
+        />
+        {/* Reviews */}
+        <View style={styles.reviewsContainer}>
+          <Image
+            source={{ url: "locations[0].hostDP" }}
+            style={{
+              width: 50,
+              height: 50,
+              borderRadius: 50,
+              borderWidth: 1,
+            }}
+          />
+          <View style={{ marginLeft: "2%" }}>
+            <Text h5>{locations[0].hostName}</Text>
+            <Text h5>
+              {locations[0].rating != 0
+                ? Math.round(locations[0].rating * 10) / 10 + "⭐"
+                : "No Reviews"}
+            </Text>
+          </View>
+        </View>
+
+        {/* More Info that will be showed when user expands bottom container */}
+        {expanded ? (
+          <View style={styles.extraInfoParentContainer}>
+            {/* Charger Type */}
+            <View style={styles.infoContainer}>
+              <Text
+                style={{
+                  fontFamily: "Inter-Bold",
+                  marginBottom: "2%",
+                  fontSize: 17,
+                }}
+              >
+                Charger Type
+              </Text>
+              {locations[0].chargerType.map((charger, index) => (
+                <View
+                  key={index}
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    marginBottom: "1%",
+                  }}
+                >
+                  <Image
+                    source={
+                      charger == "CCS2"
+                        ? require("../../assets/chargers/CCS.png")
+                        : require("../../assets/chargers/type2.png")
+                    }
+                    style={{ width: 20, height: 20 }}
+                  />
+                  <Text>{charger}</Text>
+                </View>
+              ))}
+            </View>
+            {/* Housing Type */}
+            <View style={styles.infoContainer}>
+              <Text
+                style={{
+                  fontFamily: "Inter-Bold",
+                  marginBottom: "2%",
+                  fontSize: 17,
+                }}
+              >
+                Housing Type
+              </Text>
+              <Text>{locations[0].housingType}</Text>
+            </View>
+            {/* Price */}
+            <View style={styles.infoContainer}>
+              <Text
+                style={{
+                  fontFamily: "Inter-Bold",
+                  marginBottom: "2%",
+                  fontSize: 17,
+                }}
+              >
+                Amount Payable
+              </Text>
+              <Text>${locations[0].costPerCharge}</Text>
+            </View>
+            {/* Payment Method */}
+            <View style={styles.infoContainer}>
+              <Text
+                style={{
+                  fontFamily: "Inter-Bold",
+                  marginBottom: "2%",
+                  fontSize: 17,
+                }}
+              >
+                Payment Method(s)
+              </Text>
+              <Text>{locations[0].paymentMethod.join()}</Text>
+            </View>
+          </View>
+        ) : null}
+
+        {/* Button Options */}
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            width: 300,
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <TouchableOpacity
+            style={[styles.bookButton, { backgroundColor: "gray" }]}
+            onPress={otherLocations}
+          >
+            <Icon name="arrow-back-ios" color="white" />
+            <Text style={{ color: "white" }}>Other Locations</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.bookButton}
+            onPress={() => bookLocation(locations[0])}
+          >
+            <Icon name="book" color="white" />
+            <Text style={{ color: "white" }}>Book Location</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  };
+
+  // Filter container
+  const FilterView = () => {
+    return (
+      <View style={styles.filterContainer}>
+        <TouchableOpacity style={styles.filterButton} onPress={selectFilter}>
+          <Icon name="filter-list" color="white" />
+          <Text style={{ color: "white" }}>Filter by</Text>
+        </TouchableOpacity>
+        {filterCharger != "" ? (
+          <View style={styles.filteredIcon}>
+            <Image
+              source={
+                filterCharger == "CCS2"
+                  ? require("../../assets/chargers/CCS.png")
+                  : require("../../assets/chargers/type2.png")
+              }
+              style={styles.filteredImage}
+            />
+            <Text>{filterCharger}</Text>
+          </View>
+        ) : null}
+      </View>
+    );
+  };
+
+  // Sorting Container
+  const SortingView = () => {
+    return (
+      <View style={styles.sortingContainer}>
+        <TouchableOpacity
+          style={[styles.filterButton, { width: "50%" }]}
+          onPress={selectSort}
+        >
+          <Icon name="sort" color="white" />
+          <Text style={{ color: "white" }}>Sorted by {sortOption}</Text>
+        </TouchableOpacity>
+      </View>
+    );
   };
 
   return (
@@ -56,17 +1073,28 @@ export default function ChargeMap({ navigation }) {
         showsPointsOfInterest={false}
         showsBuildings={false}
         provider={PROVIDER_GOOGLE}
+        onPress={animateCloseBottomContainer}
       >
-        {origin[0] != null ? (
+        {/* Navigation */}
+        {destination[0] != null ? (
           <MapViewDirections
             origin={{ latitude: origin[0], longitude: origin[1] }}
-            destination={{ latitude: 37.79441, longitude: -122.43424 }}
-            apikey="{API_KEY}"
+            destination={{
+              latitude: destination[0],
+              longitude: destination[1],
+            }}
+            apikey={googleMapsAPIKey}
             strokeWidth={10}
             strokeColor="#1BB530"
+            onStart={(x) => console.log("Starting routing")}
             onReady={(result) => {
-              console.log("Distance: " + result.distance + " km");
-              console.log("Duration: " + result.duration + " min.");
+              setLocations([
+                {
+                  ...locations[0],
+                  distance: result.distance,
+                  travelTime: result.duration,
+                },
+              ]);
 
               mapRef.current.fitToCoordinates(result.coordinates, {
                 edgePadding: {
@@ -82,7 +1110,126 @@ export default function ChargeMap({ navigation }) {
             }}
           />
         ) : null}
+
+        {/* Current Location */}
+        {origin[0] != null ? (
+          <Marker
+            coordinate={{ latitude: origin[0], longitude: origin[1] }}
+            opacity={0}
+          />
+        ) : null}
+
+        {/* Charger Location Markers */}
+        {locations.map((loc, index) => (
+          <Marker
+            key={index}
+            ref={index == 0 ? firstCharger : null}
+            coordinate={{
+              latitude: loc.coords.latitude,
+              longitude: loc.coords.longitude,
+            }}
+            title={loc.address}
+            description={loc.chargerType.join()}
+            onPress={() => setChargerIndex(index)}
+          />
+        ))}
       </MapView>
+
+      {/* Bottom Container */}
+      <Animated.ScrollView
+        style={[styles.bottomBox, { height: heightAnimInter }]}
+        contentContainerStyle={styles.bottomBoxContent}
+        onScrollBeginDrag={() => animateExpandBottomContainer()}
+        onScroll={(e) => {
+          if (e.nativeEvent.contentOffset.y < -100)
+            animateCloseBottomContainer();
+        }}
+      >
+        {/* Display number of chargers near */}
+        {!locationSelected && !locationBooked ? (
+          <Text h4 h4Style={styles.textGreyed} style={{ marginBottom: "5%" }}>
+            {searching
+              ? "Loading..."
+              : "There are " + locations.length + " chargers near you."}
+          </Text>
+        ) : null}
+
+        {/* Sorting Container */}
+        {!locationSelected &&
+        !searching &&
+        !locationBooked &&
+        expanded &&
+        locations.length != 0 ? (
+          <SortingView />
+        ) : null}
+
+        {/* Filter Container */}
+        {!locationSelected &&
+        !locationBooked &&
+        !searching &&
+        locations.length != 0 ? (
+          <FilterView />
+        ) : null}
+
+        {/* Content */}
+        {!searching && !locationSelected && !locationBooked ? (
+          locations.length != 0 ? (
+            expanded ? (
+              locations.map((location, index) => (
+                <ChargeMapLocationBox
+                  key={index}
+                  location={location}
+                  onPress={() => selectLocation(index)}
+                />
+              ))
+            ) : (
+              <ChargeMapLocationBox
+                location={locations[chargerIndex]}
+                onPress={() => selectLocation(chargerIndex)}
+              />
+            )
+          ) : (
+            <NoChargersFound />
+          )
+        ) : null}
+
+        {/* Loading View */}
+        {searching ? <LoadingView /> : null}
+
+        {/* User selected a location */}
+        {locationSelected && !searching && !locationBooked ? (
+          <SelectedLocation />
+        ) : null}
+
+        {/* User booked a location */}
+        {locationBooked && !searching ? <BookedLocationView /> : null}
+      </Animated.ScrollView>
+
+      {/* Back Button */}
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => navigation.goBack()}
+      >
+        <Icon name="arrow-back" />
+      </TouchableOpacity>
+
+      {/* Refresh Button */}
+      {!locationSelected && !locationBooked ? (
+        <TouchableOpacity
+          style={styles.refreshButton}
+          onPress={() => getChargers(origin)}
+        >
+          <Icon name="refresh" />
+        </TouchableOpacity>
+      ) : null}
+
+      {/* Reframe Button */}
+      <TouchableOpacity
+        style={[styles.refreshButton, { right: "5%" }]}
+        onPress={fitElements}
+      >
+        <Icon name="crop-free" />
+      </TouchableOpacity>
     </View>
   );
 }
@@ -99,12 +1246,140 @@ const styles = StyleSheet.create({
     height: Dimensions.get("window").height,
     zIndex: -1,
   },
-  actionButton: {
-    alignSelf: "center",
-    justifyContent: "center",
+  bottomBox: {
     position: "absolute",
-    top: 70,
-    left: 20,
-    zIndex: 1,
+    bottom: "2%",
+    backgroundColor: "white",
+    width: "95%",
+    height: "30%",
+    borderRadius: 20,
+    padding: "2%",
+    display: "flex",
+    flexDirection: "column",
+    borderStyle: "solid",
+    borderWidth: 0.2,
+  },
+  bottomBoxContent: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  backButton: {
+    position: "absolute",
+    top: "7%",
+    width: "10%",
+    height: "5%",
+    backgroundColor: "white",
+    left: "5%",
+    borderRadius: "100%",
+    shadowOpacity: 0.8,
+    shadowOffset: { width: 0, height: 3 },
+    display: "flex",
+    justifyContent: "center",
+  },
+  refreshButton: {
+    position: "absolute",
+    top: "7%",
+    width: "10%",
+    height: "5%",
+    backgroundColor: "white",
+    right: "17%",
+    borderRadius: "100%",
+    shadowOpacity: 0.8,
+    shadowOffset: { width: 0, height: 3 },
+    display: "flex",
+    justifyContent: "center",
+  },
+  textGreyed: {
+    fontFamily: "Inter-Light",
+    fontSize: 12,
+    color: "gray",
+  },
+  loadingImage: {
+    width: 313.6,
+    height: 100,
+    marginTop: "10%",
+  },
+  filterButton: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    backgroundColor: "black",
+    padding: "1%",
+    borderRadius: 10,
+    width: "30%",
+  },
+  filterContainer: {
+    width: "90%",
+    display: "flex",
+    flexDirection: "row",
+  },
+  filteredIcon: {
+    display: "flex",
+    flexDirection: "row",
+    borderWidth: 1,
+    borderStyle: "solid",
+    justifyContent: "space-evenly",
+    alignItems: "center",
+    width: "20%",
+    padding: "1%",
+    borderRadius: 10,
+    marginLeft: "5%",
+    width: "25%",
+  },
+  filteredImage: {
+    width: 20,
+    height: 20,
+  },
+  sortingContainer: {
+    width: "90%",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    marginBottom: "2%",
+  },
+  locationSelectedContainer: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: "2%",
+  },
+  reviewsContainer: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-evenly",
+  },
+  bookButton: {
+    backgroundColor: "#1BB530",
+    padding: "3%",
+    borderRadius: 5,
+    marginTop: "5%",
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-evenly",
+    width: "45%",
+  },
+  extraInfoParentContainer: {
+    width: 300,
+    paddingBottom: "10%",
+    marginTop: "5%",
+  },
+  infoContainer: {
+    marginTop: "5%",
+  },
+  bookedIcon: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    alignItems: "center",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#1BB530",
+    paddingLeft: "2%",
+    paddingRight: "2%",
+    marginTop: "1%",
   },
 });

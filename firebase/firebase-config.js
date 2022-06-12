@@ -21,3 +21,4 @@ const app = initializeApp(firebaseConfig);
 export const authentication = getAuth(app);
 export const firestore = getFirestore(app);
 export const storage = getStorage(app);
+export const googleMapsAPIKey = "AIzaSyDF8ECR3O5QiEaTRLms1fmu5HRW_K_G_xM"

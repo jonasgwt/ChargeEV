@@ -55,6 +55,7 @@ export default function Address({
             value: "",
           }}
           items={[
+            { label: "San Jose", value: "San Jose" },
             { label: "San Francisco", value: "San Francisco" },
             { label: "Los Angeles", value: "Los Angeles" },
             { label: "New York", value: "New York" },
