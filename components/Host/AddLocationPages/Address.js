@@ -41,7 +41,9 @@ export default function Address({
             value: "",
           }}
           value={country}
-          items={[{ label: "United States", value: "US" }]}
+          items={[{ label: "United States", value: "US" },
+            { label: "Singapore", value: "SG" }
+          ]}
           style={{
             ...pickerSelectStyles,
           }}
@@ -54,12 +56,12 @@ export default function Address({
             label: "Select your city",
             value: "",
           }}
-          items={[
+          items={country == "US" ? [
             { label: "San Jose", value: "San Jose" },
             { label: "San Francisco", value: "San Francisco" },
             { label: "Los Angeles", value: "Los Angeles" },
             { label: "New York", value: "New York" },
-          ]}
+          ]: [{label: "Singapore", value: "Singapore"}]}
           style={pickerSelectStyles}
         />
         <View style={{ padding: "2.5%" }} />

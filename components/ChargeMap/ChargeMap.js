@@ -47,7 +47,7 @@ import * as TaskManager from "expo-task-manager";
 
 export default function ChargeMap({ navigation }) {
   const { width, height } = Dimensions.get("window");
-  const ASPECT_RATIO = width / height;
+  const ASPECT_RATIO = height / width;
   const [statusBackground, requestBackgroundPermission] =
     Location.useBackgroundPermissions();
   const [statusForeground, requestForegroundPermission] =
@@ -68,10 +68,11 @@ export default function ChargeMap({ navigation }) {
   const [userNearLocation, setUserNearLocation] = useState(false);
   const [hostNotiToken, setHostNotiToken] = useState("");
   const [userNotiToken, setUserNotiToken] = useState("");
+  const [bookingID, setBookingID] = useState("");
   const heightAnim = useRef(new Animated.Value(0)).current;
   const heightAnimInter = heightAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: ["30%", "80%"],
+    outputRange: [ASPECT_RATIO > 2 ? "30%" : "35%", "80%"],
   });
 
   // Geofence Tasks
@@ -91,14 +92,21 @@ export default function ChargeMap({ navigation }) {
   // else search for chargers
   useEffect(() => {
     setSearching(true);
-    Location.watchPositionAsync({}, (location) => {
-      setOrigin([location.coords.latitude, location.coords.longitude]);
-    });
     getUserNotiToken()
       .then(async () => await getLocation())
       .then(async (currLocation) => await checkIfInBooking(currLocation))
       .then(async (x) =>
         x[0] != "" ? await setBookedLocation(x) : await getChargers(x[1])
+      )
+      .then(() =>
+        Location.watchPositionAsync({distanceInterval: 500}, (location) => {
+          setOrigin([
+            location.coords.latitude,
+            location.coords.longitude,
+            location.coords.heading,
+            location.coords.speed,
+          ]);
+        })
       )
       .then(() => setSearching(false));
   }, []);
@@ -106,6 +114,7 @@ export default function ChargeMap({ navigation }) {
   // If user is in a booking get and add booking info
   const setBookedLocation = async (params) => {
     const bookingDoc = await getDoc(doc(firestore, "Bookings", params[0]));
+    setBookingID(params[0]);
     const locationRef = doc(
       firestore,
       "HostedLocations",
@@ -115,7 +124,7 @@ export default function ChargeMap({ navigation }) {
     const hostData = await getDPHost(locationDoc.data());
     const distanceInKm = distanceBetween(
       [locationDoc.data().coords.latitude, locationDoc.data().coords.longitude],
-      params[1]
+      params[1].slice(0, 2)
     );
     const distanceInM = distanceInKm * 1000;
     setLocations([
@@ -131,6 +140,7 @@ export default function ChargeMap({ navigation }) {
       setUserNearLocation(true);
       setDestination([null, null]);
     } else {
+      setOrigin(params[1]);
       setDestination([
         locationDoc.data().coords.latitude,
         locationDoc.data().coords.longitude,
@@ -163,28 +173,41 @@ export default function ChargeMap({ navigation }) {
         );
       }
     });
-    Location.getBackgroundPermissionsAsync().then(async (res) => {
-      if (!res.granted) 
-      await requestBackgroundPermission().then(status => {
-        if (!status.granted) {
-        Alert.alert(
-          "Enable Background Locations",
-          "Open Settings > ChargeEV > Location > Always",
-          [
-            {
-              text: "Open Settings",
-              onPress: () => Linking.openSettings(),
-            },
-          ]
-        );
-      }
+    Location.getBackgroundPermissionsAsync()
+      .then(async (res) => {
+        if (!res.granted)
+          await requestBackgroundPermission().then((status) => {
+            if (!status.granted) {
+              Alert.alert(
+                "Enable Background Locations",
+                "Open Settings > ChargeEV > Location > Always",
+                [
+                  {
+                    text: "Open Settings",
+                    onPress: () => Linking.openSettings(),
+                  },
+                ]
+              );
+            }
+          });
       })
-      
-    });
+      .catch((err) => {
+        if (err.code == "ERR_LOCATION_INFO_PLIST")
+          console.log("unable to activate bg tracking");
+      });
     await Location.enableNetworkProviderAsync();
-    const position = await Location.getCurrentPositionAsync();
-    setOrigin([position.coords.latitude, position.coords.longitude]);
-    return [position.coords.latitude, position.coords.longitude];
+    const position = await Location.getCurrentPositionAsync().catch((err) =>
+      Alert.alert(
+        "There is an error getting your location",
+        "Please restart the app and try again"
+      )
+    );
+    return [
+      position.coords.latitude,
+      position.coords.longitude,
+      position.coords.heading,
+      position.coords.speed,
+    ];
   };
 
   // Upon render checks if user is in a current booking
@@ -204,13 +227,18 @@ export default function ChargeMap({ navigation }) {
         {
           latitude: locations[0].coords.latitude,
           longitude: locations[0].coords.longitude,
-          radius: 100,
+          radius: 500,
         },
       ]).catch((err) => {
         if (err.code == "E_NO_PERMISSIONS") {
           // For foreground tracking
-          Location.watchPositionAsync({}, async (position) => {
-            setOrigin([position.coords.latitude, position.coords.longitude]);
+          Location.watchPositionAsync({distanceInterval: 500}, async (position) => {
+            setOrigin([
+              position.coords.latitude,
+              position.coords.longitude,
+              position.coords.heading,
+              position.coords.speed,
+            ]);
             if (
               distanceBetween(
                 [position.coords.latitude, position.coords.longitude],
@@ -233,7 +261,7 @@ export default function ChargeMap({ navigation }) {
   const getChargers = async (currLocation) => {
     if (currLocation[0] != null) {
       const radiusInM = 50 * 1000;
-      const bounds = geohashQueryBounds(currLocation, radiusInM);
+      const bounds = geohashQueryBounds(currLocation.slice(0, 2), radiusInM);
       const promises = [];
       for (const b of bounds) {
         const q = await getDocs(
@@ -255,7 +283,10 @@ export default function ChargeMap({ navigation }) {
               const coords = doc.get("coords");
               const lat = coords.latitude;
               const lng = coords.longitude;
-              const distanceInKm = distanceBetween([lat, lng], currLocation);
+              const distanceInKm = distanceBetween(
+                [lat, lng],
+                currLocation.slice(0, 2)
+              );
               const distanceInM = distanceInKm * 1000;
               if (distanceInM <= radiusInM) {
                 const hostData = await getDPHost(doc.data());
@@ -305,7 +336,11 @@ export default function ChargeMap({ navigation }) {
         "You have reached the charging station",
         "You are not allowed to cancel the booking from now"
       );
-      await sendNotification(hostNotiToken, "User has reached", "");
+      await sendNotification(
+        hostNotiToken,
+        authentication.currentUser.displayName + " has reached ",
+        ""
+      );
     }
   };
 
@@ -353,14 +388,34 @@ export default function ChargeMap({ navigation }) {
     if (origin[0] != null && locations.length != 0) {
       fitElements();
       firstCharger.current.showCallout();
+    } else if (origin[0] != null && locations.length == 0) {
+      updateLocation();
     }
-  }, [locations]);
+  }, [locations, origin]);
+
+  useEffect(() => {
+    if (!locationSelected && !locationBooked && !searching) getChargers(origin);
+  }, [origin]);
+
+  // Adjusts zoom when there are no charger location
+  const updateLocation = () => {
+    // Animate with camera rotation
+    const camera = {
+      center: {
+        latitude: origin[0],
+        longitude: origin[1],
+      },
+      heading: origin[2],
+      zoom: -origin[3] * 0.1 + 18,
+    };
+    mapRef.current.animateCamera(camera, {});
+  };
 
   // Fits elements in map to viewport
   const fitElements = () => {
     mapRef.current.fitToElements({
       animated: true,
-      edgePadding: { top: 20, left: 70, right: 70, bottom: 100 },
+      edgePadding: { top: 250, left: 70, right: 70, bottom: 400 },
     });
   };
 
@@ -417,7 +472,8 @@ export default function ChargeMap({ navigation }) {
             }
           );
         else if (index == 2) {
-          setLocations(originalLocations);
+          if (sortOption == "Cheapest") sortCheapest(originalLocations);
+          else setLocations(originalLocations);
           setFilterCharger("");
         }
         setSearching(false);
@@ -437,11 +493,11 @@ export default function ChargeMap({ navigation }) {
         setSearching(true);
         if (option == 1) {
           if (sortOption == "Nearest") return;
-          sortNearest();
+          sortNearest(locations);
           setSortOption("Nearest");
         } else if (option == 2) {
           if (sortOption == "Cheapest") return;
-          sortCheapest();
+          sortCheapest(locations);
           setSortOption("Cheapest");
         }
         setSearching(false);
@@ -457,8 +513,8 @@ export default function ChargeMap({ navigation }) {
   };
 
   // sort given locations by cheapest
-  const sortCheapest = () => {
-    const locationsCopy = [...locations];
+  const sortCheapest = (locs) => {
+    const locationsCopy = [...locs];
     locationsCopy.sort((x, y) => {
       if (x.costPerCharge != y.costPerCharge)
         return x.costPerCharge > y.costPerCharge;
@@ -519,7 +575,6 @@ export default function ChargeMap({ navigation }) {
         {
           text: "Book",
           onPress: async () => {
-            // TODO: Notify Hosts
             setSearching(true);
             setLocationBooked(true);
             const bookingRef = await addDoc(collection(firestore, "Bookings"), {
@@ -537,6 +592,7 @@ export default function ChargeMap({ navigation }) {
               "users",
               authentication.currentUser.uid
             );
+            setBookingID(bookingRef.id);
             await updateDoc(userRef, {
               activeBooking: bookingRef.id,
               bookings: arrayUnion(bookingRef.id),
@@ -587,6 +643,7 @@ export default function ChargeMap({ navigation }) {
     setChargerIndex(0);
     setFilterCharger("");
     setSortOption("Nearest");
+    setBookingID("");
     setUserNearLocation(false);
     await getChargers(origin);
     setSearching(false);
@@ -612,8 +669,6 @@ export default function ChargeMap({ navigation }) {
               "users",
               authentication.currentUser.uid
             );
-            const userDoc = await getDoc(userRef);
-            const bookingID = userDoc.data().activeBooking;
             await updateDoc(userRef, {
               activeBooking: "",
               bookings: arrayRemove(bookingID),
@@ -648,6 +703,7 @@ export default function ChargeMap({ navigation }) {
             setChargerIndex(0);
             setFilterCharger("");
             setSortOption("Nearest");
+            setBookingID("");
             await getChargers(origin);
           },
         },
@@ -676,7 +732,7 @@ export default function ChargeMap({ navigation }) {
   // No chargers found view
   const NoChargersFound = () => {
     return (
-      <View style={{ marginTop: "15%", width: "80%" }}>
+      <View style={{ marginTop: "12.5%", width: "80%" }}>
         <Text h1 style={{ textAlign: "center" }}>
           Uh oh!
         </Text>

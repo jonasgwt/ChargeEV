@@ -33,8 +33,6 @@ import PaymentMethod from "./AddLocationPages/PaymentMethod";
 import { uploadImage } from "../resources/uploadImage";
 import { geohashForLocation } from "geofire-common";
 
-
-
 export default function HostAddLocation({ navigation }) {
   const [page, setPage] = useState(0);
   const [completion, setCompletion] = useState([
@@ -196,11 +194,12 @@ export default function HostAddLocation({ navigation }) {
         Location.reverseGeocodeAsync(coords[0]).then((locations) => {
           const check =
             locations[0].postalCode == postalCode &&
-            locations[0].isoCountryCode == country &&
-            locations[0].city == city;
+            locations[0].isoCountryCode == country;
           if (check) {
             setCoords([coords[0].latitude, coords[0].longitude]);
-            setLocationHash(geohashForLocation([coords[0].latitude, coords[0].longitude]));
+            setLocationHash(
+              geohashForLocation([coords[0].latitude, coords[0].longitude])
+            );
             setLoading(false);
             setPage((page) => page + 1);
           } else {
@@ -246,30 +245,30 @@ export default function HostAddLocation({ navigation }) {
     // Get user
     const userRef = doc(firestore, "users", authentication.currentUser.uid);
     const userDoc = await getDoc(userRef);
-    if (userDoc.exists()) {
-      // if no record of hosting in user, create one
-      if (userDoc.data().hostID == undefined) {
-        const hostRef = await addDoc(collection(firestore, "Host"), {
-          userID: authentication.currentUser.uid,
-          rating: 0,
-          totalRatings: 0,
-          reviewCount: 0,
-          bookings: [],
-          locations: [placeID],
-        });
-        await updateDoc(userRef, {
-          hostID: hostRef.id,
-        });
-      } else {
-        // else append new placeID to array of locations hosted
-        const hostDoc = doc(firestore, "Host", userDoc.data().hostID);
-        await updateDoc(hostDoc, {
-          locations: arrayUnion(placeID),
-        });
-      }
+    let hostID = userDoc.data().hostID;
+
+    // if no record of hosting in user, create one
+    if (hostID == undefined) {
+      const hostRef = await addDoc(collection(firestore, "Host"), {
+        userID: authentication.currentUser.uid,
+        rating: 0,
+        totalRatings: 0,
+        reviewCount: 0,
+        bookings: [],
+        locations: [placeID],
+      });
+      hostID = hostRef.id;
+      await updateDoc(userRef, {
+        hostID: hostRef.id,
+      });
     } else {
-      console.warn("No data found");
+      // else append new placeID to array of locations hosted
+      const hostDoc = doc(firestore, "Host", userDoc.data().hostID);
+      await updateDoc(hostDoc, {
+        locations: arrayUnion(placeID),
+      });
     }
+
     // Add location to database
     await setDoc(doc(firestore, "HostedLocations", placeID), {
       address: address,
@@ -278,7 +277,7 @@ export default function HostAddLocation({ navigation }) {
       placeID: placeID,
       costPerCharge: price,
       country: country,
-      hostedBy: userDoc.data().hostID,
+      hostedBy: hostID,
       housingType: locationType,
       locationImage: await uploadImage(pickedImagePath),
       paymentMethod: paymentMethods,

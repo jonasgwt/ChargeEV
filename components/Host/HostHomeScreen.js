@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, SafeAreaView, StyleSheet, Touchable } from "react-native";
+import { View, SafeAreaView, StyleSheet, Touchable, ScrollView } from "react-native";
 import { authentication, firestore } from "../../firebase/firebase-config";
 import { doc, getDoc, getDocs } from "firebase/firestore";
 import { Button, Text, Input, Divider } from "@rneui/themed";
@@ -24,6 +24,7 @@ export default function HostHomeScreen({ navigation }) {
   }, []);
 
   return (
+    <ScrollView>
     <SafeAreaView style={styles.container}>
       <Text h1 h1Style={{ fontSize: 35, color: "#1BB530"}}>
         Hello,{" "}
@@ -108,7 +109,8 @@ export default function HostHomeScreen({ navigation }) {
         logoName="contact-support"
         onPress={log}
       />
-    </SafeAreaView>
+      </SafeAreaView>
+      </ScrollView>
   );
 }
 
@@ -117,7 +119,7 @@ const styles = StyleSheet.create({
     flex: 1,
     display: "flex",
     justifyContent: "flex-start",
-    marginTop: "20%",
+    marginTop: "15%",
     alignItems: "center",
     margin: "5%",
   },

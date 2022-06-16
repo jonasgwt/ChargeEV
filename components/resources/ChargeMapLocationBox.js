@@ -9,7 +9,7 @@ export default function ChargeMapLocationBox({ location, onPress }) {
       {/* Rendering images burn through Firestore bandwidth */}
       <Image source={{ url: "location.locationImage" }} style={styles.image} />
       <View style={{ width: "50%" }}>
-        <Text h4 h4Style={{ fontFamily: "Inter-Black" }}>
+        <Text h4 h4Style={{ fontFamily: "Inter-Black", maxHeight: "40%"}}>
           {location.address}
         </Text>
         <Text h4 h4Style={{ fontSize: 10 }}>

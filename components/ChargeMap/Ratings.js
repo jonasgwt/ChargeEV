@@ -13,17 +13,19 @@ export default function Ratings({ navigation, route }) {
   // Add rating to host data
   const rate = async () => {
     navigation.navigate("Loading");
-    const bookingRef = doc(firestore, "Bookings", booking);
-    const bookingDoc = await getDoc(bookingRef);
-    const hostRef = doc(firestore, "Host", bookingDoc.data().host);
-    await updateDoc(hostRef, {
-      totalRatings: increment(rating),
-      reviewCount: increment(1),
-    });
-    const hostDoc = await getDoc(hostRef);
-    await updateDoc(hostRef, {
-      rating: hostDoc.data().totalRatings / hostDoc.data().reviewCount,
-    });
+    if (rating != -1) {
+      const bookingRef = doc(firestore, "Bookings", booking);
+      const bookingDoc = await getDoc(bookingRef);
+      const hostRef = doc(firestore, "Host", bookingDoc.data().host);
+      await updateDoc(hostRef, {
+        totalRatings: increment(rating),
+        reviewCount: increment(1),
+      });
+      const hostDoc = await getDoc(hostRef);
+      await updateDoc(hostRef, {
+        rating: hostDoc.data().totalRatings / hostDoc.data().reviewCount,
+      });
+    }
     navigation.navigate("Home");
   };
 
