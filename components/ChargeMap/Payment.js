@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { Icon, Text } from "@rneui/themed";
 import { LinearGradient } from "expo-linear-gradient";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { authentication, firestore } from "../../firebase/firebase-config";
 import sendNotification from "../resources/sendNotifications";
 
@@ -18,17 +18,21 @@ export default function Payment({ navigation, route }) {
   // User indicated that they have paid
   const paid = async (type) => {
     navigation.navigate("Loading");
+    // update user active booking field
     const userRef = doc(firestore, "users", authentication.currentUser.uid);
     const userDoc = await getDoc(userRef);
     const bookingID = userDoc.data().activeBooking;
     await updateDoc(userRef, {
       activeBooking: "",
     });
+    // update booking to reflect that user has paid
     const bookingRef = doc(firestore, "Bookings", bookingID);
     const bookingDoc = await getDoc(bookingRef);
     await updateDoc(bookingRef, {
       userPaid: true,
+      paidVia: type
     });
+    // update location to be available 
     const locationRef = doc(
       firestore,
       "HostedLocations",
@@ -37,6 +41,14 @@ export default function Payment({ navigation, route }) {
     await updateDoc(locationRef, {
       available: true,
     });
+    // update booking alerts
+    await updateDoc(doc(firestore, "BookingAlerts", bookingID), {
+      stage: "paid",
+      priority: 2,
+      actionRequired: true,
+      timestamp: serverTimestamp()
+    });
+    // send notification
     await sendNotification(
       hostNotiToken,
       authentication.currentUser.displayName + " has paid for their booking",

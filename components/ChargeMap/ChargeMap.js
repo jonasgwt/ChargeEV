@@ -40,6 +40,7 @@ import {
   arrayUnion,
   arrayRemove,
   deleteDoc,
+  GeoPoint,
 } from "firebase/firestore";
 import sendNotification from "../resources/sendNotifications";
 import { GeofencingEventType } from "expo-location";
@@ -69,6 +70,7 @@ export default function ChargeMap({ navigation }) {
   const [hostNotiToken, setHostNotiToken] = useState("");
   const [userNotiToken, setUserNotiToken] = useState("");
   const [bookingID, setBookingID] = useState("");
+  const [bgLocation, setBgLocation] = useState(false);
   const heightAnim = useRef(new Animated.Value(0)).current;
   const heightAnimInter = heightAnim.interpolate({
     inputRange: [0, 1],
@@ -88,6 +90,23 @@ export default function ChargeMap({ navigation }) {
     }
   );
 
+  TaskManager.defineTask(
+    "GET_BG_LOCATION",
+    async ({ data: { locations }, error }) => {
+      if (error) {
+        // check `error.message` for more details.
+        return;
+      }
+      const location = locations[0];
+      await updateDoc(doc(firestore, "Bookings", bookingID), {
+        currentUserLocation: new GeoPoint(
+          location.coords.latitude,
+          location.coords.longitude
+        ),
+      });
+    }
+  );
+
   // Get initial location and checks if user is currently in an active booking
   // else search for chargers
   useEffect(() => {
@@ -95,11 +114,9 @@ export default function ChargeMap({ navigation }) {
     getUserNotiToken()
       .then(async () => await getLocation())
       .then(async (currLocation) => await checkIfInBooking(currLocation))
-      .then(async (x) =>
-        x[0] != "" ? await setBookedLocation(x) : await getChargers(x[1])
-      )
+      .then(async (x) => (x[0] != "" ? await setBookedLocation(x) : null))
       .then(() =>
-        Location.watchPositionAsync({distanceInterval: 500}, (location) => {
+        Location.watchPositionAsync({ distanceInterval: 500 }, (location) => {
           setOrigin([
             location.coords.latitude,
             location.coords.longitude,
@@ -190,6 +207,7 @@ export default function ChargeMap({ navigation }) {
               );
             }
           });
+        else setBgLocation(true);
       })
       .catch((err) => {
         if (err.code == "ERR_LOCATION_INFO_PLIST")
@@ -229,36 +247,58 @@ export default function ChargeMap({ navigation }) {
           longitude: locations[0].coords.longitude,
           radius: 500,
         },
-      ]).catch((err) => {
-        if (err.code == "E_NO_PERMISSIONS") {
-          // For foreground tracking
-          Location.watchPositionAsync({distanceInterval: 500}, async (position) => {
-            setOrigin([
-              position.coords.latitude,
-              position.coords.longitude,
-              position.coords.heading,
-              position.coords.speed,
-            ]);
-            if (
-              distanceBetween(
-                [position.coords.latitude, position.coords.longitude],
-                [locations[0].coords.latitude, locations[0].coords.longitude]
-              ) *
-                1000 <
-              100
-            ) {
-              await userReached();
-            } else {
-              if (userNearLocation) await userLeft();
-            }
-          });
-        }
-      });
+      ])
+        .then(
+          Location.startLocationUpdatesAsync("GET_BG_LOCATION", {
+            deferredUpdatesDistance: 500,
+          })
+        )
+        .catch((err) => {
+          if (err.code == "E_NO_PERMISSIONS") {
+            // For foreground tracking
+            Location.watchPositionAsync(
+              { distanceInterval: 500 },
+              async (position) => {
+                setOrigin([
+                  position.coords.latitude,
+                  position.coords.longitude,
+                  position.coords.heading,
+                  position.coords.speed,
+                ]);
+                await updateDoc(doc(firestore, "BookingAlerts", bookingID), {
+                  bgLocation: false
+                })
+                await updateDoc(doc(firestore, "Bookings", bookingID), {
+                  currentUserLocation: new GeoPoint(
+                    position.coords.latitude,
+                    position.coords.longitude
+                  ),
+                });
+                if (
+                  distanceBetween(
+                    [position.coords.latitude, position.coords.longitude],
+                    [
+                      locations[0].coords.latitude,
+                      locations[0].coords.longitude,
+                    ]
+                  ) *
+                    1000 <
+                  100
+                ) {
+                  await userReached();
+                } else {
+                  if (userNearLocation) await userLeft();
+                }
+              }
+            );
+          }
+        });
     }
   }, [locationBooked]);
 
   // Gets nearby chargers in a 50km radius
   const getChargers = async (currLocation) => {
+    setSearching(true);
     if (currLocation[0] != null) {
       const radiusInM = 50 * 1000;
       const bounds = geohashQueryBounds(currLocation.slice(0, 2), radiusInM);
@@ -307,6 +347,7 @@ export default function ChargeMap({ navigation }) {
           locations.sort((a, b) => a.distance > b.distance);
           setLocations(locations);
           setOriginalLocations(locations);
+          setSearching(false);
         });
     }
   };
@@ -320,16 +361,18 @@ export default function ChargeMap({ navigation }) {
       );
       setUserNearLocation(true);
       setDestination([null, null]);
-      const userDoc = await getDoc(
-        doc(firestore, "users", authentication.currentUser.uid)
-      );
-      const bookingRef = doc(
-        firestore,
-        "Bookings",
-        userDoc.data().activeBooking
-      );
+      // update user status
+      const bookingRef = doc(firestore, "Bookings", bookingID);
       await updateDoc(bookingRef, {
         userReached: true,
+      });
+      // update booking alerts
+      const bookingAlertRef = doc(firestore, "BookingAlerts", bookingID);
+      await updateDoc(bookingAlertRef, {
+        stage: "arrived",
+        action: false,
+        priority: 0,
+        timestamp: serverTimestamp(),
       });
       await sendNotification(
         userNotiToken,
@@ -415,7 +458,12 @@ export default function ChargeMap({ navigation }) {
   const fitElements = () => {
     mapRef.current.fitToElements({
       animated: true,
-      edgePadding: { top: 250, left: 70, right: 70, bottom: 400 },
+      edgePadding: {
+        top: ASPECT_RATIO > 2 ? 250 : 200,
+        left: 70,
+        right: 70,
+        bottom: ASPECT_RATIO > 2 ? 400 : 300,
+      },
     });
   };
 
@@ -577,6 +625,7 @@ export default function ChargeMap({ navigation }) {
           onPress: async () => {
             setSearching(true);
             setLocationBooked(true);
+            // Add booking doc
             const bookingRef = await addDoc(collection(firestore, "Bookings"), {
               user: authentication.currentUser.uid,
               host: location.hostedBy,
@@ -587,6 +636,7 @@ export default function ChargeMap({ navigation }) {
               userReached: false,
               time: serverTimestamp(),
             });
+            // Add booking in user
             const userRef = doc(
               firestore,
               "users",
@@ -597,16 +647,19 @@ export default function ChargeMap({ navigation }) {
               activeBooking: bookingRef.id,
               bookings: arrayUnion(bookingRef.id),
             });
+            // add booking in host
             const hostRef = doc(firestore, "Host", location.hostedBy);
             const hostDoc = await getDoc(hostRef);
             const hostUserDoc = await getDoc(
               doc(firestore, "users", hostDoc.data().userID)
             );
+            // get host noti token
             const notiToken = hostUserDoc.data().notificationToken;
             setHostNotiToken(notiToken);
             await updateDoc(hostRef, {
               bookings: arrayUnion(bookingRef.id),
             });
+            // update bookings in location
             const locationRef = doc(
               firestore,
               "HostedLocations",
@@ -616,6 +669,18 @@ export default function ChargeMap({ navigation }) {
               bookings: arrayUnion(bookingRef.id),
               available: false,
             });
+            // add alerts
+            await setDoc(doc(firestore, "BookingAlerts", bookingRef.id), {
+              stage: "booked",
+              host: location.hostedBy,
+              user: authentication.currentUser.uid,
+              priority: 1,
+              actionRequired: false,
+              action: true,
+              bgLocation: bgLocation,
+              timestamp: serverTimestamp(),
+            });
+            // send notification to host
             const locationDoc = await getDoc(locationRef);
             await sendNotification(
               notiToken,
@@ -636,6 +701,8 @@ export default function ChargeMap({ navigation }) {
   // User done with charging and wants to pay
   const proceedToPayment = async () => {
     setSearching(true);
+    Location.stopLocationUpdatesAsync("GET_BG_LOCATION");
+    Location.stopGeofencingAsync("GEOFENCE_BOOKED_LOCATION");
     navigation.navigate("Payment", { hostNotiToken: hostNotiToken });
     setLocationBooked(false);
     setDestination([null, null]);
@@ -664,6 +731,7 @@ export default function ChargeMap({ navigation }) {
           text: "Cancel Booking",
           onPress: async () => {
             setSearching(true);
+            // update user
             const userRef = doc(
               firestore,
               "users",
@@ -673,12 +741,15 @@ export default function ChargeMap({ navigation }) {
               activeBooking: "",
               bookings: arrayRemove(bookingID),
             });
+            // get info
             const bookingRef = doc(firestore, "Bookings", bookingID);
             const bookingDoc = await getDoc(bookingRef);
             const hostRef = doc(firestore, "Host", bookingDoc.data().host);
+            // update host
             await updateDoc(hostRef, {
               bookings: arrayRemove(bookingID),
             });
+            // update locations
             const locationRef = doc(
               firestore,
               "HostedLocations",
@@ -688,6 +759,15 @@ export default function ChargeMap({ navigation }) {
               bookings: arrayRemove(bookingID),
               available: true,
             });
+            // update alerts
+            await updateDoc(doc(firestore, "BookingAlerts", bookingID), {
+              stage: "cancelled",
+              priority: 0,
+              action: false,
+              actionRequired: false,
+              timestamp: serverTimestamp(),
+            });
+            // send notification
             await sendNotification(
               hostNotiToken,
               "User has cancelled their booking",
@@ -695,6 +775,7 @@ export default function ChargeMap({ navigation }) {
                 authentication.currentUser.displayName +
                 " has cancelled their booking"
             );
+            // delete booking and reset
             await deleteDoc(bookingRef);
             setSearching(false);
             setLocationBooked(false);
