@@ -18,6 +18,9 @@ import {
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import Profile from "../Profile/Profile";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons"
+import ChargeMap from "../ChargeMap/ChargeMap";
+import * as Linking from 'expo-linking';
+import { Link } from "react-router-dom";
 
 
 export default function Homepage ({ navigation }) {
@@ -79,7 +82,7 @@ export default function Homepage ({ navigation }) {
     <Divider style={{ width: "100%", margin: "2%", }} color="black" />
     <ScrollView horizontal = {true} showsHorizontalScrollIndicator={false} style={{
       marginTop:10,
-      height:"15%"
+      height:100
       }}>
         <TouchableOpacity 
           onPress={() => {navigation.navigate('Profile')}}
@@ -88,16 +91,22 @@ export default function Homepage ({ navigation }) {
             <ImageBackground source={require('./Icons/ProfileIcon.png')} 
             style={{width: "100%", height: '100%', borderRadius:20}}>
               <View style={{position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center'}}>
-                <Text>Centered text</Text>
+                <Text></Text>
               </View>
             </ImageBackground>
             </View>
         </TouchableOpacity>
         <TouchableOpacity 
-          style={styles.welcome}
-          onPress={() => {}}
+          onPress={() => {Linking.openURL("https://t.me/ChargeEVHelpBot")}}
           >
-            <Text style = {{alignContent:'center', textAlign:'center'}}>Placeholder 2</Text>
+            <View style={styles.horiwelcome}>
+            <ImageBackground source={require('./Icons/telegram.png')} 
+            style={{width: "100%", height: '100%', borderRadius:20}}>
+              <View style={{position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center'}}>
+                <Text></Text>
+              </View>
+            </ImageBackground>
+            </View>
         </TouchableOpacity>
         <TouchableOpacity 
           style={styles.welcome}
@@ -119,21 +128,26 @@ export default function Homepage ({ navigation }) {
         </TouchableOpacity>
       </ScrollView>
       </View>
-      <ScrollView showsVerticalScrollIndicator={false} style={{
+    <ScrollView showsVerticalScrollIndicator={false} style={{
         height: "50%",
         marginTop:10
       }}>
         <TouchableOpacity 
             style={styles.welcome}
-            onPress={() => {navigation.navigate("")}}
+            onPress={() => {navigation.navigate("ChargeMap")}}
             >
-              <Text style = {{alignContent:'center', textAlign:'center'}}>Placeholder 1</Text>
+            <ImageBackground source={require('./Icons/findcharger.png')} 
+            style={{height:400, width:"99%", marginLeft:5 }}>
+              <View style={{position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center'}}>
+                <Text></Text>
+              </View>
+            </ImageBackground>
           </TouchableOpacity>
           <TouchableOpacity 
             style={styles.welcome}
             onPress={() => {}}
             >
-              <Text style = {{alignContent:'center', textAlign:'center'}}>Placeholder 1</Text>
+              <Text style = {{alignContent:'center', textAlign:'center'}}>Placeholder 2</Text>
           </TouchableOpacity>
           <TouchableOpacity 
             style={styles.welcome}
@@ -169,14 +183,11 @@ const styles = StyleSheet.create({
   },
 
   welcome: {
-    flex: 1,
-    margin: 20,
-    backgroundColor: '#1bb530',
-    margin: 10,
     textAlign: 'center',
     fontSize: 20,
-    paddingTop: 80,
-    borderRadius: 20,
+    borderRadius:20,
+    alignContent:'center',
+    alignItems:'center'
   },
   container: {
     flex: 1,
