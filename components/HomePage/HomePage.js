@@ -136,8 +136,9 @@ export default function Homepage ({ navigation }) {
             style={styles.welcome}
             onPress={() => {navigation.navigate("ChargeMap")}}
             >
-            <ImageBackground source={require('./Icons/findcharger.png')} 
-            style={{height:400, width:"99%", marginLeft:5 }}>
+            <ImageBackground source={require('./Icons/chargemap.png')} 
+            style={{height:400, width:"100%"}}
+            imageStyle={{borderRadius:20}}>
               <View style={{position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center'}}>
                 <Text></Text>
               </View>
