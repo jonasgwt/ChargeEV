@@ -23,6 +23,7 @@ import * as ImagePicker from "expo-image-picker";
 import { signOut } from "firebase/auth";
 import { getStorage, ref, uploadBytes, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { updateProfile } from "firebase/auth";
+import { uploadImage } from "../resources/uploadImage";
 
 
 
@@ -114,6 +115,22 @@ const EditProfile = ({ navigation }) => {
       // doc.data() will be undefined in this case
       console.log("No such document!");
     }
+  };
+
+  const showChoice = () => {
+    Alert.alert("Profile Photo", "Select an image of yourself", [
+      {
+        text: "Select from Photos",
+        onPress: showImagePicker,
+      },
+      {
+        text: "Take a Photo",
+        onPress: openCamera,
+      },
+      {
+        text: "Cancel",
+      },
+    ]);
   };
 
   const handleUpdate = async() => {
@@ -217,7 +234,7 @@ const EditProfile = ({ navigation }) => {
       <SafeAreaView>
         <View>
           <View style={{ alignItems: "center", marginTop: 50 }}>
-            <TouchableOpacity onPress={() => setIsVisible(true)}>
+            <TouchableOpacity onPress={() => showChoice()}>
               <View
                 style={{
                   height: 100,
@@ -301,7 +318,8 @@ const EditProfile = ({ navigation }) => {
               <Image source={{ uri: pickedImagePath }} style={styles.image} />
             )}
           </View>
-          <BottomSheet modalProps={{}} isVisible={isVisible}>
+          {/* Bottom Sheet Code No longer needed as replaced by alert */}
+          {/* <BottomSheet modalProps={{}} isVisible={isVisible}>
             {list.map((l, i) => (
               <ListItem
                 key={i}
@@ -315,7 +333,7 @@ const EditProfile = ({ navigation }) => {
                 </ListItem.Content>
               </ListItem>
             ))}
-          </BottomSheet>
+          </BottomSheet> */}
         </View>
       </SafeAreaView>
     </KeyboardAvoidingView>

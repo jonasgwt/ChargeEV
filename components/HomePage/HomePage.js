@@ -23,6 +23,7 @@ import * as Linking from 'expo-linking';
 import { Link } from "react-router-dom";
 
 
+
 export default function Homepage ({ navigation }) {
   const [userData, setUserData] = useState(null);
   const name = "";
@@ -89,7 +90,7 @@ export default function Homepage ({ navigation }) {
           >
             <View style={styles.horiwelcome}>
             <ImageBackground source={require('./Icons/ProfileIcon.png')} 
-            style={{width: "100%", height: '100%', borderRadius:20}}>
+            style={{width: "100%", height: '100%', borderRadius:30}}>
               <View style={{position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center'}}>
                 <Text></Text>
               </View>
@@ -100,8 +101,20 @@ export default function Homepage ({ navigation }) {
           onPress={() => {Linking.openURL("https://t.me/ChargeEVHelpBot")}}
           >
             <View style={styles.horiwelcome}>
-            <ImageBackground source={require('./Icons/telegram.png')} 
-            style={{width: "100%", height: '100%', borderRadius:20}}>
+            <ImageBackground source={require('./Icons/support.png')} 
+            style={{width: "100%", height: '100%', borderRadius:30}}>
+              <View style={{position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center'}}>
+                <Text></Text>
+              </View>
+            </ImageBackground>
+            </View>
+        </TouchableOpacity>
+        <TouchableOpacity 
+          onPress={() => {navigation.navigate('Inbox')}}
+          >
+            <View style={styles.horiwelcome}>
+            <ImageBackground source={require('./Icons/mailicon.png')} 
+            style={{width: "100%", height: '100%', borderRadius:30}}>
               <View style={{position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center'}}>
                 <Text></Text>
               </View>
@@ -128,8 +141,8 @@ export default function Homepage ({ navigation }) {
         </TouchableOpacity>
       </ScrollView>
       </View>
-    <ScrollView showsVerticalScrollIndicator={false} style={{
-        height: "50%",
+    <ScrollView showsVerticalScrollIndicator={true} style={{
+        height: "48%",
         marginTop:10
       }}>
         <TouchableOpacity 
@@ -137,7 +150,19 @@ export default function Homepage ({ navigation }) {
             onPress={() => {navigation.navigate("ChargeMap")}}
             >
             <ImageBackground source={require('./Icons/chargemap.png')} 
-            style={{height:400, width:"100%"}}
+            style={{height:400, width:"99%"}}
+            imageStyle={{borderRadius:20}}>
+              <View style={{position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center'}}>
+                <Text></Text>
+              </View>
+            </ImageBackground>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.welcome}
+            onPress={() => {navigation.navigate("Host")}}
+            >
+            <ImageBackground source={require('./Icons/host.png')} 
+            style={{height:400, width:"99%"}}
             imageStyle={{borderRadius:20}}>
               <View style={{position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center'}}>
                 <Text></Text>
@@ -188,7 +213,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
     borderRadius:20,
     alignContent:'center',
-    alignItems:'center'
+    alignItems:'center',
+    marginBottom:10,
   },
   container: {
     flex: 1,
