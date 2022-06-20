@@ -19,6 +19,7 @@ import {
 import { firestore, authentication } from "../../firebase/firebase-config";
 import HostAlert from "./HostAlert";
 import UserAlert from "./UserAlert";
+import AnimatedLottieView from "lottie-react-native";
 
 export default function InboxHomeScreen({ navigation }) {
   const [toggleUser, setToggleUser] = useState(true);
@@ -188,8 +189,17 @@ export default function InboxHomeScreen({ navigation }) {
         <View
           style={{ height: "80%", display: "flex", justifyContent: "center" }}
         >
-          <Text h2 h2Style={{ textAlign: "center" }}>
-            Loading...
+            <AnimatedLottieView
+              autoPlay
+            style={{
+              width: 300,
+              height: 300,
+              marginTop: "-5%"
+            }}
+            source={require("../../assets/animations/findmessages.json")}
+          />
+          <Text h2 h2Style={{ textAlign: "center" }} style={{marginTop: "-10%"}}>
+            Loading Messages...
           </Text>
         </View>
       )}

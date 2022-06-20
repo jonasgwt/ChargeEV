@@ -45,6 +45,7 @@ import {
 import sendNotification from "../resources/sendNotifications";
 import { GeofencingEventType } from "expo-location";
 import * as TaskManager from "expo-task-manager";
+import AnimatedLottieView from "lottie-react-native";
 
 export default function ChargeMap({ navigation }) {
   const { width, height } = Dimensions.get("window");
@@ -859,10 +860,16 @@ export default function ChargeMap({ navigation }) {
   const LoadingView = () => {
     return (
       <View>
-        <Image
-          source={require("../../assets/logo_nobg_black.png")}
-          style={styles.loadingImage}
+        <AnimatedLottieView
+          autoPlay
+          style={{
+            width: 200,
+            height: 200,
+            marginTop: "-5%",
+          }}
+          source={require("../../assets/animations/searching.json")}
         />
+        <Text h5 style={{maxWidth: 200, textAlign: "center", marginTop: "-20%"}}>Loading...</Text>
       </View>
     );
   };
