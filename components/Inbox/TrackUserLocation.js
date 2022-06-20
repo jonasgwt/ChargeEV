@@ -46,6 +46,26 @@ export default function TrackUserLocation({ navigation, route }) {
     );
   };
 
+  const getUserLocation = async () => {
+    const bookingDoc = await getDoc(doc(firestore, "Bookings", bookingID));
+    if (!bookingDoc.exists()) {
+      clearInterval(checkLocation);
+      navigation.navigate("InboxHomeScreen");
+      return;
+    }
+    if (bookingDoc.data().userReached) {
+      clearInterval(checkLocation);
+      navigation.navigate("InboxHomeScreen");
+      return;
+    }
+    setUserLocation([
+      bookingDoc.data().currentUserLocation.latitude,
+      bookingDoc.data().currentUserLocation.longitude,
+    ]);
+  };
+
+  const checkLocation = setInterval(getUserLocation, 5000);
+
   useEffect(() => {
     const getDestination = async () => {
       const bookingDoc = await getDoc(doc(firestore, "Bookings", bookingID));
@@ -56,13 +76,6 @@ export default function TrackUserLocation({ navigation, route }) {
       setDestination([
         locationDoc.data().coords.latitude,
         locationDoc.data().coords.longitude,
-      ]);
-    };
-    const getUserLocation = async () => {
-      const bookingDoc = await getDoc(doc(firestore, "Bookings", bookingID));
-      setUserLocation([
-        bookingDoc.data().currentUserLocation.latitude,
-        bookingDoc.data().currentUserLocation.longitude,
       ]);
     };
     const getUserInfo = async () => {
@@ -83,12 +96,14 @@ export default function TrackUserLocation({ navigation, route }) {
       .then(() => getUserInfo())
       .then(() => setLoading(false))
       .then(() => console.log(profilePicture));
-    setInterval(getUserLocation, 5000);
     if (!bgOn)
       Alert.alert(
         "User has not enabled background locations",
         "User location may not be updated"
       );
+    return () => {
+      clearInterval(getUserLocation);
+    };
   }, []);
 
   useEffect(() => {
@@ -183,7 +198,10 @@ export default function TrackUserLocation({ navigation, route }) {
       {/* Back Button */}
       <TouchableOpacity
         style={styles.backButton}
-        onPress={() => navigation.navigate("InboxHomeScreen")}
+        onPress={() => {
+          clearInterval(checkLocation);
+          navigation.navigate("InboxHomeScreen");
+        }}
       >
         <Icon name="arrow-back" />
       </TouchableOpacity>

@@ -73,7 +73,7 @@ export default function VerifyPayment({ navigation, route }) {
   };
 
   return (
-    <View style={{ width: "100%", height: "100%" }}>
+    <View style={{ width: "100%", height: "100%", overflow: "hidden" }}>
       <LinearGradient style={styles.semiCircle} colors={["#23E83D", "#1BB530"]}>
         <Image
           source={require("../../assets/logo_white_black_shadow.png")}

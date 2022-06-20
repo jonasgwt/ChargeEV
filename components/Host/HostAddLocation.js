@@ -133,14 +133,15 @@ export default function HostAddLocation({ navigation }) {
 
   // Update Completion status for page 4
   useEffect(() => {
-    if (price == "")
+    if (price == "" || !/^\d+$/.test(price))
       setCompletion((completion) => {
         return [...completion.slice(0, 4), false, ...completion.slice(5)];
       });
-    else
+    else {
       setCompletion((completion) => {
         return [...completion.slice(0, 4), true, ...completion.slice(5)];
       });
+    }
   }, [price]);
 
   // Update Completion status for page 5
@@ -275,7 +276,7 @@ export default function HostAddLocation({ navigation }) {
       chargerType: chargerTypes,
       city: city,
       placeID: placeID,
-      costPerCharge: price,
+      costPerCharge: parseInt(price).toFixed(2),
       country: country,
       hostedBy: hostID,
       housingType: locationType,
@@ -347,7 +348,7 @@ export default function HostAddLocation({ navigation }) {
           setLoading={setLoading}
         />
       ) : page == 4 ? (
-        <Price price={price} setPrice={setPrice} />
+        <Price price={price} setPrice={setPrice} coords={coords} />
       ) : page == 5 ? (
         <PaymentMethod
           paymentMethods={paymentMethods}
@@ -386,6 +387,7 @@ const styles = StyleSheet.create({
     width: "100%",
     display: "flex",
     alignItems: "center",
+    overflow: "hidden",
   },
   progressBar: {
     position: "absolute",

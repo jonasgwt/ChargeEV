@@ -1,10 +1,10 @@
 import { Icon, Text } from "@rneui/themed";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, deleteDoc, updateDoc } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { firestore } from "../../firebase/firebase-config";
 
-export default function HostAlert({ data, onPress }) {
+export default function HostAlert({ data, onPress, refresh }) {
   const [address, setAddress] = useState("");
   const [username, setUsername] = useState("");
   const statusTotitle = {
@@ -17,7 +17,7 @@ export default function HostAlert({ data, onPress }) {
     booked: "A user has booked your location at " + address + ".",
     paid: "User has made their payment. Verify now.",
     arrived: "User has arrived at " + address + ".",
-    cancelled: "User has cancelled booking at " + address + " has been cancelled.",
+    cancelled: "User has cancelled booking.",
   };
 
   useEffect(() => {
@@ -28,8 +28,20 @@ export default function HostAlert({ data, onPress }) {
       );
       setAddress(locationDoc.data().address);
     };
-    getAddress();
+    if (data.stage == "booked" || data.stage == "arrived") getAddress();
   }, []);
+
+  const deleteNoti = async () => {
+    const showUser = await getDoc(
+      doc(firestore, "BookingAlerts", data.id)
+    ).then((x) => x.data().showUser);
+    if (!showUser) await deleteDoc(doc(firestore, "BookingAlerts", data.id));
+    else
+      await updateDoc(doc(firestore, "BookingAlerts", data.id), {
+        showHost: false,
+      });
+    await refresh();
+  };
 
   return data.actionRequired || data.action ? (
     <TouchableOpacity style={styles.container} onPress={onPress}>
@@ -81,6 +93,13 @@ export default function HostAlert({ data, onPress }) {
             : statusTosubtitle.cancelled}
         </Text>
       </View>
+      {data.stage == "arrived" ? (
+        <Icon name="arrow-forward-ios" style={{ opacity: 0 }} />
+      ) : (
+        <TouchableOpacity onPress={deleteNoti}>
+          <Icon name="delete" size={35} color="red" />
+        </TouchableOpacity>
+      )}
     </View>
   );
 }

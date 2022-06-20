@@ -18,7 +18,6 @@ export default function Profile({ navigation }) {
     const docRef = doc(firestore, "users", authentication.currentUser.uid);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
-      console.log("Document data:", docSnap.data());
       setUserData(docSnap);
     } else {
       // doc.data() will be undefined in this case
@@ -27,8 +26,11 @@ export default function Profile({ navigation }) {
   };
 
   useEffect(() => {
-    getUser();
-  }, []);
+    const unsubscribe = navigation.addListener("focus", () => {
+      getUser();
+    });
+    return unsubscribe;
+  }, [navigation]);
 
   const SignOut = async () => {
     await AsyncStorage.clear();

@@ -51,44 +51,39 @@ export default function InboxHomeScreen({ navigation }) {
     const userAlerts = await getDocs(
       query(
         bookingAlertsRef,
-        where("user", "==", authentication.currentUser.uid)
+        where("user", "==", authentication.currentUser.uid),
+        where("showUser", "==", true)
       )
     );
     const userAlertsTemp = [];
     userAlerts.forEach((doc) =>
       userAlertsTemp.push({ ...doc.data(), id: doc.id })
     );
-    userAlertsTemp.sort((a, b) => a.priority > b.priority);
+    userAlertsTemp.sort((a, b) => a.priority < b.priority);
     setUserAlerts(userAlertsTemp);
     // Find noti for host
     const hostAlerts = await getDocs(
-      query(bookingAlertsRef, where("host", "==", hostID))
+      query(
+        bookingAlertsRef,
+        where("host", "==", hostID),
+        where("showHost", "==", true)
+      )
     );
     const hostAlertsTemp = [];
     hostAlerts.forEach((doc) =>
       hostAlertsTemp.push({ ...doc.data(), id: doc.id })
     );
-    hostAlertsTemp.sort((a, b) => a.priority > b.priority);
+    hostAlertsTemp.sort((a, b) => a.priority < b.priority);
     setHostAlerts(hostAlertsTemp);
     setLoading(false);
   };
 
-  const deletNoti = async () => {
-    setLoading(true);
-    const userAlertsToDelete = userAlerts.filter((x) => x.priority == 0);
-    const hostAlertsToDelete = hostAlerts.filter((x) => x.priority == 0);
-    userAlertsToDelete.map(async (x) => {
-      await deleteDoc(doc(firestore, "BookingAlerts", x.id));
-    });
-    hostAlertsToDelete.map(async (x) => {
-      await deleteDoc(doc(firestore, "BookingAlerts", x.id));
-    });
-    await getNoti();
-  };
-
   useEffect(() => {
-    getNoti();
-  }, []);
+    const unsubscribe = navigation.addListener("focus", () => {
+      getNoti();
+    });
+    return unsubscribe;
+  }, [navigation]);
 
   const userAlertPress = (stage) => {
     if (stage == "booked") navigation.navigate("ChargeMap");
@@ -100,7 +95,8 @@ export default function InboxHomeScreen({ navigation }) {
         bookingID: id,
         bgOn: bgLocation,
       });
-    else if (stage == "paid") navigation.navigate("VerifyPayment", {
+    else if (stage == "paid")
+      navigation.navigate("VerifyPayment", {
         bookingID: id,
       });
   };
@@ -151,19 +147,9 @@ export default function InboxHomeScreen({ navigation }) {
             }}
           />
         </View>
-        <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            width: "25%",
-            justifyContent: "space-around",
-          }}
-        >
+        <View>
           <TouchableOpacity style={styles.button} onPress={getNoti}>
             <Icon name="refresh" size={30} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={deletNoti}>
-            <Icon name="delete" size={30} color="#cc4158" />
           </TouchableOpacity>
         </View>
       </View>
@@ -177,6 +163,7 @@ export default function InboxHomeScreen({ navigation }) {
                   key={index}
                   data={x}
                   onPress={() => userAlertPress(x.stage)}
+                  refresh={getNoti}
                 />
               ))
             : hostAlerts.map((x, index) => (
@@ -184,6 +171,7 @@ export default function InboxHomeScreen({ navigation }) {
                   key={index}
                   data={x}
                   onPress={() => hostAlertPress(x.stage, x.id, x.bgLocation)}
+                  refresh={getNoti}
                 />
               ))}
 
@@ -244,7 +232,7 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: "#e8e8e8",
-    padding: "5%",
-    borderRadius: 100,
+    padding: 7,
+    borderRadius: 50,
   },
 });
