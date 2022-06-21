@@ -73,7 +73,6 @@ export default function ChargeMap({ navigation }) {
   const [bookingID, setBookingID] = useState("");
   const [bgLocation, setBgLocation] = useState(false);
   const [currLocationInFirestore, setCurrLocationInFirestore] = useState([]);
-  const [publicLocations, setPublicLocations] = useState([]);
   const heightAnim = useRef(new Animated.Value(0)).current;
   const heightAnimInter = heightAnim.interpolate({
     inputRange: [0, 1],
@@ -173,6 +172,7 @@ export default function ChargeMap({ navigation }) {
         rating: await getRatings(locationDoc.data()),
         hostDP: hostData[1],
         hostName: hostData[0],
+        type: "ChargeEV"
       },
     ]);
     if (bookingDoc.data().userReached) {
@@ -782,7 +782,7 @@ export default function ChargeMap({ navigation }) {
           },
         ]
       );
-    else
+    else {
       Alert.alert(
         "Public Location",
         "You have booked a public charger location. ChargeEV will not record this booking. You will be redirected to Maps",
@@ -793,7 +793,8 @@ export default function ChargeMap({ navigation }) {
           },
         ]
       );
-    otherLocations();
+      otherLocations();
+    }
   };
 
   // User done with charging and wants to pay
