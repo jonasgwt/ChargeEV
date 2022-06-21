@@ -3,14 +3,28 @@ import { StyleSheet, TouchableOpacity, Image, View } from "react-native";
 import { Text, Divider } from "@rneui/themed";
 
 export default function ChargeMapLocationBox({ location, onPress }) {
+  const publicImageURL =
+    location.photos != undefined
+      ? "https://maps.googleapis.com/maps/api/place/photo?photoreference=" +
+        location.photos[0].photo_reference +
+        "&sensor=false&maxheight=1600&maxwidth=1600&key=AIzaSyDF8ECR3O5QiEaTRLms1fmu5HRW_K_G_xM"
+      : "https://icon-library.com/images/no-image-icon/no-image-icon-0.jpg";
   return (
     <TouchableOpacity style={styles.locationBox} onPress={onPress}>
       {/* Remove "" in image source when deploy */}
       {/* Rendering images burn through Firestore bandwidth */}
-      <Image source={{ url: "location.locationImage" }} style={styles.image} />
+      <Image
+        source={{
+          url:
+            location.type == "ChargeEV"
+              ? "location.locationImage"
+              : publicImageURL,
+        }}
+        style={styles.image}
+      />
       <View style={{ width: "50%" }}>
-        <Text h4 h4Style={{ fontFamily: "Inter-Black", maxHeight: "40%"}}>
-          {location.address}
+        <Text h4 h4Style={{ fontFamily: "Inter-Black", maxHeight: "40%" }}>
+          {location.type == "ChargeEV" ? location.address : location.name}
         </Text>
         <Text h4 h4Style={{ fontSize: 10 }}>
           {location.distance > 1000
@@ -22,16 +36,22 @@ export default function ChargeMapLocationBox({ location, onPress }) {
           style={{ marginTop: "2%", marginBottom: "2%" }}
           color="black"
         />
-        <Text h3 h3Style={{ fontSize: 10 }} style={{marginBottom: "2%"}}>
-          {location.rating != 0 ? Math.round(location.rating*10)/10 + "⭐" : "No Reviews"}
+        <Text h3 h3Style={{ fontSize: 10 }} style={{ marginBottom: "2%" }}>
+          {location.rating != 0
+            ? Math.round(location.rating * 10) / 10 + "⭐"
+            : "No Reviews"}
         </Text>
         <Text h3 h3Style={{ fontSize: 12 }}>
-          {location.chargerType.join()} Charger
+          {location.type == "ChargeEV"
+            ? location.chargerType.join() + " Charger"
+            : location.vicinity}
         </Text>
         <Text h3 h3Style={{ fontSize: 12 }}>
-          ${location.costPerCharge} / charge
+          {location.type == "ChargeEV"
+            ? "$" + location.costPerCharge + " / charge"
+            : "Public Charger"}
         </Text>
-        {location.chargerType.length < 2 ? (
+        {location.type == "ChargeEV" && location.chargerType.length < 2 ? (
           <Image
             source={
               location.chargerType.includes("CCS2")

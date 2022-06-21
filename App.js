@@ -25,6 +25,11 @@ import PaymentDone from "./components/ChargeMap/PaymentDone.js";
 import Ratings from "./components/ChargeMap/Ratings.js";
 import { doc, updateDoc } from "firebase/firestore";
 import ProfileHomeScreen from "./components/Profile/Profile"
+import {LogBox} from "react-native";
+
+LogBox.ignoreLogs([
+"ViewPropTypes will be removed",
+])
 
 
 const Stack = createNativeStackNavigator();
