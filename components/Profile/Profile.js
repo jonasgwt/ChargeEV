@@ -1,5 +1,6 @@
 import { React, useEffect, useState } from "react";
-import { View, SafeAreaView, StyleSheet, ScrollView } from "react-native";
+import { StatusBar } from 'expo-status-bar';
+import { View, SafeAreaView, StyleSheet, ScrollView, Share } from "react-native";
 import { authentication, firestore } from "../../firebase/firebase-config";
 import { doc, getDoc, getDocs } from "firebase/firestore";
 import { Button, Text } from "@rneui/themed";
@@ -13,6 +14,28 @@ const Stack = createNativeStackNavigator();
 
 export default function Profile({ navigation }) {
   const [userData, setUserData] = useState(null);
+
+  const options = {
+    message: 'Hey there!\n\nHave you heard of the newest EV app in town? \n\nChargeEV is an app enabling you to loan or rent Electric vehicle chargers.\nNever run out of juice again\n\nDownload it now!'
+  }
+
+  const onShare = async () => {
+    try {
+      const result = await Share.share(options);
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          // shared with activity type of result.activityType
+        } else {
+          // shared
+        }
+      } else if (result.action === Share.dismissedAction) {
+        // dismissed
+      }
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+ 
 
   const getUser = async () => {
     const docRef = doc(firestore, "users", authentication.currentUser.uid);
@@ -117,17 +140,11 @@ export default function Profile({ navigation }) {
           </TouchableRipple>
           <TouchableRipple onPress={() => {}}>
             <View style={styles.menuItem}>
-              <Icon name="history" color="#1BB530" size={25} />
-              <Text style={styles.menuItemText}>Your History</Text>
-            </View>
-          </TouchableRipple>
-          <TouchableRipple onPress={() => {}}>
-            <View style={styles.menuItem}>
               <Icon name="credit-card" color="#1BB530" size={25} />
               <Text style={styles.menuItemText}>Payment</Text>
             </View>
           </TouchableRipple>
-          <TouchableRipple onPress={() => {}}>
+          <TouchableRipple onPress={onShare}>
             <View style={styles.menuItem}>
               <Icon name="share-outline" color="#1BB530" size={25} />
               <Text style={styles.menuItemText}>Tell Your Friends</Text>
@@ -158,6 +175,12 @@ export default function Profile({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  containerShare: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   userInfoSection: {
     paddingHorizontal: 30,
