@@ -172,7 +172,7 @@ export default function ChargeMap({ navigation }) {
         rating: await getRatings(locationDoc.data()),
         hostDP: hostData[1],
         hostName: hostData[0],
-        type: "ChargeEV"
+        type: "ChargeEV",
       },
     ]);
     if (bookingDoc.data().userReached) {
@@ -412,6 +412,8 @@ export default function ChargeMap({ navigation }) {
   // Get public and ChargeEV chargers in a 50km radius
   const getChargers = async (currLocation) => {
     const loc = [];
+    setSortOption("Nearest");
+    setFilterCharger("");
     loc.push(...(await getChargeEVChargers(currLocation)));
     loc.push(...(await getPublicChargers(currLocation)));
     loc.sort((a, b) => a.distance > b.distance);
@@ -498,7 +500,8 @@ export default function ChargeMap({ navigation }) {
   useEffect(() => {
     if (origin[0] != null && locations.length != 0) {
       fitElements();
-      firstCharger.current.showCallout();
+      if (firstCharger!= null) firstCharger.current.showCallout();
+      setChargerIndex(0);
     } else if (origin[0] != null && locations.length == 0) {
       updateLocation();
     }
@@ -519,7 +522,7 @@ export default function ChargeMap({ navigation }) {
       heading: origin[2],
       zoom: -origin[3] * 0.1 + 18,
     };
-    mapRef.current.animateCamera(camera, {});
+    if (mapRef != null) mapRef.current.animateCamera(camera, {});
   };
 
   // Fits elements in map to viewport
@@ -546,6 +549,7 @@ export default function ChargeMap({ navigation }) {
       },
       (index) => {
         setSearching(true);
+        setChargerIndex(0);
         if (index == 1)
           ActionSheetIOS.showActionSheetWithOptions(
             {
@@ -684,6 +688,8 @@ export default function ChargeMap({ navigation }) {
   // User goes back from a selected location
   const otherLocations = () => {
     setLocations(originalLocations);
+    setFilterCharger("");
+    setSortOption("Nearest");
     setDestination([null, null]);
     setLocationSelected(false);
   };
@@ -926,7 +932,7 @@ export default function ChargeMap({ navigation }) {
           h3Style={{ fontSize: 17 }}
           style={{ textAlign: "center", color: "gray", marginTop: "2%" }}
         >
-          There are no ChargeEV locations near you.
+          There are no charger locations near you.
         </Text>
       </View>
     );
@@ -1134,7 +1140,7 @@ export default function ChargeMap({ navigation }) {
               ? locations[0].address + " " + locations[0].unitNumber
               : locations[0].name}
           </Text>
-          <Text h4>
+          <Text h4 style={{ textAlign: "center" }}>
             {locations[0].type == "ChargeEV"
               ? locations[0].postalCode
               : locations[0].vicinity}

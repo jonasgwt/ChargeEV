@@ -5,6 +5,8 @@ import {
   StyleSheet,
   Touchable,
   ScrollView,
+  Linking,
+  Alert,
 } from "react-native";
 import { authentication, firestore } from "../../firebase/firebase-config";
 import { doc, getDoc, getDocs } from "firebase/firestore";
@@ -25,10 +27,23 @@ export default function HostHomeScreen({ navigation }) {
     if (docSnap.exists()) setName(docSnap.data().fname);
     else console.error("User not Found");
   };
-  
+
+  // Checks if user can add a location
+  const userAddLocation = async () => {
+    const userDoc = await getDoc(
+      doc(firestore, "users", authentication.currentUser.uid)
+    );
+      const hostDoc = await getDoc(doc(firestore, "Host", userDoc.data().hostID));
+    if (hostDoc.data().paymentMethods.length == 0) {
+      Alert.alert("No Payment Method", "Please add a payment method before adding a hosting location");
+      return;
+    }
+    navigation.navigate("HostAddLocation")
+  }
+
   useEffect(() => {
-    const unsubscribe = navigation.addListener("focus", () => {
-      getFirstName();
+    const unsubscribe = navigation.addListener("focus", async () => {
+      await getFirstName();
     });
     return unsubscribe;
   }, [navigation]);
@@ -55,15 +70,10 @@ export default function HostHomeScreen({ navigation }) {
           Manage
         </Text>
         <Selection
-          title="Update Payment Information"
+          title="Manage Payment Information"
           logoName="wallet"
           logoType="entypo"
-          onPress={log}
-        />
-        <Selection
-          title="Update Contact Information"
-          logoName="phone"
-          onPress={log}
+          onPress={() => navigation.navigate("HostPaymentInformation")}
         />
         <Text
           h2
@@ -85,24 +95,7 @@ export default function HostHomeScreen({ navigation }) {
         <Selection
           title="Add New Location"
           logoName="add-location"
-          onPress={() => navigation.navigate("HostAddLocation")}
-        />
-        <Text
-          h2
-          h2Style={{
-            fontFamily: "Inter-Bold",
-            alignSelf: "flex-start",
-            paddingLeft: "2%",
-            marginTop: 30,
-            marginBottom: 5,
-          }}
-        >
-          Report
-        </Text>
-        <Selection
-          title="Report Errant Usage"
-          logoName="report"
-          onPress={log}
+          onPress={userAddLocation}
         />
         <Text
           h2
@@ -117,9 +110,9 @@ export default function HostHomeScreen({ navigation }) {
           Support
         </Text>
         <Selection
-          title="How Does It Work?"
+          title="Get Support"
           logoName="contact-support"
-          onPress={log}
+          onPress={() => Linking.openURL("https://t.me/ChargeEVHelpBot")}
         />
       </SafeAreaView>
     </ScrollView>
