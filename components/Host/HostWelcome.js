@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Icon, Text, Button } from "@rneui/themed";
 import { addDoc, collection, updateDoc, doc } from "firebase/firestore";
@@ -80,6 +80,13 @@ export default function HostWelcome({ navigation }) {
         loading={loading}
         onPress={goNext}
       />
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => navigation.navigate("Homepage")}
+      >
+        <Icon name="arrow-back-ios" />
+        <Icon name="home" size={27}/>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -110,5 +117,22 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: "90%",
     maxHeight: 150,
+  },
+  backButton: {
+    position: "absolute",
+    top: "7%",
+    backgroundColor: "white",
+    left: "5%",
+    borderRadius: 15,
+    shadowOpacity: 0.8,
+    shadowOffset: { width: 0, height: 3 },
+    display: "flex",
+    justifyContent: "space-evenly",
+    flexDirection: "row",
+    paddingLeft: "3%",
+    paddingRight: "3%",
+    paddingTop: "1%",
+    paddingBottom: "1%",
+    alignItems: "center",
   },
 });

@@ -17,8 +17,11 @@ export default function HostNavigator({ navigation }) {
       if (userDoc.data().hostID == undefined)
         navigation.navigate("HostWelcome");
     };
-    getData();
-  }, []);
+    const unsubscribe = navigation.addListener("focus", async () => {
+      await getData();
+    });
+    return unsubscribe;
+  }, [navigation]);
 
   return (
     <Host.Navigator

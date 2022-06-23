@@ -34,7 +34,7 @@ export default function HostHomeScreen({ navigation }) {
       doc(firestore, "users", authentication.currentUser.uid)
     );
       const hostDoc = await getDoc(doc(firestore, "Host", userDoc.data().hostID));
-    if (hostDoc.data().paymentMethods.length == 0) {
+    if (hostDoc.data().paymentMethods == undefined || hostDoc.data().paymentMethods.length == 0 ) {
       Alert.alert("No Payment Method", "Please add a payment method before adding a hosting location");
       return;
     }
