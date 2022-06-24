@@ -49,7 +49,7 @@ export default function Homepage({ navigation }) {
         <Avatar.Image
           source={{
             uri:
-              userData != null
+              userData != null && userData.get("userImg") != null
                 ? userData.get("userImg")
                 : "https://firebasestorage.googleapis.com/v0/b/chargeev-986bd.appspot.com/o/photos%2F1B2C5C85-6253-4C85-9355-BE0AEC1B9A921654325573980.png?alt=media&token=3a176203-5203-403f-b63e-d0aa37912875",
           }}

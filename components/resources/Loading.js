@@ -15,7 +15,6 @@ export default function Loading({ navigation }) {
         height: "100%",
       }}
     >
-      <LinearGradient style={styles.bg} colors={["#23E83D", "#1BB530"]} />
       <LottieView
         autoPlay
         style={{
@@ -25,7 +24,7 @@ export default function Loading({ navigation }) {
         }}
         source={require("../../assets/animations/loading.json")}
       />
-      <Text h4 h4Style={{color: "white"}}>Loading...</Text>
+      <Text h4>Loading...</Text>
     </View>
   );
 }

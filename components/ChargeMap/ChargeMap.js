@@ -73,6 +73,7 @@ export default function ChargeMap({ navigation }) {
   const [bookingID, setBookingID] = useState("");
   const [bgLocation, setBgLocation] = useState(false);
   const [currLocationInFirestore, setCurrLocationInFirestore] = useState([]);
+  const [hostMobileNumber, setHostMobileNumber] = useState("");
   const heightAnim = useRef(new Animated.Value(0)).current;
   const heightAnimInter = heightAnim.interpolate({
     inputRange: [0, 1],
@@ -744,6 +745,7 @@ export default function ChargeMap({ navigation }) {
               // get host noti token
               const notiToken = hostUserDoc.data().notificationToken;
               setHostNotiToken(notiToken);
+              setHostMobileNumber(hostUserDoc.data().phone)
               await updateDoc(hostRef, {
                 bookings: arrayUnion(bookingRef.id),
               });
@@ -901,6 +903,24 @@ export default function ChargeMap({ navigation }) {
     );
   };
 
+  // Call user
+  const callUser = () => {
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options: ["Cancel", "Call " + hostMobileNumber],
+        cancelButtonIndex: 0,
+        userInterfaceStyle: "light",
+      },
+      (buttonIndex) => {
+        if (buttonIndex === 0) {
+          // cancel action
+        } else if (buttonIndex === 1) {
+          Linking.openURL("tel:" + hostMobileNumber);
+        }
+      }
+    );
+  };
+
   // Below are all components to be rendered
   // seperated for readability
 
@@ -1005,7 +1025,7 @@ export default function ChargeMap({ navigation }) {
             <Text h4 h4Style={{ fontFamily: "Inter-Regular" }}>
               {locations[0].hostName}
             </Text>
-            <TouchableOpacity style={styles.bookedIcon}>
+            <TouchableOpacity style={styles.bookedIcon} onPress={callUser}>
               <Icon name="phone-in-talk" color="#1BB530" />
               <Text style={{ color: "#1BB530" }}>Contact</Text>
             </TouchableOpacity>
@@ -1516,14 +1536,6 @@ export default function ChargeMap({ navigation }) {
         {/* User booked a location */}
         {locationBooked && !searching ? <BookedLocationView /> : null}
       </Animated.ScrollView>
-
-      {/* Back Button */}
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => navigation.goBack()}
-      >
-        <Icon name="arrow-back" />
-      </TouchableOpacity>
 
       {/* Refresh Button */}
       {!locationSelected && !locationBooked ? (

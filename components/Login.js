@@ -43,7 +43,7 @@ export default function Login({ navigation }) {
     >
       <View style={styles.titleContainer}>
         <Text h1>Login</Text>
-        <Text h2>Lorem ipsum dolor sit amet</Text>
+        <Text h2>Login to your ChargeEV account</Text>
         <Text h4 style={{ color: "red", marginTop: 10, marginBottom: 10 }}>
         {invalidAccount? "Invalid Password Or Email" : ""}
         </Text>

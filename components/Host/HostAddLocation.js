@@ -221,7 +221,7 @@ export default function HostAddLocation({ navigation }) {
             setLoading(false);
             setPage((page) => page + 1);
           } else {
-            Alert.alert("Invalid Address");
+            Alert.alert("Invalid Address", "It is likely that your postal code do not match your written address");
             setLoading(false);
           }
         });
@@ -261,11 +261,10 @@ export default function HostAddLocation({ navigation }) {
     // Navigate to loading page
     navigation.navigate("Loading");
     // Get user
-    const userRef = doc(firestore, "users", authentication.currentUser.uid);
-    const userDoc = await getDoc(userRef);
+    const userDoc = await getDoc(doc(firestore, "users", authentication.currentUser.uid));
     const hostID = userDoc.data().hostID;
     // append new placeID to array of locations hosted
-    const hostDoc = doc(firestore, "Host", userDoc.data().hostID);
+    const hostDoc = doc(firestore, "Host", hostID);
     await updateDoc(hostDoc, {
       locations: arrayUnion(placeID),
     });

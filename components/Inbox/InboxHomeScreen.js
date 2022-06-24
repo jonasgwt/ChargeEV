@@ -189,16 +189,20 @@ export default function InboxHomeScreen({ navigation }) {
         <View
           style={{ height: "80%", display: "flex", justifyContent: "center" }}
         >
-            <AnimatedLottieView
-              autoPlay
+          <AnimatedLottieView
+            autoPlay
             style={{
               width: 300,
               height: 300,
-              marginTop: "-5%"
+              marginTop: "-5%",
             }}
             source={require("../../assets/animations/findmessages.json")}
           />
-          <Text h2 h2Style={{ textAlign: "center" }} style={{marginTop: "-10%"}}>
+          <Text
+            h2
+            h2Style={{ textAlign: "center" }}
+            style={{ marginTop: "-10%" }}
+          >
             Loading Messages...
           </Text>
         </View>

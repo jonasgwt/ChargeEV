@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, SafeAreaView, Image } from "react-native";
 import { Button, Text } from "@rneui/themed";
+import AnimatedLottieView from "lottie-react-native";
 
 export default function Welcome({ navigation }) {
   // Content
@@ -43,10 +44,16 @@ export default function Welcome({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Image
+      {page == 0 ? <Image
         style={styles.image}
         source={require("../assets/welcomeLogo.png")}
-      ></Image>
+      /> : <AnimatedLottieView autoPlay
+        style={{
+          width: 300,
+          height: 300,
+          marginTop: "-5%"
+        }}
+        source={page == 1 ? require("../assets/animations/host.json/"):require("../assets/animations/loading.json/")} />}
       <Text h1 style={{ marginBottom: 10 }}>
         {title}
       </Text>

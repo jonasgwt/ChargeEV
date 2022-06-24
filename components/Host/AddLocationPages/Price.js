@@ -159,34 +159,40 @@ export default function Price({ price, setPrice, coords }) {
                 locations in United States
               </Text>
             )}
-            <Text h4>
-              Chargers near you are charging
-              <Text h4 h4Style={{ fontFamily: "Inter-Bold" }}>
-                {" "}
-                ${priceChargersNear}
-              </Text>
-            </Text>
-            <View
-              style={{
-                marginTop: "7%",
-                flex: 1,
-              }}
-            >
-              <Text style={{ fontFamily: "Inter-Bold", fontSize: 17 }}>
-                Chargers Near You
-              </Text>
-              <View style={styles.chargerExplorer}>
-                {chargersNear.map((x, index) => (
-                  <View key={index} style={styles.chargerContainer}>
-                    <View>
-                      <Text>{x.location}</Text>
-                      <Text>{x.chargerType}</Text>
-                    </View>
-                    <Text>${parseInt(x.price).toFixed(2)}</Text>
+            {chargersNear.length > 0 ? (
+              <>
+                <Text h4>
+                  Chargers near you are charging
+                  <Text h4 h4Style={{ fontFamily: "Inter-Bold" }}>
+                    {" "}
+                    ${priceChargersNear}
+                  </Text>
+                </Text>
+                <View
+                  style={{
+                    marginTop: "7%",
+                    flex: 1,
+                  }}
+                >
+                  <Text style={{ fontFamily: "Inter-Bold", fontSize: 17 }}>
+                    Chargers Near You
+                  </Text>
+                  <View style={styles.chargerExplorer}>
+                    {chargersNear.map((x, index) => (
+                      <View key={index} style={styles.chargerContainer}>
+                        <View>
+                          <Text>{x.location}</Text>
+                          <Text>{x.chargerType}</Text>
+                        </View>
+                        <Text>${parseInt(x.price).toFixed(2)}</Text>
+                      </View>
+                    ))}
                   </View>
-                ))}
-              </View>
-            </View>
+                </View>
+              </>
+            ) : (
+              <Text h4>There are no chargers near you</Text>
+            )}
           </DismissKeyboardView>
         </ScrollView>
       ) : (
