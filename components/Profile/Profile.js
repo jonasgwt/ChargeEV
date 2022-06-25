@@ -145,12 +145,6 @@ export default function Profile({ navigation }) {
               <Text style={styles.menuItemText}>Edit Profile</Text>
             </View>
           </TouchableRipple>
-          <TouchableRipple onPress={() => {}}>
-            <View style={styles.menuItem}>
-              <Icon name="credit-card" color="#1BB530" size={25} />
-              <Text style={styles.menuItemText}>Payment</Text>
-            </View>
-          </TouchableRipple>
           <TouchableRipple onPress={onShare}>
             <View style={styles.menuItem}>
               <Icon name="share-outline" color="#1BB530" size={25} />
