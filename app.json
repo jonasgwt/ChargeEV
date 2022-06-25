@@ -17,7 +17,7 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "simulator",
+      "bundleIdentifier": "ChargeEV",
       "config": {
         "googleMapsApiKey": "AIzaSyDF8ECR3O5QiEaTRLms1fmu5HRW_K_G_xM"
       },

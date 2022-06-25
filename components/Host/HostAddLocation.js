@@ -172,9 +172,26 @@ export default function HostAddLocation({ navigation }) {
       checkAddress();
     } else if (page < 5) setPage((page) => page + 1);
     else if (page == 5) {
-      await uploadData();
+      if (paymentMethods.includes("QR Code"))
+        Alert.alert(
+          "QR Code Payment",
+          "For QR code payment, hosts have to display QR code on location. Do you have your QR code displayed?",
+          [
+            {
+              text: "No",
+              style: "cancel",
+              onPress: () => null,
+            },
+            {
+              text: "Yes",
+              onPress: async () => await uploadData(),
+            },
+          ]
+        );
+      else await uploadData();
     }
   };
+
   // Navigate back to page before
   const back = () => {
     if (page != 0) setPage((page) => page - 1);
@@ -204,7 +221,7 @@ export default function HostAddLocation({ navigation }) {
             setLoading(false);
             setPage((page) => page + 1);
           } else {
-            Alert.alert("Invalid Address");
+            Alert.alert("Invalid Address", "It is likely that your postal code do not match your written address");
             setLoading(false);
           }
         });
@@ -244,32 +261,13 @@ export default function HostAddLocation({ navigation }) {
     // Navigate to loading page
     navigation.navigate("Loading");
     // Get user
-    const userRef = doc(firestore, "users", authentication.currentUser.uid);
-    const userDoc = await getDoc(userRef);
-    let hostID = userDoc.data().hostID;
-
-    // if no record of hosting in user, create one
-    if (hostID == undefined) {
-      const hostRef = await addDoc(collection(firestore, "Host"), {
-        userID: authentication.currentUser.uid,
-        rating: 0,
-        totalRatings: 0,
-        reviewCount: 0,
-        bookings: [],
-        locations: [placeID],
-      });
-      hostID = hostRef.id;
-      await updateDoc(userRef, {
-        hostID: hostRef.id,
-      });
-    } else {
-      // else append new placeID to array of locations hosted
-      const hostDoc = doc(firestore, "Host", userDoc.data().hostID);
-      await updateDoc(hostDoc, {
-        locations: arrayUnion(placeID),
-      });
-    }
-
+    const userDoc = await getDoc(doc(firestore, "users", authentication.currentUser.uid));
+    const hostID = userDoc.data().hostID;
+    // append new placeID to array of locations hosted
+    const hostDoc = doc(firestore, "Host", hostID);
+    await updateDoc(hostDoc, {
+      locations: arrayUnion(placeID),
+    });
     // Add location to database
     await setDoc(doc(firestore, "HostedLocations", placeID), {
       address: address,

@@ -73,6 +73,7 @@ export default function ChargeMap({ navigation }) {
   const [bookingID, setBookingID] = useState("");
   const [bgLocation, setBgLocation] = useState(false);
   const [currLocationInFirestore, setCurrLocationInFirestore] = useState([]);
+  const [hostMobileNumber, setHostMobileNumber] = useState("");
   const heightAnim = useRef(new Animated.Value(0)).current;
   const heightAnimInter = heightAnim.interpolate({
     inputRange: [0, 1],
@@ -128,6 +129,8 @@ export default function ChargeMap({ navigation }) {
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
       setSearching(true);
+      setSortOption("Nearest");
+      setFilterCharger("");
       getUserNotiToken()
         .then(async () => await getLocation())
         .then(async (currLocation) => await checkIfInBooking(currLocation))
@@ -170,6 +173,7 @@ export default function ChargeMap({ navigation }) {
         rating: await getRatings(locationDoc.data()),
         hostDP: hostData[1],
         hostName: hostData[0],
+        type: "ChargeEV",
       },
     ]);
     if (bookingDoc.data().userReached) {
@@ -317,8 +321,8 @@ export default function ChargeMap({ navigation }) {
     }
   }, [locationBooked]);
 
-  // Gets nearby chargers in a 50km radius
-  const getChargers = async (currLocation) => {
+  // Gets nearby ChargeEV chargers in a 50km radius
+  const getChargeEVChargers = async (currLocation) => {
     setSearching(true);
     if (currLocation[0] != null) {
       const radiusInM = 50 * 1000;
@@ -336,7 +340,7 @@ export default function ChargeMap({ navigation }) {
         );
         promises.push(q);
       }
-      Promise.all(promises)
+      return Promise.all(promises)
         .then(async (snapshots) => {
           const matchingDocs = [];
           for (const snap of snapshots) {
@@ -357,6 +361,7 @@ export default function ChargeMap({ navigation }) {
                   rating: await getRatings(doc.data()),
                   hostDP: hostData[1],
                   hostName: hostData[0],
+                  type: "ChargeEV",
                 });
               }
             }
@@ -364,13 +369,58 @@ export default function ChargeMap({ navigation }) {
           return matchingDocs;
         })
         .then((locations) => {
-          // Process the matching documents
-          locations.sort((a, b) => a.distance > b.distance);
-          setLocations(locations);
-          setOriginalLocations(locations);
-          setSearching(false);
+          return locations;
         });
     }
+  };
+
+  // Gets public chargers in a 50km radius
+  const getPublicChargers = async (currLocation) => {
+    return await fetch(
+      "https://maps.googleapis.com/maps/api/place/nearbysearch/json?keyword=ev%20charger&location=" +
+        currLocation[0] +
+        "," +
+        currLocation[1] +
+        "&radius=50000&key=AIzaSyDF8ECR3O5QiEaTRLms1fmu5HRW_K_G_xM"
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        const allLoc = data.results.filter(
+          (x) =>
+            x.business_status == "OPERATIONAL" &&
+            x.opening_hours != undefined &&
+            x.opening_hours.open_now
+        );
+        const res = allLoc.map((x) => {
+          return {
+            ...x,
+            distance:
+              distanceBetween(
+                [x.geometry.location.lat, x.geometry.location.lng],
+                currLocation.slice(0, 2)
+              ) * 1000,
+            type: "Public",
+            coords: {
+              latitude: x.geometry.location.lat,
+              longitude: x.geometry.location.lng,
+            },
+          };
+        });
+        return res;
+      });
+  };
+
+  // Get public and ChargeEV chargers in a 50km radius
+  const getChargers = async (currLocation) => {
+    const loc = [];
+    setSortOption("Nearest");
+    setFilterCharger("");
+    loc.push(...(await getChargeEVChargers(currLocation)));
+    loc.push(...(await getPublicChargers(currLocation)));
+    loc.sort((a, b) => a.distance > b.distance);
+    setOriginalLocations(loc);
+    setLocations(loc);
+    setSearching(false);
   };
 
   // when user reached location
@@ -451,7 +501,8 @@ export default function ChargeMap({ navigation }) {
   useEffect(() => {
     if (origin[0] != null && locations.length != 0) {
       fitElements();
-      firstCharger.current.showCallout();
+      if (firstCharger!= null) firstCharger.current.showCallout();
+      setChargerIndex(0);
     } else if (origin[0] != null && locations.length == 0) {
       updateLocation();
     }
@@ -472,7 +523,7 @@ export default function ChargeMap({ navigation }) {
       heading: origin[2],
       zoom: -origin[3] * 0.1 + 18,
     };
-    mapRef.current.animateCamera(camera, {});
+    if (mapRef != null) mapRef.current.animateCamera(camera, {});
   };
 
   // Fits elements in map to viewport
@@ -499,6 +550,7 @@ export default function ChargeMap({ navigation }) {
       },
       (index) => {
         setSearching(true);
+        setChargerIndex(0);
         if (index == 1)
           ActionSheetIOS.showActionSheetWithOptions(
             {
@@ -510,7 +562,10 @@ export default function ChargeMap({ navigation }) {
               if (option == 1) {
                 setLocations(
                   originalLocations
-                    .filter((x) => x.chargerType.includes("CCS2"))
+                    .filter(
+                      (x) =>
+                        x.chargerType != null && x.chargerType.includes("CCS2")
+                    )
                     .sort(
                       sortOption == "Nearest"
                         ? (a, b) => a.distance > b.distance
@@ -525,7 +580,11 @@ export default function ChargeMap({ navigation }) {
               } else if (option == 2) {
                 setLocations(
                   originalLocations
-                    .filter((x) => x.chargerType.includes("Type 2"))
+                    .filter(
+                      (x) =>
+                        x.chargerType != null &&
+                        x.chargerType.includes("Type 2")
+                    )
                     .sort(
                       sortOption == "Nearest"
                         ? (a, b) => a.distance > b.distance
@@ -585,7 +644,11 @@ export default function ChargeMap({ navigation }) {
   const sortCheapest = (locs) => {
     const locationsCopy = [...locs];
     locationsCopy.sort((x, y) => {
-      if (x.costPerCharge != y.costPerCharge)
+      if (x.costPerCharge == undefined && y.costPerCharge != undefined)
+        return true;
+      else if (x.costPerCharge != undefined && y.costPerCharge == undefined)
+        return false;
+      else if (x.costPerCharge != y.costPerCharge)
         return x.costPerCharge > y.costPerCharge;
       else return x.distance > y.distance;
     });
@@ -626,100 +689,120 @@ export default function ChargeMap({ navigation }) {
   // User goes back from a selected location
   const otherLocations = () => {
     setLocations(originalLocations);
+    setFilterCharger("");
+    setSortOption("Nearest");
     setDestination([null, null]);
     setLocationSelected(false);
   };
 
   // User Booked the location
   const bookLocation = (location) => {
-    Alert.alert(
-      "Book Location?",
-      "Host will be informed. \n Cancellation is not allowed when you are near the location.",
-      [
-        {
-          text: "Cancel",
-          onPress: () => null,
-          style: "cancel",
-        },
-        {
-          text: "Book",
-          onPress: async () => {
-            setSearching(true);
-            // Add booking doc
-            const bookingRef = await addDoc(collection(firestore, "Bookings"), {
-              user: authentication.currentUser.uid,
-              host: location.hostedBy,
-              location: location.placeID,
-              active: true,
-              userPaid: false,
-              hostVerified: false,
-              userReached: false,
-              time: serverTimestamp(),
-            });
-            // Add booking in user
-            const userRef = doc(
-              firestore,
-              "users",
-              authentication.currentUser.uid
-            );
-            setBookingID(bookingRef.id);
-            await updateDoc(userRef, {
-              activeBooking: bookingRef.id,
-              bookings: arrayUnion(bookingRef.id),
-            });
-            // add booking in host
-            const hostRef = doc(firestore, "Host", location.hostedBy);
-            const hostDoc = await getDoc(hostRef);
-            const hostUserDoc = await getDoc(
-              doc(firestore, "users", hostDoc.data().userID)
-            );
-            // get host noti token
-            const notiToken = hostUserDoc.data().notificationToken;
-            setHostNotiToken(notiToken);
-            await updateDoc(hostRef, {
-              bookings: arrayUnion(bookingRef.id),
-            });
-            // update bookings in location
-            const locationRef = doc(
-              firestore,
-              "HostedLocations",
-              location.placeID
-            );
-            await updateDoc(locationRef, {
-              bookings: arrayUnion(bookingRef.id),
-              available: false,
-            });
-            // add alerts
-            await setDoc(doc(firestore, "BookingAlerts", bookingRef.id), {
-              stage: "booked",
-              host: location.hostedBy,
-              user: authentication.currentUser.uid,
-              priority: 1,
-              actionRequired: false,
-              action: true,
-              bgLocation: bgLocation,
-              timestamp: serverTimestamp(),
-              showUser: true,
-              showHost: true,
-            });
-            // send notification to host
-            const locationDoc = await getDoc(locationRef);
-            await sendNotification(
-              notiToken,
-              "Your Location has been booked",
-              authentication.currentUser.displayName +
-                " is " +
-                Math.round(locations[0].travelTime) +
-                " min away from " +
-                locationDoc.data().address
-            );
-            setCurrLocationInFirestore([]);
-            setLocationBooked(true);
-            setSearching(false);
+    if (location.type == "ChargeEV")
+      Alert.alert(
+        "Book Location?",
+        "Host will be informed. \n Cancellation is not allowed when you are near the location.",
+        [
+          {
+            text: "Cancel",
+            onPress: () => null,
+            style: "cancel",
           },
-        },
-      ]
-    );
+          {
+            text: "Book",
+            onPress: async () => {
+              setSearching(true);
+              // Add booking doc
+              const bookingRef = await addDoc(
+                collection(firestore, "Bookings"),
+                {
+                  user: authentication.currentUser.uid,
+                  host: location.hostedBy,
+                  location: location.placeID,
+                  active: true,
+                  userPaid: false,
+                  hostVerified: false,
+                  userReached: false,
+                  time: serverTimestamp(),
+                }
+              );
+              // Add booking in user
+              const userRef = doc(
+                firestore,
+                "users",
+                authentication.currentUser.uid
+              );
+              setBookingID(bookingRef.id);
+              await updateDoc(userRef, {
+                activeBooking: bookingRef.id,
+                bookings: arrayUnion(bookingRef.id),
+              });
+              // add booking in host
+              const hostRef = doc(firestore, "Host", location.hostedBy);
+              const hostDoc = await getDoc(hostRef);
+              const hostUserDoc = await getDoc(
+                doc(firestore, "users", hostDoc.data().userID)
+              );
+              // get host noti token
+              const notiToken = hostUserDoc.data().notificationToken;
+              setHostNotiToken(notiToken);
+              setHostMobileNumber(hostUserDoc.data().phone)
+              await updateDoc(hostRef, {
+                bookings: arrayUnion(bookingRef.id),
+              });
+              // update bookings in location
+              const locationRef = doc(
+                firestore,
+                "HostedLocations",
+                location.placeID
+              );
+              await updateDoc(locationRef, {
+                bookings: arrayUnion(bookingRef.id),
+                available: false,
+              });
+              // add alerts
+              await setDoc(doc(firestore, "BookingAlerts", bookingRef.id), {
+                stage: "booked",
+                host: location.hostedBy,
+                user: authentication.currentUser.uid,
+                priority: 1,
+                actionRequired: false,
+                action: true,
+                bgLocation: bgLocation,
+                timestamp: serverTimestamp(),
+                showUser: true,
+                showHost: true,
+              });
+              // send notification to host
+              const locationDoc = await getDoc(locationRef);
+              await sendNotification(
+                notiToken,
+                "Your Location has been booked",
+                authentication.currentUser.displayName +
+                  " is " +
+                  Math.round(locations[0].travelTime) +
+                  " min away from " +
+                  locationDoc.data().address
+              );
+              setCurrLocationInFirestore([]);
+              setLocationBooked(true);
+              setSearching(false);
+            },
+          },
+        ]
+      );
+    else {
+      Alert.alert(
+        "Public Location",
+        "You have booked a public charger location. ChargeEV will not record this booking. You will be redirected to Maps",
+        [
+          {
+            text: "Take me there",
+            onPress: () => openLocation(location),
+          },
+        ]
+      );
+      otherLocations();
+    }
   };
 
   // User done with charging and wants to pay
@@ -820,6 +903,24 @@ export default function ChargeMap({ navigation }) {
     );
   };
 
+  // Call user
+  const callUser = () => {
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options: ["Cancel", "Call " + hostMobileNumber],
+        cancelButtonIndex: 0,
+        userInterfaceStyle: "light",
+      },
+      (buttonIndex) => {
+        if (buttonIndex === 0) {
+          // cancel action
+        } else if (buttonIndex === 1) {
+          Linking.openURL("tel:" + hostMobileNumber);
+        }
+      }
+    );
+  };
+
   // Below are all components to be rendered
   // seperated for readability
 
@@ -830,7 +931,8 @@ export default function ChargeMap({ navigation }) {
       android: "geo:0,0?q=",
     });
     const latLng = `${location.coords.latitude},${location.coords.longitude}`;
-    const label = location.address;
+    const label =
+      location.type == "ChargeEV" ? location.address : location.name;
     const url = Platform.select({
       ios: `${scheme}${label}@${latLng}`,
       android: `${scheme}${latLng}(${label})`,
@@ -850,7 +952,7 @@ export default function ChargeMap({ navigation }) {
           h3Style={{ fontSize: 17 }}
           style={{ textAlign: "center", color: "gray", marginTop: "2%" }}
         >
-          There are no ChargeEV locations near you.
+          There are no charger locations near you.
         </Text>
       </View>
     );
@@ -869,7 +971,12 @@ export default function ChargeMap({ navigation }) {
           }}
           source={require("../../assets/animations/searching.json")}
         />
-        <Text h5 style={{maxWidth: 200, textAlign: "center", marginTop: "-20%"}}>Loading...</Text>
+        <Text
+          h5
+          style={{ maxWidth: 200, textAlign: "center", marginTop: "-20%" }}
+        >
+          Loading...
+        </Text>
       </View>
     );
   };
@@ -918,7 +1025,7 @@ export default function ChargeMap({ navigation }) {
             <Text h4 h4Style={{ fontFamily: "Inter-Regular" }}>
               {locations[0].hostName}
             </Text>
-            <TouchableOpacity style={styles.bookedIcon}>
+            <TouchableOpacity style={styles.bookedIcon} onPress={callUser}>
               <Icon name="phone-in-talk" color="#1BB530" />
               <Text style={{ color: "#1BB530" }}>Contact</Text>
             </TouchableOpacity>
@@ -1049,9 +1156,15 @@ export default function ChargeMap({ navigation }) {
           }}
         >
           <Text h2 h2Style={{ fontFamily: "Inter-Bold" }}>
-            {locations[0].address + " " + locations[0].unitNumber}
+            {locations[0].type == "ChargeEV"
+              ? locations[0].address + " " + locations[0].unitNumber
+              : locations[0].name}
           </Text>
-          <Text h4>{locations[0].postalCode}</Text>
+          <Text h4 style={{ textAlign: "center" }}>
+            {locations[0].type == "ChargeEV"
+              ? locations[0].postalCode
+              : locations[0].vicinity}
+          </Text>
           <Text h4>
             {Math.round(locations[0].distance * 10) / 10} km ,{" "}
             {Math.round(locations[0].travelTime)} min
@@ -1069,16 +1182,24 @@ export default function ChargeMap({ navigation }) {
         {/* Reviews */}
         <View style={styles.reviewsContainer}>
           <Image
-            source={{ url: "locations[0].hostDP" }}
+            source={{
+              url:
+                locations[0].type == "ChargeEV"
+                  ? "locations[0].hostDP"
+                  : "https://cdn.icon-icons.com/icons2/836/PNG/512/Google_icon-icons.com_66793.png",
+            }}
             style={{
               width: 50,
               height: 50,
               borderRadius: 50,
-              borderWidth: 1,
             }}
           />
           <View style={{ marginLeft: "2%" }}>
-            <Text h5>{locations[0].hostName}</Text>
+            <Text h5>
+              {locations[0].type == "ChargeEV"
+                ? locations[0].hostName
+                : "Data from Google"}
+            </Text>
             <Text h5>
               {locations[0].rating != 0
                 ? Math.round(locations[0].rating * 10) / 10 + "⭐"
@@ -1088,7 +1209,7 @@ export default function ChargeMap({ navigation }) {
         </View>
 
         {/* More Info that will be showed when user expands bottom container */}
-        {expanded ? (
+        {expanded && locations[0].type == "ChargeEV" ? (
           <View style={styles.extraInfoParentContainer}>
             {/* Charger Type */}
             <View style={styles.infoContainer}>
@@ -1162,6 +1283,32 @@ export default function ChargeMap({ navigation }) {
               </Text>
               <Text>{locations[0].paymentMethod.join()}</Text>
             </View>
+          </View>
+        ) : null}
+
+        {expanded && locations[0].type != "ChargeEV" ? (
+          <View style={styles.extraInfoParentContainer}>
+            <Text
+              style={{
+                fontFamily: "Inter-Bold",
+                marginBottom: "2%",
+                fontSize: 17,
+                textAlign: "center",
+              }}
+            >
+              Public Location
+            </Text>
+            <Text
+              style={{
+                fontFamily: "Inter-Regular",
+                fontSize: 13,
+                textAlign: "center",
+              }}
+            >
+              This location is a public location. ChargeEV does not have any
+              information of pricing, charger types provided and availability.
+              Booking of this location will not be recorded.
+            </Text>
           </View>
         ) : null}
 
@@ -1299,10 +1446,24 @@ export default function ChargeMap({ navigation }) {
               latitude: loc.coords.latitude,
               longitude: loc.coords.longitude,
             }}
-            title={loc.address}
-            description={loc.chargerType.join()}
+            title={loc.type == "ChargeEV" ? loc.address : loc.name}
+            description={
+              loc.type == "ChargeEV" ? loc.chargerType.join() : loc.vicinity
+            }
             onPress={() => setChargerIndex(index)}
-          />
+          >
+            {loc.type == "ChargeEV" ? (
+              <Image
+                source={require("../../assets/marker/marker.png")}
+                style={{ height: 40, width: 40 }}
+              />
+            ) : (
+              <Image
+                source={require("../../assets/marker/markerPublic.png")}
+                style={{ height: 40, width: 40 }}
+              />
+            )}
+          </Marker>
         ))}
       </MapView>
 
@@ -1376,14 +1537,6 @@ export default function ChargeMap({ navigation }) {
         {locationBooked && !searching ? <BookedLocationView /> : null}
       </Animated.ScrollView>
 
-      {/* Back Button */}
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => navigation.goBack()}
-      >
-        <Icon name="arrow-back" />
-      </TouchableOpacity>
-
       {/* Refresh Button */}
       {!locationSelected && !locationBooked ? (
         <TouchableOpacity
@@ -1441,7 +1594,7 @@ const styles = StyleSheet.create({
     height: "5%",
     backgroundColor: "white",
     left: "5%",
-    borderRadius: "100%",
+    borderRadius: 50,
     shadowOpacity: 0.8,
     shadowOffset: { width: 0, height: 3 },
     display: "flex",
@@ -1454,7 +1607,7 @@ const styles = StyleSheet.create({
     height: "5%",
     backgroundColor: "white",
     right: "17%",
-    borderRadius: "100%",
+    borderRadius: 50,
     shadowOpacity: 0.8,
     shadowOffset: { width: 0, height: 3 },
     display: "flex",

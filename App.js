@@ -24,8 +24,15 @@ import Payment from "./components/ChargeMap/Payment.js";
 import PaymentDone from "./components/ChargeMap/PaymentDone.js";
 import Ratings from "./components/ChargeMap/Ratings.js";
 import { doc, updateDoc } from "firebase/firestore";
-import ProfileHomeScreen from "./components/Profile/Profile"
+import ProfileHomeScreen from "./components/Profile/Profile";
+import { LogBox } from "react-native";
+import HostAddPayment from "./components/Host/HostAddPayment";
+import HostWelcome from "./components/Host/HostWelcome";
 
+LogBox.ignoreLogs([
+  "ViewPropTypes will be removed",
+  "AsyncStorage has been extracted from react-native core and will be removed in a future release.",
+]);
 
 const Stack = createNativeStackNavigator();
 const theme = createTheme(themeConfig);
@@ -170,6 +177,12 @@ export default function App() {
 
           {/*Hosts*/}
           <Stack.Screen name="HostAddLocation" component={HostAddLocation} />
+          <Stack.Screen name="HostAddPayment" component={HostAddPayment} />
+          <Stack.Screen
+            name="HostWelcome"
+            component={HostWelcome}
+            options={{ gestureEnabled: false }}
+          />
 
           {/*Loading & Success*/}
           <Stack.Screen

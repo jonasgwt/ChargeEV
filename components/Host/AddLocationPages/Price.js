@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Alert, SafeAreaView, StyleSheet, View } from "react-native";
+import {
+  Alert,
+  SafeAreaView,
+  StyleSheet,
+  View,
+  ScrollView,
+  Dimensions,
+} from "react-native";
 import { Icon, Input, Text } from "@rneui/themed";
 import { DismissKeyboardView } from "../../resources/DismissKeyboardView";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -21,6 +28,9 @@ export default function Price({ price, setPrice, coords }) {
   const [utilityName, setUtilityName] = useState("");
   const [dataAvailable, setDataAvailable] = useState(true);
   const [priceChargersNear, setPriceChargersNear] = useState(0);
+  const [chargersNear, setChargersNear] = useState([]);
+  const { width, height } = Dimensions.get("window");
+  const ASPECT_RATIO = height / width;
 
   const getElectricityPricingData = async () => {
     const data = await fetch(
@@ -63,7 +73,11 @@ export default function Price({ price, setPrice, coords }) {
             const distanceInKm = distanceBetween([lat, lng], coords);
             const distanceInM = distanceInKm * 1000;
             if (distanceInM <= radiusInM) {
-              matchingDocs.push(doc.data().costPerCharge);
+              matchingDocs.push({
+                price: doc.data().costPerCharge,
+                location: doc.data().address,
+                chargerType: doc.data().chargerType,
+              });
             }
           }
         }
@@ -71,12 +85,16 @@ export default function Price({ price, setPrice, coords }) {
       })
       .then((locations) => {
         // Process the matching documents
+        const data = [];
         setPriceChargersNear(
           (
-            locations.reduce((total, num) => (total += parseInt(num)), 0) /
-            locations.length
+            locations.reduce((total, loc) => {
+              data.push(loc);
+              return (total += parseInt(loc.price));
+            }, 0) / locations.length
           ).toFixed(2)
         );
+        setChargersNear(data);
       });
   };
 
@@ -91,7 +109,12 @@ export default function Price({ price, setPrice, coords }) {
   }, []);
 
   return (
-    <DismissKeyboardView style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        { maxHeight: ASPECT_RATIO > 2 ? "70%" : "60%" },
+      ]}
+    >
       <View style={styles.priceContainer}>
         <Input
           containerStyle={styles.input}
@@ -111,53 +134,81 @@ export default function Price({ price, setPrice, coords }) {
         </Text>
       </View>
       {!isLoading ? (
-        <View style={styles.text}>
-          {dataAvailable ? (
-            <>
-              <Text h4 h4Style={{ marginBottom: "5%" }}>
-                According to data from {infoSource} cost of electricity is{" "}
-                <Text h4 h4Style={{ fontFamily: "Inter-Bold" }}>
-                  ${cost.toFixed(2)}/kwh{" "}
+        <ScrollView style={styles.text}>
+          <DismissKeyboardView>
+            {dataAvailable ? (
+              <>
+                <Text h4 h4Style={{ marginBottom: "5%" }}>
+                  According to data from {infoSource} cost of electricity is{" "}
+                  <Text h4 h4Style={{ fontFamily: "Inter-Bold" }}>
+                    ${cost.toFixed(2)}/kwh{" "}
+                  </Text>
+                  from {utilityName}.
                 </Text>
-                from {utilityName}.
-              </Text>
+                <Text h4 h4Style={{ marginBottom: "5%" }}>
+                  Average cost of a full charge is{" "}
+                  <Text h4 h4Style={{ fontFamily: "Inter-Bold" }}>
+                    ${(cost * 40).toFixed(2)} - ${(cost * 100).toFixed(2)}
+                  </Text>{" "}
+                  (40kwh - 100kwh)
+                </Text>
+              </>
+            ) : (
               <Text h4 h4Style={{ marginBottom: "5%" }}>
-                Average cost of a full charge is{" "}
-                <Text h4 h4Style={{ fontFamily: "Inter-Bold" }}>
-                  ${(cost * 40).toFixed(2)} - $
-                  {(cost * 100).toFixed(2)}
-                </Text>{" "}
-                (40kwh - 100kwh)
+                Sorry! We are only able to provide electricity cost data to
+                locations in United States
               </Text>
-            </>
-          ) : (
-            <Text h4 h4Style={{ marginBottom: "5%" }}>
-              Sorry! We are only able to provide electricity cost data to locations in United
-              States
-            </Text>
-          )}
-          <Text h4>
-            Chargers near you are charging
-            <Text h4 h4Style={{ fontFamily: "Inter-Bold" }}>
-              {" "}
-              ${priceChargersNear}
-            </Text>
-          </Text>
-        </View>
+            )}
+            {chargersNear.length > 0 ? (
+              <>
+                <Text h4>
+                  Chargers near you are charging
+                  <Text h4 h4Style={{ fontFamily: "Inter-Bold" }}>
+                    {" "}
+                    ${priceChargersNear}
+                  </Text>
+                </Text>
+                <View
+                  style={{
+                    marginTop: "7%",
+                    flex: 1,
+                  }}
+                >
+                  <Text style={{ fontFamily: "Inter-Bold", fontSize: 17 }}>
+                    Chargers Near You
+                  </Text>
+                  <View style={styles.chargerExplorer}>
+                    {chargersNear.map((x, index) => (
+                      <View key={index} style={styles.chargerContainer}>
+                        <View>
+                          <Text>{x.location}</Text>
+                          <Text>{x.chargerType}</Text>
+                        </View>
+                        <Text>${parseInt(x.price).toFixed(2)}</Text>
+                      </View>
+                    ))}
+                  </View>
+                </View>
+              </>
+            ) : (
+              <Text h4>There are no chargers near you</Text>
+            )}
+          </DismissKeyboardView>
+        </ScrollView>
       ) : (
         <Text>Loading Data...</Text>
       )}
-    </DismissKeyboardView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     width: "95%",
-    height: "100%",
     display: "flex",
     justifyContent: "flex-start",
     alignItems: "flex-start",
+    flex: 1,
   },
   input: {
     width: "70%",
@@ -171,8 +222,21 @@ const styles = StyleSheet.create({
   },
   text: {
     display: "flex",
-    justifyContent: "center",
     flexDirection: "column",
     paddingLeft: "5%",
+    flex: 1,
+  },
+  chargerExplorer: {
+    marginTop: "3%",
+  },
+  chargerContainer: {
+    borderWidth: 1,
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    padding: "5%",
+    borderRadius: 10,
+    marginBottom: "5%",
+    justifyContent: "space-between",
   },
 });

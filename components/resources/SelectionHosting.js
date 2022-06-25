@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
   },
   container: {
     width: "90%",
-    height: "9%",
+    height: "10%",
     shadowOpacity: 0.3,
     shadowRadius: 5,
     shadowColor: "#000",

@@ -152,6 +152,7 @@ const styles = StyleSheet.create({
     width: "15%",
     height: "15%",
     marginBottom: "5%",
+    borderRadius: 50
   },
   optionContainer: {
     position: "absolute",

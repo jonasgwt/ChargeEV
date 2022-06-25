@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
   StyleSheet,
@@ -8,6 +8,7 @@ import {
 import { Text, Input, Button } from "@rneui/themed";
 import RNPickerSelect from "react-native-picker-select";
 import { DismissKeyboardView } from "../../resources/DismissKeyboardView";
+import { ScrollView } from "react-native-gesture-handler";
 
 export default function Address({
   country,
@@ -21,89 +22,144 @@ export default function Address({
   postalCode,
   setPostalCode,
 }) {
+  const [states, setStates] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const asyncFunc = async () => {
+      await getStates(country);
+    };
+    asyncFunc();
+  }, [country]);
+
+  async function getStates(countryCode) {
+    if (countryCode == "") {
+      setCity("");
+      return;
+    }
+    setLoading(true);
+    await fetch(
+      "https://battuta.medunes.net/api/region/" +
+        countryCode +
+        "/all/?key=848a8d354030b7e0ae7a3a18d9f828ef"
+    )
+      .catch((err) => console.log(err))
+      .then((response) => response.json())
+      .then((data) => {
+        let check = city == "";
+        setStates(
+          data.map((x) => {
+            check = check || x.region == city;
+            return {
+              label: x.region,
+              value: x.region,
+            };
+          })
+        );
+        if (!check) setCity("");
+      });
+    setLoading(false);
+  }
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
-      <DismissKeyboardView
+      <ScrollView
         style={{
           width: "100%",
           height: "100%",
           display: "flex",
-          alignItems: "center",
         }}
+        contentContainerStyle={{ alignItems: "center" }}
       >
-        <RNPickerSelect
-          onValueChange={setCountry}
-          placeholder={{
-            label: "Select your country",
-            value: "",
-          }}
-          value={country}
-          items={[{ label: "United States", value: "US" },
-            { label: "Singapore", value: "SG" }
-          ]}
-          style={{
-            ...pickerSelectStyles,
-          }}
-        />
-        <View style={{ padding: "2.5%" }} />
-        <RNPickerSelect
-          onValueChange={setCity}
-          value={city}
-          placeholder={{
-            label: "Select your city",
-            value: "",
-          }}
-          items={country == "US" ? [
-            { label: "San Jose", value: "San Jose" },
-            { label: "San Francisco", value: "San Francisco" },
-            { label: "Los Angeles", value: "Los Angeles" },
-            { label: "New York", value: "New York" },
-          ]: [{label: "Singapore", value: "Singapore"}]}
-          style={pickerSelectStyles}
-        />
-        <View style={{ padding: "2.5%" }} />
-        <Input
-          inputContainerStyle={styles.input}
-          containerStyle={{ width: "105%" }}
-          value={address}
-          textContentType="fullStreetAddress"
-          placeholder="Enter your address"
-          inputStyle={{ fontSize: 20, fontFamily: "Inter-Regular" }}
-          onChangeText={setAddress}
-        />
-        <View style={styles.addressContainer}>
+        <DismissKeyboardView>
+          <RNPickerSelect
+            onValueChange={async (input) => {
+              setCountry(input);
+              await getStates(input);
+            }}
+            placeholder={{
+              label: "Select your country",
+              value: "",
+            }}
+            value={country}
+            items={[
+              { label: "United States", value: "US" },
+              { label: "Singapore", value: "SG" },
+            ]}
+            style={{
+              ...pickerSelectStyles,
+            }}
+          />
+          <View style={{ padding: "2.5%" }} />
+          {loading ? (
+            <Input
+              inputContainerStyle={styles.input}
+              containerStyle={{ width: "105%", marginBottom: "-7.5%" }}
+              placeholder="Loading..."
+              inputStyle={{ fontSize: 20, fontFamily: "Inter-Regular" }}
+              disabled={true}
+            />
+          ) : (
+            <RNPickerSelect
+              onValueChange={setCity}
+              value={city}
+              placeholder={{
+                label: "Select your city",
+                value: "",
+              }}
+              items={
+                country == "SG"
+                  ? [{ label: "Singapore", value: "Singapore" }]
+                  : states
+              }
+              style={pickerSelectStyles}
+            />
+          )}
+          <View style={{ padding: "2.5%" }} />
           <Input
             inputContainerStyle={styles.input}
-            containerStyle={{ width: "52.5%" }}
-            value={unitNumber}
-            placeholder="Unit Number"
+            containerStyle={{ width: "105%" }}
+            value={address}
+            textContentType="fullStreetAddress"
+            placeholder="Enter your address"
             inputStyle={{ fontSize: 20, fontFamily: "Inter-Regular" }}
-            onChangeText={setUnitNumber}
+            onChangeText={setAddress}
           />
-          <Input
-            inputContainerStyle={styles.input}
-            containerStyle={{ width: "52.5%" }}
-            value={postalCode}
-            placeholder="Postal Code"
-            textContentType="postalCode"
-            keyboardType="number-pad"
-            inputStyle={{ fontSize: 20, fontFamily: "Inter-Regular" }}
-            onChangeText={setPostalCode}
-          />
-        </View>
-      </DismissKeyboardView>
+          <View style={styles.addressContainer}>
+            <Input
+              inputContainerStyle={styles.input}
+              containerStyle={{ width: "52.5%" }}
+              value={unitNumber}
+              placeholder="Unit Number"
+              inputStyle={{ fontSize: 20, fontFamily: "Inter-Regular" }}
+              onChangeText={setUnitNumber}
+            />
+            <Input
+              inputContainerStyle={styles.input}
+              containerStyle={{ width: "52.5%" }}
+              value={postalCode}
+              placeholder="Postal Code"
+              textContentType="postalCode"
+              keyboardType="number-pad"
+              inputStyle={{ fontSize: 20, fontFamily: "Inter-Regular" }}
+              onChangeText={setPostalCode}
+            />
+          </View>
+        </DismissKeyboardView>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }
 
 const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
-    width: "100%",
+    width: "95%",
     padding: "5%",
     borderColor: "#707070",
+    marginLeft: "2.5%",
     borderWidth: 1,
     fontFamily: "Inter-Regular",
     fontSize: 20,
@@ -118,11 +174,11 @@ const pickerSelectStyles = StyleSheet.create({
 const styles = StyleSheet.create({
   container: {
     width: "90%",
-    height: "100%",
     display: "flex",
     flexDirection: "column",
     justifyContent: "flex-start",
     alignItems: "center",
+    flex: 1,
   },
   input: {
     borderWidth: 1,
@@ -134,7 +190,6 @@ const styles = StyleSheet.create({
   addressContainer: {
     display: "flex",
     flexDirection: "row",
-    justifyContent: "center",
     alignContent: "center",
     width: "100%",
   },
