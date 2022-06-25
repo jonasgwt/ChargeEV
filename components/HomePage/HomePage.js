@@ -269,7 +269,7 @@ export default function Homepage({ navigation }) {
           </Text>
         </TouchableOpacity>
       </ScrollView>
-      <Text>Bottom</Text>
+        <Text style={{fontSize:20}}>⇊</Text>
     </SafeAreaView>
   );
 }
