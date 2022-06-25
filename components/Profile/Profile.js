@@ -96,7 +96,7 @@ export default function Profile({ navigation }) {
                 {authentication.currentUser.displayName}
               </Title>
               <Caption style={styles.caption}>
-                {authentication.currentUser.uid}
+                Friend of the environment
               </Caption>
             </View>
           </View>
