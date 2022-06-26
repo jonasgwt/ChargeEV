@@ -63,19 +63,21 @@ export default function InboxHomeScreen({ navigation }) {
     userAlertsTemp.sort((a, b) => a.priority < b.priority);
     setUserAlerts(userAlertsTemp);
     // Find noti for host
-    const hostAlerts = await getDocs(
-      query(
-        bookingAlertsRef,
-        where("host", "==", hostID),
-        where("showHost", "==", true)
-      )
-    );
-    const hostAlertsTemp = [];
-    hostAlerts.forEach((doc) =>
-      hostAlertsTemp.push({ ...doc.data(), id: doc.id })
-    );
-    hostAlertsTemp.sort((a, b) => a.priority < b.priority);
-    setHostAlerts(hostAlertsTemp);
+    if (hostID != undefined) {
+      const hostAlerts = await getDocs(
+        query(
+          bookingAlertsRef,
+          where("host", "==", hostID),
+          where("showHost", "==", true)
+        )
+      );
+      const hostAlertsTemp = [];
+      hostAlerts.forEach((doc) =>
+        hostAlertsTemp.push({ ...doc.data(), id: doc.id })
+      );
+      hostAlertsTemp.sort((a, b) => a.priority < b.priority);
+      setHostAlerts(hostAlertsTemp);
+    }
     setLoading(false);
   };
 
