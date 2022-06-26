@@ -160,7 +160,12 @@ export default function TrackUserLocation({ navigation, route }) {
               longitude: destination[1],
             }}
             title={address}
-          />
+          >
+            <Image
+                source={require("../../assets/marker/marker.png")}
+                style={{ height: 40, width: 40 }}
+            />
+            </Marker>
         ) : null}
 
         {!loading ? (
@@ -170,7 +175,12 @@ export default function TrackUserLocation({ navigation, route }) {
               longitude: userLocation[1],
             }}
             title="User Location"
-          />
+          >
+            <Image
+                source={require("../../assets/marker/currLocation.png")}
+                style={{ height: 40, width: 40 }}
+            />
+            </Marker>
         ) : null}
 
         {!loading ? (
@@ -293,7 +303,7 @@ const styles = StyleSheet.create({
     height: "5%",
     backgroundColor: "white",
     left: "5%",
-    borderRadius: "100%",
+    borderRadius: 50,
     shadowOpacity: 0.8,
     shadowOffset: { width: 0, height: 3 },
     display: "flex",
@@ -306,7 +316,7 @@ const styles = StyleSheet.create({
     height: "5%",
     backgroundColor: "white",
     right: "17%",
-    borderRadius: "100%",
+    borderRadius: 50,
     shadowOpacity: 0.8,
     shadowOffset: { width: 0, height: 3 },
     display: "flex",
