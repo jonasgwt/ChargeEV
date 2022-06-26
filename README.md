@@ -60,6 +60,8 @@
     <li>
       <a href="#getting-started">Getting Started</a>
     </li>
+    <li><a href="#stories">Stories</a></li>
+    <li><a href="#competitor">Competitor</a></li>
     <li><a href="#planning">Planning</a></li>
     <li><a href="#backend">Backend</a></li>
     <li><a href="#feature">Feature</a></li>
@@ -154,7 +156,29 @@ Contact Mila @MilaTayJK (Telegram) should you have any issues
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
+## Stories
 
+### User Stories
+
+1. Hosts can provide EV chargers at fixed prices (the app will provide an estimated cost). The host will seek to lend their chargers when they are not using them.
+
+2. Users can find and select their preferred locations and suitable chargers within the area. As a user, I might be unable to find chargers near me, especially if there is no well-developed EV network in my country. 
+
+3. As administrators, we will seek to reduce predatory behaviour such as price gouging. This can be done by informing users if they are overpaying.
+
+## Competitor 
+
+### Current competition
+* We have not identified an app that implements the same ideas as ours.
+* There are apps that allow the locating of chargers in general, we are aware of such apps. We have allowed for the non ChargeEV chargers to be shown as well as this will attract more users to the app
+
+### Plans
+* One drawback is that our app requires sign-ups which could hold back potential users
+- A way is to create a mode which allows for non signed up users to use the app, however CRM methods will have to be thought off to encourage them to sign up 
+* We have an advantage whichout many competitors, this also means the market share is likely to be small. There will have to be greater drive to increase potential market. 
+
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- USAGE EXAMPLES -->
 ## Planning
