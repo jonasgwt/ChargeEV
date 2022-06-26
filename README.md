@@ -1,11 +1,5 @@
 <div id="top"></div>
-<!--
-*** Thanks for checking out the Best-README-Template. If you have a suggestion
-*** that would make this better, please fork the repo and create a pull request
-*** or simply open an issue with the tag "enhancement".
-*** Don't forget to give the project a star!
-*** Thanks again! Now go create something AMAZING! :D
--->
+
 
 
 
@@ -29,6 +23,10 @@
   <a href="https://github.com/github_username/repo_name">
     <img src="logo_nobg (1).png" alt="Logo" width="280" height="90">
   </a>
+  <p float="center">
+  <img src="photo/intro.GIF" width="20%"/>
+  </p>
+  
 
 <h3 align="center">ChargeEV</h3>
 
@@ -66,7 +64,7 @@
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
-    <li><a href="#usage">Usage</a></li>
+    <li><a href="#planning">Planning</a></li>
     <li><a href="#backend">Backend</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#feature">Feature</a></li>
@@ -83,7 +81,7 @@
 
 <div align="center">
   <a href="">
-    <img src="photo/poster.png" width="70%" height="90%">
+    <img src="photo/ChargeEV MS2 Poster-1.png" width="70%" height="90%">
   </a>
 </div>
 
@@ -108,7 +106,7 @@ their chargers and rent them out. With outdoor chargers costing up to $15000, so
 users might be unwilling to install them. Additionally, in rural areas, there might be a lack
 of charging stations, and thus users will be able to share.
 
-### Key Features
+## Key Features
 
 * ChargEV will consist of two sections, GetACharge and GiveACharge.
 * GetACharge will consist of users looking to charge their EVs. Using their current
@@ -131,6 +129,8 @@ need to charge. Users will tentatively make payments through a QR code.
 * [Firebase](https://firebase.google.com/)
 * [Javascript](https://www.javascript.com/)
 * [Maps Api](https://developers.google.com/maps)
+* [Python](https://www.python.org/)
+* [Heroku](https://dashboard.heroku.com/apps)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -177,11 +177,8 @@ Download [here](https://drive.google.com/drive/folders/1GC19YGHUu1QHnV6HoAdkamiN
 
 
 <!-- USAGE EXAMPLES -->
-## Usage
+## Planning
 
-Completed:
-<li> Log-in and welcome page</li>
-<li> Basic navigation and lock-in feature</li>
 
 ### Screenshots and Figma Mockups
 
@@ -190,7 +187,7 @@ Completed:
 
 #### Log-in and Charging map view
 <p float="left">
-  <img src="photo/login.PNG" width="60%" />
+  <img src="photo/login.PNG" width="30%" />
   <img src="photo/chargemap.PNG" width="30%" /> 
 </p>
 
@@ -215,7 +212,7 @@ Completed:
 
 <div align="center">
   <a href="">
-    <img src="photo/chargesetup.drawio.png" width="30%" >
+    <img src="photo/chargesetup.drawio.png" width="10%" >
   </a>
 </div>
 
@@ -226,7 +223,7 @@ Completed:
 
 ### User flow
 <p float="left">
-  <img src="photo/PF.png" />
+  <img src="photo/PF.png" width="20%"/>
 </p>
 
 <!-- BACKEND -->
@@ -234,21 +231,26 @@ Completed:
 
 ### Database structure
 <p float="left">
-  <img src="photo/QuickDBD-Free Diagram.png" width="60%" />
+  <img src="photo/QuickDBD-Free Diagram.png" width="25%" />
 </p>
 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
+
 <!-- FEATURE -->
+
 ## Feature 
 
 ### Main Feature List 
 
 #### FindACharge
 This enables drivers to find EVchargers that are near them. Chargers may not be on ChargeEV platform.
+
+On Platform:
 <p float="left">
   <img src="photo/onplatform.GIF" width="30%" height="30%" />
 </p>
+Off Platform (No booking function)
 <p float="right">
   <img src="photo/offplatform.GIF" width="30%" height="30%" />
 </p>
