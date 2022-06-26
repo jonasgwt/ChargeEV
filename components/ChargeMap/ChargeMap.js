@@ -523,7 +523,7 @@ export default function ChargeMap({ navigation }) {
       heading: origin[2],
       zoom: -origin[3] * 0.1 + 18,
     };
-    if (mapRef != null) mapRef.current.animateCamera(camera, {});
+    if (mapRef != null) mapRef.current.animateCamera(camera, {duration: 500});
   };
 
   // Fits elements in map to viewport

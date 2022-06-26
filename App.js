@@ -28,6 +28,7 @@ import ProfileHomeScreen from "./components/Profile/Profile";
 import { LogBox } from "react-native";
 import HostAddPayment from "./components/Host/HostAddPayment";
 import HostWelcome from "./components/Host/HostWelcome";
+import { StatusBar } from 'expo-status-bar';
 
 LogBox.ignoreLogs([
   "ViewPropTypes will be removed",
@@ -156,6 +157,7 @@ export default function App() {
   return (
     <ThemeProvider theme={theme}>
       <NavigationContainer style={styles.container}>
+        <StatusBar style="dark" />
         <Stack.Navigator
           screenOptions={{ headerShown: false }}
           style={styles.container}
