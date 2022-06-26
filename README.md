@@ -69,7 +69,7 @@
     <li><a href="#usage">Usage</a></li>
     <li><a href="#backend">Backend</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#license">License</a></li>
+    <li><a href="#feature">Feature</a></li>
     <li><a href="#contact">Contact</a></li>
     <li><a href="#other">Others</a></li>
   </ol>
@@ -239,6 +239,20 @@ Completed:
 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
+<!-- FEATURE -->
+## Feature 
+
+### Main Feature List 
+
+#### FindACharge
+This enables drivers to find EVchargers that are near them. Chargers may not be on ChargeEV platform.
+<p float="left">
+  <img src="photo/onplatform.GIF" width="30%" height="30%" />
+</p>
+<p float="right">
+  <img src="photo/offplatform.GIF" width="30%" height="30%" />
+</p>
+
 
 <!-- ROADMAP -->
 ## Roadmap
