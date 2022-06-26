@@ -21,7 +21,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/github_username/repo_name">
-    <img src="logo_nobg (1).png" alt="Logo" width="280" height="90">
+    <img src="photo/logo_nobg_white.png" alt="Logo" width="280" height="90">
   </a>
   <p float="center">
   <img src="photo/intro.GIF" width="20%"/>
