@@ -80,7 +80,7 @@
 
 <div align="center">
   <a href="">
-    <img src="photo/ChargeEVMS2 Poster.png" width="100%" height="100%">
+    <img src="photo/ChargeEVMS2Poster.png" width="100%" height="100%">
   </a>
 </div>
 
