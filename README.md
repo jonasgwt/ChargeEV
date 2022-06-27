@@ -154,7 +154,7 @@ Contact Mila @MilaTayJK (Telegram) should you have any issues
   <img src="photo/setup.GIF" width="20%" />
 </p>
 
-**Note:** Expo Go does not allow for background location tracking.
+**Note:** Due to the limited bandwidth we have for firebase, we have temprarily disabled the displaying of some images for testing
 
 Alternatively, you can also test on iPhone Simulator <a href="https://drive.google.com/drive/folders/1GC19YGHUu1QHnV6HoAdkamiN6RMGNjQn?usp=sharing">here</a>
 
