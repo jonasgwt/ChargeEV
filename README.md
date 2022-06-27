@@ -145,7 +145,7 @@ a charger
 <!-- GETTING STARTED -->
 ## Getting Started
 
-The App has only been optimised for IOS, Andriod is being considered
+The App has **only been optimised for IOS**, Andriod is being considered.
 To start, download the ExpoGo app and scan the following QR code (In Camera App)
 Contact Mila @MilaTayJK (Telegram) should you have any issues 
 
@@ -153,6 +153,10 @@ Contact Mila @MilaTayJK (Telegram) should you have any issues
   <img src="photo/ms2png.jpeg" width="20%" />
   <img src="photo/setup.GIF" width="20%" />
 </p>
+
+**Note:** Expo Go does not allow for background location tracking.
+
+Alternatively, you can also test on iPhone Simulator <a href="https://drive.google.com/drive/folders/1GC19YGHUu1QHnV6HoAdkamiN6RMGNjQn?usp=sharing">here</a>
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
