@@ -29,6 +29,7 @@ import { LogBox } from "react-native";
 import HostAddPayment from "./components/Host/HostAddPayment";
 import HostWelcome from "./components/Host/HostWelcome";
 import { StatusBar } from 'expo-status-bar';
+import EditLocation from "./components/Host/EditLocation"
 
 LogBox.ignoreLogs([
   "ViewPropTypes will be removed",
@@ -180,6 +181,7 @@ export default function App() {
           {/*Hosts*/}
           <Stack.Screen name="HostAddLocation" component={HostAddLocation} />
           <Stack.Screen name="HostAddPayment" component={HostAddPayment} />
+          <Stack.Screen name="EditLocation" component={EditLocation} />
           <Stack.Screen
             name="HostWelcome"
             component={HostWelcome}

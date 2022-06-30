@@ -5,7 +5,7 @@ import {
   StyleSheet,
   Animated,
   TouchableOpacity,
-  Image
+  Image,
 } from "react-native";
 import { Icon } from "@rneui/themed";
 
@@ -15,6 +15,7 @@ export default function SelectionHosting({
   selected,
   setSelected,
   imageName,
+  height,
 }) {
   // Animations
   const selectionAnim = useRef(new Animated.Value(0)).current;
@@ -100,7 +101,10 @@ export default function SelectionHosting({
     <TouchableOpacity
       onPress={select}
       activeOpacity={1}
-      style={[styles.container, { shadowOpacity: selectionAnim }]}
+      style={[
+        styles.container,
+        { shadowOpacity: selectionAnim, height: height ? height : "10%" },
+      ]}
     >
       <Animated.View
         style={[styles.button, { backgroundColor: bgSelectionAnim }]}
@@ -126,7 +130,9 @@ export default function SelectionHosting({
               <Icon name={iconName} size={30} />
             </Animated.View>
           </>
-        ) : <Image source={imageName} style={styles.image} />}
+        ) : (
+          <Image source={imageName} style={styles.image} />
+        )}
       </Animated.View>
     </TouchableOpacity>
   );
@@ -146,7 +152,6 @@ const styles = StyleSheet.create({
   },
   container: {
     width: "90%",
-    height: "10%",
     shadowOpacity: 0.3,
     shadowRadius: 5,
     shadowColor: "#000",
@@ -157,6 +162,6 @@ const styles = StyleSheet.create({
     height: "150%",
     width: "25%",
     position: "absolute",
-    right: 0
-  }
+    right: 0,
+  },
 });

@@ -5,6 +5,7 @@ import HostAddLocation from "./HostAddLocation";
 import HostPaymentInformation from "./HostPaymentInformation";
 import { doc, getDoc } from "firebase/firestore";
 import { authentication, firestore } from "../../firebase/firebase-config";
+import ViewLocations from "./ViewLocations";
 
 const Host = createNativeStackNavigator();
 
@@ -33,6 +34,7 @@ export default function HostNavigator({ navigation }) {
         name="HostPaymentInformation"
         component={HostPaymentInformation}
       />
+      <Host.Screen name="ViewLocations" component={ViewLocations} />
     </Host.Navigator>
   );
 }

@@ -8,6 +8,7 @@ import {
 
 // Upload Image
 export const uploadImage = async (image) => {
+  console.log("uploading image")
   if (image == null) return null;
   const uploadUri = image;
   let filename = uploadUri.substring(uploadUri.lastIndexOf("/") + 1);

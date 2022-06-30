@@ -16,8 +16,8 @@ import Selection from "../resources/Selection";
 export default function HostHomeScreen({ navigation }) {
   const [name, setName] = useState("");
 
-  const log = () => {
-    console.log("clicked");
+  const userEditLocation = () => {
+    navigation.navigate("ViewLocations")
   };
 
   // Get first name of the host
@@ -90,7 +90,7 @@ export default function HostHomeScreen({ navigation }) {
         <Selection
           title="View and Edit Hosted Locations"
           logoName="location-pin"
-          onPress={log}
+          onPress={userEditLocation}
         />
         <Selection
           title="Add New Location"
