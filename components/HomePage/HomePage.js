@@ -7,11 +7,10 @@ import { Avatar, Title, Caption, TouchableRipple } from "react-native-paper";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import * as Linking from "expo-linking";
 import AnimatedLottieView from "lottie-react-native";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function Homepage({ navigation }) {
   const [userData, setUserData] = useState(null);
-  const [news, setNews] = useState([]);
-  const [loadingNews, setLoadingNews] = useState(true);
 
   const getUser = async () => {
     const docRef = doc(firestore, "users", authentication.currentUser.uid);
@@ -30,22 +29,6 @@ export default function Homepage({ navigation }) {
     });
     return unsubscribe;
   }, [navigation]);
-
-  const getNews = async () => {
-    setLoadingNews(true);
-    await fetch(
-      "https://newsapi.org/v2/everything?q=electric%20cars&apiKey=2d9f2e2251bc45e2a8b0470e53ec11ab"
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        setNews(data.articles.splice(0, 10));
-      })
-      .then(() => setLoadingNews(false));
-  };
-
-  useEffect(() => {
-    getNews();
-  }, []);
 
   return (
     <SafeAreaView>
@@ -68,7 +51,6 @@ export default function Homepage({ navigation }) {
           imageStyle={{ borderRadius: 15 }}
         />
       </View>
-
       <View styles={{ marginTop: 20 }}>
         <View style={{ marginTop: 10 }}>
           <Text
@@ -179,87 +161,107 @@ export default function Homepage({ navigation }) {
         style={{
           marginTop: 10,
         }}
-        contentContainerStyle={{ paddingBottom: "100%" }}
+        contentContainerStyle={{ paddingBottom: "90%" }}
       >
-        {loadingNews ? (
-          <View style={{ marginTop: "-15%" }}>
-            <AnimatedLottieView
-              autoPlay
-              style={{
-                width: 300,
-                height: 300,
-              }}
-              source={require("../../assets/animations/findmessages.json")}
+        {/* Find Chargers */}
+        <TouchableOpacity
+          style={styles.welcome}
+          onPress={() => {
+            navigation.navigate("ChargeMap");
+          }}
+        >
+          <ImageBackground
+            source={{
+              url: "https://motoristprod.s3.amazonaws.com/uploads/redactor_rails/picture/data/6125/ev-charging-stations-in-shopping-malls-singapore-featured.jpeg",
+            }}
+            style={{ height: 175, width: "100%", marginLeft: "2.5%" }}
+            imageStyle={{ borderRadius: 20 }}
+          >
+            <LinearGradient
+              style={styles.overlay}
+              colors={["#ffffff", "#000000"]}
+              start={{ x: 0, y: 1.25 }}
+              end={{ x: 0, y: 0 }}
             />
             <Text
-              h2
-              h2Style={{ textAlign: "center" }}
-              style={{ marginTop: "-10%" }}
-            >
-              Getting News...
-            </Text>
-          </View>
-        ) : news.length > 0 ? (
-          <>
-            {news.map((x, index) => {
-              return (
-                <TouchableOpacity
-                  style={styles.newsContainer}
-                  key={index}
-                  onPress={() => Linking.openURL(x.url)}
-                >
-                  <Image
-                    source={{ url: x.urlToImage }}
-                    style={{ width: 150, height: 100, borderRadius: 10 }}
-                  />
-                  <View
-                    style={{ width: "50%", maxHeight: 100, overflow: "hidden" }}
-                  >
-                    <Text
-                      style={{
-                        fontFamily: "Inter-Bold",
-                        fontSize: 17,
-                      }}
-                      numberOfLines={2}
-                      ellipsizeMode="tail"
-                    >
-                      {x.title}
-                    </Text>
-                    <Text numberOfLines={3} ellipsizeMode="tail" style={{fontSize: 15}}>
-                      {x.description}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              );
-            })}
-            <Text
-              style={{ textAlign: "center", color: "gray", marginTop: "2%" }}
-            >
-              Data from newsapi.org
-            </Text>
-          </>
-        ) : !loadingNews ? (
-          <View style={{ height: "80%", alignItems: "center" }}>
-            <AnimatedLottieView
-              autoPlay
               style={{
-                width: 150,
-                height: 150,
+                textAlign: "center",
+                color: "white",
+                marginTop: "2%",
+                fontFamily: "Inter-Bold",
+                fontSize: 20,
               }}
-              source={require("../../assets/animations/noresults.json")}
+            >
+              Find Chargers
+            </Text>
+          </ImageBackground>
+        </TouchableOpacity>
+        {/* Hosting */}
+        <TouchableOpacity
+          style={styles.welcome}
+          onPress={() => {
+            navigation.navigate("Host");
+          }}
+        >
+          <ImageBackground
+            source={{
+              url: "https://cleantechnica.com/files/2018/03/Toyota-Prius-Prime-garage-plugging-in.jpg",
+            }}
+            style={{ height: 175, width: "100%", marginLeft: "2.5%" }}
+            imageStyle={{ borderRadius: 20 }}
+          >
+            <LinearGradient
+              style={styles.overlay}
+              colors={["#ffffff", "#000000"]}
+              start={{ x: 0, y: 1.25 }}
+              end={{ x: 0, y: 0 }}
             />
             <Text
-              h2
-              h2Style={{ textAlign: "center", fontFamily: "Inter-Bold" }}
-              style={{ marginTop: "10%" }}
+              style={{
+                textAlign: "center",
+                color: "white",
+                marginTop: "2%",
+                fontFamily: "Inter-Bold",
+                fontSize: 20,
+              }}
             >
-              Uh oh!
+              Hosting
             </Text>
-            <Text style={{ textAlign: "center" }}>
-              We are unable to get any news right now.
+          </ImageBackground>
+        </TouchableOpacity>
+        {/* EV News */}
+        <TouchableOpacity
+          style={styles.welcome}
+          onPress={() => {
+            navigation.navigate("News");
+          }}
+        >
+          <ImageBackground
+            source={{
+              url: "https://images.mktw.net/im-309602?width=1280&size=1.33333333",
+            }}
+            style={{ height: 175, width: "100%", marginLeft: "2.5%" }}
+            imageStyle={{ borderRadius: 20 }}
+          >
+            <LinearGradient
+              style={styles.overlay}
+              colors={["#ffffff", "#000000"]}
+              start={{ x: 0, y: 1.25 }}
+              end={{ x: 0, y: 0 }}
+            />
+            <Text
+              style={{
+                textAlign: "center",
+                color: "white",
+                marginTop: "2%",
+                fontFamily: "Inter-Bold",
+                fontSize: 20,
+              }}
+            >
+              EV News
             </Text>
-          </View>
-        ) : null}
+          </ImageBackground>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -269,19 +271,17 @@ const styles = StyleSheet.create({
   container: {
     marginTop: 20,
   },
+  chargeMap: {
+    borderWidth: 1,
+  },
   horiwelcome: {
     marginRight: 15,
     width: "100%",
-    alignItems: "center"
-  },
-
-  welcome: {
-    textAlign: "center",
-    fontSize: 20,
-    borderRadius: 20,
-    alignContent: "center",
     alignItems: "center",
+  },
+  welcome: {
     marginBottom: 10,
+    width: "95%",
   },
   container: {
     flex: 1,
@@ -303,14 +303,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     margin: "5%",
   },
-  newsContainer: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    alignItems: "center",
-    width: "95%",
-    margin: "2%",
-    borderBottomWidth: 0.5,
-    paddingBottom: "2%",
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 10,
+    opacity: 0.5,
   },
 });

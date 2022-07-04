@@ -29,7 +29,8 @@ import { LogBox } from "react-native";
 import HostAddPayment from "./components/Host/HostAddPayment";
 import HostWelcome from "./components/Host/HostWelcome";
 import { StatusBar } from 'expo-status-bar';
-import EditLocation from "./components/Host/EditLocation"
+import EditLocation from "./components/Host/EditLocation";
+import EVNews from "./components/EVNews"
 
 LogBox.ignoreLogs([
   "ViewPropTypes will be removed",
@@ -208,6 +209,9 @@ export default function App() {
             options={{ gestureEnabled: false }}
           />
           <Stack.Screen name="Ratings" component={Ratings} />
+
+          {/* EV News*/}
+          <Stack.Screen name="News" component={EVNews} options={{headerShown : true}} />
         </Stack.Navigator>
       </NavigationContainer>
     </ThemeProvider>
