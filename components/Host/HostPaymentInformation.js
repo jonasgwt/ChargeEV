@@ -64,13 +64,9 @@ export default function HostPaymentInformation({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text h1 h1Style={{ fontSize: 30, fontFamily: "Inter-Bold" }}>
-        Payment Details
-      </Text>
-      <Divider style={{ width: "100%", margin: 20 }} color="black" />
       {loading ? (
         <View
-          style={{ height: "80%", display: "flex", justifyContent: "center" }}
+          style={{ height: "100%", display: "flex", justifyContent: "center" }}
         >
           <AnimatedLottieView
             autoPlay
@@ -186,7 +182,6 @@ const styles = StyleSheet.create({
     flex: 1,
     display: "flex",
     justifyContent: "flex-start",
-    marginTop: "15%",
     alignItems: "center",
     margin: "5%",
   },

@@ -31,10 +31,15 @@ export default function HostNavigator({ navigation }) {
     >
       <Host.Screen name="HostHomeScreen" component={HostHomeScreen} />
       <Host.Screen
-        name="HostPaymentInformation"
+        name="Payment Information"
         component={HostPaymentInformation}
+        options={{
+            headerShown: true,
+          }}
       />
-      <Host.Screen name="ViewLocations" component={ViewLocations} />
+      <Host.Screen name="View Locations" component={ViewLocations} options={{
+            headerShown: true,
+          }}/>
     </Host.Navigator>
   );
 }

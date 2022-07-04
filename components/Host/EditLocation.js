@@ -11,7 +11,14 @@ import {
 import { Button, Icon, Input, Text } from "@rneui/themed";
 import { StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { doc, GeoPoint, getDoc, updateDoc } from "firebase/firestore";
+import {
+  arrayRemove,
+  deleteDoc,
+  doc,
+  GeoPoint,
+  getDoc,
+  updateDoc,
+} from "firebase/firestore";
 import { firestore, googleMapsAPIKey } from "../../firebase/firebase-config";
 import AnimatedLottieView from "lottie-react-native";
 import RNPickerSelect from "react-native-picker-select";
@@ -26,7 +33,7 @@ import { geohashForLocation } from "geofire-common";
 import * as Location from "expo-location";
 
 export default function EditLocation({ navigation, route }) {
-  const { id, currImage, currAddress } = route.params;
+  const { id, currImage, currAddress, hostID } = route.params;
   const [loading, setLoading] = useState(false);
   const [housingType, setHousingType] = useState("");
   const [country, setCountry] = useState("");
@@ -47,6 +54,7 @@ export default function EditLocation({ navigation, route }) {
   const [placeID, setPlaceID] = useState("");
   const [loadingSave, setLoadingSave] = useState(false);
   const isMounted = useRef(false);
+  const [loadingDelete, setLoadingDelete] = useState(false);
 
   // make a reqeust to api to get all the states from a given country
   async function getStates(countryCode) {
@@ -263,7 +271,7 @@ export default function EditLocation({ navigation, route }) {
       address: address,
       chargerType: chargerType,
       city: city,
-      costPerCharge: costPerCharge,
+      costPerCharge: parseInt(costPerCharge).toFixed(2),
       country: country,
       housingType: housingType,
       locationHash: locationHash,
@@ -277,6 +285,16 @@ export default function EditLocation({ navigation, route }) {
       await updateDoc(doc(firestore, "HostedLocations", id), {
         coords: new GeoPoint(coords[0], coords[1]),
       });
+  };
+
+  const deleteLocation = async () => {
+    setLoadingDelete(true);
+    await deleteDoc(doc(firestore, "HostedLocations", id));
+    await updateDoc(doc(firestore, "Host", hostID), {
+      locations: arrayRemove(id),
+    });
+    setLoadingDelete(false);
+    navigation.navigate("View Locations");
   };
 
   return (
@@ -521,10 +539,37 @@ export default function EditLocation({ navigation, route }) {
           </View>
           <Button
             title="Save Changes"
-            containerStyle={{ width: "75%", alignSelf: "center" }}
+            containerStyle={{ alignSelf: "center", width: "60%" }}
             onPress={handleChange}
             loading={loadingSave}
-          />
+            buttonStyle={{
+              justifyContent: "space-around",
+            }}
+          >
+            <Icon name="done" color="white" />
+            <Text h3 h3Style={{ color: "white" }}>
+              Save Changes
+            </Text>
+          </Button>
+          <Button
+            containerStyle={{
+              alignSelf: "center",
+              marginTop: "5%",
+              width: "60%",
+            }}
+            buttonStyle={{
+              backgroundColor: "#f24660",
+
+              justifyContent: "space-around",
+            }}
+            onPress={deleteLocation}
+            loading={loadingDelete}
+          >
+            <Icon name="cancel" color="white" />
+            <Text h3 h3Style={{ color: "white" }}>
+              Delete Location
+            </Text>
+          </Button>
         </KeyboardAwareScrollView>
       )}
     </DismissKeyboardView>

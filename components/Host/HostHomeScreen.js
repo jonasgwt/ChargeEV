@@ -17,7 +17,7 @@ export default function HostHomeScreen({ navigation }) {
   const [name, setName] = useState("");
 
   const userEditLocation = () => {
-    navigation.navigate("ViewLocations")
+    navigation.navigate("View Locations")
   };
 
   // Get first name of the host
@@ -73,7 +73,7 @@ export default function HostHomeScreen({ navigation }) {
           title="Manage Payment Information"
           logoName="wallet"
           logoType="entypo"
-          onPress={() => navigation.navigate("HostPaymentInformation")}
+          onPress={() => navigation.navigate("Payment Information")}
         />
         <Text
           h2

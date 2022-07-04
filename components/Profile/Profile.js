@@ -202,6 +202,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     marginBottom: 10,
+    alignItems: "center"
   },
   infoBoxWrapper: {
     borderBottomColor: "#dddddd",

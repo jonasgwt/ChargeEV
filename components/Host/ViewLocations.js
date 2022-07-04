@@ -16,6 +16,7 @@ import AnimatedLottieView from "lottie-react-native";
 
 export default function ViewLocations({ navigation }) {
   const [loading, setLoading] = useState(false);
+  const [hostID, setHostID] = useState("");
   const [locations, setLocations] = useState([]);
 
   const getLocations = async () => {
@@ -23,6 +24,7 @@ export default function ViewLocations({ navigation }) {
     const userDoc = await getDoc(
       doc(firestore, "users", authentication.currentUser.uid)
     );
+    setHostID(userDoc.data().hostID);
     const hostDoc = await getDoc(doc(firestore, "Host", userDoc.data().hostID));
     const temp = hostDoc.data().locations;
     Promise.all(
@@ -46,15 +48,16 @@ export default function ViewLocations({ navigation }) {
   }, [navigation]);
 
   const editLocation = (id, image, address) => {
-    navigation.navigate("EditLocation", {id:id, currImage:image, currAddress: address})
+    navigation.navigate("EditLocation", {
+      id: id,
+      currImage: image,
+      currAddress: address,
+      hostID: hostID,
+    });
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text h1 h1Style={{ fontSize: 30, fontFamily: "Inter-Bold" }}>
-        View Locations
-      </Text>
-      <Divider style={{ width: "100%", margin: 20 }} color="black" />
       <ScrollView
         style={styles.scrollContainer}
         contentContainerStyle={{ alignItems: "center" }}
@@ -150,7 +153,6 @@ const styles = StyleSheet.create({
     flex: 1,
     display: "flex",
     justifyContent: "flex-start",
-    marginTop: "15%",
     alignItems: "center",
     margin: "5%",
   },

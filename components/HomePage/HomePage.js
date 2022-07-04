@@ -1,22 +1,17 @@
 import { React, useState, useEffect } from "react";
 import { SafeAreaView, StyleSheet, View, ImageBackground } from "react-native";
 import { Text, Button, Divider, Image } from "@rneui/themed";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { signOut } from "firebase/auth";
 import { authentication, firestore } from "../../firebase/firebase-config";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { Avatar, Title, Caption, TouchableRipple } from "react-native-paper";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
-import Profile from "../Profile/Profile";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import ChargeMap from "../ChargeMap/ChargeMap";
 import * as Linking from "expo-linking";
-import { Link } from "react-router-dom";
+import AnimatedLottieView from "lottie-react-native";
 
 export default function Homepage({ navigation }) {
   const [userData, setUserData] = useState(null);
-  const name = "";
-  var cache = {};
+  const [news, setNews] = useState([]);
+  const [loadingNews, setLoadingNews] = useState(true);
 
   const getUser = async () => {
     const docRef = doc(firestore, "users", authentication.currentUser.uid);
@@ -30,11 +25,27 @@ export default function Homepage({ navigation }) {
   };
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener("focus", () => {
-      getUser();
+    const unsubscribe = navigation.addListener("focus", async () => {
+      await getUser();
     });
     return unsubscribe;
   }, [navigation]);
+
+  const getNews = async () => {
+    setLoadingNews(true);
+    await fetch(
+      "https://newsapi.org/v2/everything?q=electric%20cars&apiKey=2d9f2e2251bc45e2a8b0470e53ec11ab"
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        setNews(data.articles.splice(0, 10));
+      })
+      .then(() => setLoadingNews(false));
+  };
+
+  useEffect(() => {
+    getNews();
+  }, []);
 
   return (
     <SafeAreaView>
@@ -56,13 +67,6 @@ export default function Homepage({ navigation }) {
           size={100}
           imageStyle={{ borderRadius: 15 }}
         />
-        {/* <View style={{marginLeft: 20}}>
-            <Title style={[styles.title, {
-              marginTop:15,
-              marginBottom: 5,
-            }]}>{authentication.currentUser.displayName}</Title>
-            <Caption style={styles.caption}>{authentication.currentUser.uid}</Caption>
-          </View> */}
       </View>
 
       <View styles={{ marginTop: 20 }}>
@@ -90,65 +94,41 @@ export default function Homepage({ navigation }) {
             Need A Charge?
           </Text>
         </View>
-        <Divider style={{ width: "100%", margin: "2%" }} color="black" />
+        <Divider style={{ width: "95%", margin: "2%" }} color="black" />
         <ScrollView
           horizontal={true}
           showsHorizontalScrollIndicator={false}
           style={{
             marginTop: 10,
-            height: 100,
+            marginLeft: "2%",
           }}
         >
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate("Profile");
+              navigation.navigate("ChargeMap");
             }}
           >
             <View style={styles.horiwelcome}>
-              <ImageBackground
-                source={require("./Icons/ProfileIcon.png")}
-                style={{ width: "100%", height: "100%", borderRadius: 30 }}
-              >
-                <View
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <Text></Text>
-                </View>
-              </ImageBackground>
+              <Image
+                source={require("./Icons/charger.png")}
+                style={{ width: 70, height: 70, borderRadius: 30 }}
+              />
+              <View style={{ padding: "2%" }}></View>
+              <Text style={{ textAlign: "center" }}>Charge Map</Text>
             </View>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              Linking.openURL("https://t.me/ChargeEVHelpBot");
+              navigation.navigate("Host");
             }}
           >
             <View style={styles.horiwelcome}>
-              <ImageBackground
-                source={require("./Icons/support.png")}
-                style={{ width: "100%", height: "100%", borderRadius: 30 }}
-              >
-                <View
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <Text></Text>
-                </View>
-              </ImageBackground>
+              <Image
+                source={require("./Icons/host.png")}
+                style={{ width: 70, height: 70, borderRadius: 30 }}
+              />
+              <View style={{ padding: "2%" }} />
+              <Text style={{ textAlign: "center" }}>Host</Text>
             </View>
           </TouchableOpacity>
           <TouchableOpacity
@@ -157,119 +137,130 @@ export default function Homepage({ navigation }) {
             }}
           >
             <View style={styles.horiwelcome}>
-              <ImageBackground
-                source={require("./Icons/mailicon.png")}
-                style={{ width: "100%", height: "100%", borderRadius: 30 }}
-              >
-                <View
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <Text></Text>
-                </View>
-              </ImageBackground>
+              <Image
+                source={require("./Icons/inbox.png")}
+                style={{ width: 70, height: 70, borderRadius: 30 }}
+              />
+              <View style={{ padding: "2%" }} />
+              <Text style={{ textAlign: "center" }}>Inbox</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.welcome} onPress={() => {}}>
-            <Text style={{ alignContent: "center", textAlign: "center" }}>
-              Placeholder 1
-            </Text>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("Profile");
+            }}
+          >
+            <View style={styles.horiwelcome}>
+              <Image
+                source={require("./Icons/profile.png")}
+                style={{ width: 70, height: 70, borderRadius: 30 }}
+              />
+              <View style={{ padding: "2%" }} />
+              <Text style={{ textAlign: "center" }}>Profile</Text>
+            </View>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.welcome} onPress={() => {}}>
-            <Text style={{ alignContent: "center", textAlign: "center" }}>
-              Placeholder 1
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.welcome} onPress={() => {}}>
-            <Text style={{ alignContent: "center", textAlign: "center" }}>
-              Placeholder 1
-            </Text>
+          <TouchableOpacity
+            onPress={() => {
+              Linking.openURL("https://t.me/ChargeEVHelpBot");
+            }}
+          >
+            <View style={styles.horiwelcome}>
+              <Image
+                source={require("./Icons/support.png")}
+                style={{ width: 70, height: 70, borderRadius: 30 }}
+              />
+              <Text style={{ textAlign: "center" }}>Support</Text>
+            </View>
           </TouchableOpacity>
         </ScrollView>
       </View>
       <ScrollView
         showsVerticalScrollIndicator={true}
         style={{
-          height: "48%",
           marginTop: 10,
         }}
+        contentContainerStyle={{ paddingBottom: "100%" }}
       >
-        <TouchableOpacity
-          style={styles.welcome}
-          onPress={() => {
-            navigation.navigate("ChargeMap");
-          }}
-        >
-          <ImageBackground
-            source={require("./Icons/chargemap.png")}
-            style={{ height: 400, width: "99%" }}
-            imageStyle={{ borderRadius: 20 }}
-          >
-            <View
+        {loadingNews ? (
+          <View style={{ marginTop: "-15%" }}>
+            <AnimatedLottieView
+              autoPlay
               style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                justifyContent: "center",
-                alignItems: "center",
+                width: 300,
+                height: 300,
               }}
+              source={require("../../assets/animations/findmessages.json")}
+            />
+            <Text
+              h2
+              h2Style={{ textAlign: "center" }}
+              style={{ marginTop: "-10%" }}
             >
-              <Text></Text>
-            </View>
-          </ImageBackground>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.welcome}
-          onPress={() => {
-            navigation.navigate("Host");
-          }}
-        >
-          <ImageBackground
-            source={require("./Icons/host.png")}
-            style={{ height: 400, width: "99%" }}
-            imageStyle={{ borderRadius: 20 }}
-          >
-            <View
+              Getting News...
+            </Text>
+          </View>
+        ) : news.length > 0 ? (
+          <>
+            {news.map((x, index) => {
+              return (
+                <TouchableOpacity
+                  style={styles.newsContainer}
+                  key={index}
+                  onPress={() => Linking.openURL(x.url)}
+                >
+                  <Image
+                    source={{ url: x.urlToImage }}
+                    style={{ width: 150, height: 100, borderRadius: 10 }}
+                  />
+                  <View
+                    style={{ width: "50%", maxHeight: 100, overflow: "hidden" }}
+                  >
+                    <Text
+                      style={{
+                        fontFamily: "Inter-Bold",
+                        fontSize: 17,
+                      }}
+                      numberOfLines={2}
+                      ellipsizeMode="tail"
+                    >
+                      {x.title}
+                    </Text>
+                    <Text numberOfLines={3} ellipsizeMode="tail" style={{fontSize: 15}}>
+                      {x.description}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+            <Text
+              style={{ textAlign: "center", color: "gray", marginTop: "2%" }}
+            >
+              Data from newsapi.org
+            </Text>
+          </>
+        ) : !loadingNews ? (
+          <View style={{ height: "80%", alignItems: "center" }}>
+            <AnimatedLottieView
+              autoPlay
               style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                justifyContent: "center",
-                alignItems: "center",
+                width: 150,
+                height: 150,
               }}
+              source={require("../../assets/animations/noresults.json")}
+            />
+            <Text
+              h2
+              h2Style={{ textAlign: "center", fontFamily: "Inter-Bold" }}
+              style={{ marginTop: "10%" }}
             >
-              <Text></Text>
-            </View>
-          </ImageBackground>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.welcome} onPress={() => {}}>
-          <Text style={{ alignContent: "center", textAlign: "center" }}>
-            Placeholder 2
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.welcome} onPress={() => {}}>
-          <Text style={{ alignContent: "center", textAlign: "center" }}>
-            Placeholder 1
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.welcome} onPress={() => {}}>
-          <Text style={{ alignContent: "center", textAlign: "center" }}>
-            Placeholder 1
-          </Text>
-        </TouchableOpacity>
+              Uh oh!
+            </Text>
+            <Text style={{ textAlign: "center" }}>
+              We are unable to get any news right now.
+            </Text>
+          </View>
+        ) : null}
       </ScrollView>
-        <Text style={{fontSize:20}}>⇊</Text>
     </SafeAreaView>
   );
 }
@@ -279,11 +270,9 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   horiwelcome: {
-    marginLeft: 5,
-    textAlign: "center",
-    fontSize: 20,
-    width: 100,
-    borderRadius: 20,
+    marginRight: 15,
+    width: "100%",
+    alignItems: "center"
   },
 
   welcome: {
@@ -313,5 +302,15 @@ const styles = StyleSheet.create({
     marginTop: 50,
     alignItems: "center",
     margin: "5%",
+  },
+  newsContainer: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    alignItems: "center",
+    width: "95%",
+    margin: "2%",
+    borderBottomWidth: 0.5,
+    paddingBottom: "2%",
   },
 });
