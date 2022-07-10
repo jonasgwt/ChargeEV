@@ -31,6 +31,7 @@ export default function TrackUserLocation({ navigation, route }) {
   const [distanceAway, setDistanceAway] = useState("");
   const [timeAway, setTimeAway] = useState("");
   const [userPhoneNumber, setUserPhoneNumber] = useState("");
+  let intervalIDTest;
 
   const LoadingView = () => {
     return (
@@ -49,13 +50,37 @@ export default function TrackUserLocation({ navigation, route }) {
   const getUserLocation = async () => {
     const bookingDoc = await getDoc(doc(firestore, "Bookings", bookingID));
     if (!bookingDoc.exists()) {
-      clearInterval(checkLocation);
-      navigation.navigate("InboxHomeScreen");
+      clearInterval(intervalIDTest);
+      Alert.alert(
+        "Booking Cancelled",
+        "Sorry! We are unable to get the current user location. It is likley that the user has cancelled the booking",
+        [
+          {
+            text: "Return to Inbox",
+            onPress: () => {
+              clearInterval(intervalIDTest);
+              navigation.navigate("InboxHomeScreen");
+            },
+          },
+        ]
+      );
       return;
     }
     if (bookingDoc.data().userReached) {
-      clearInterval(checkLocation);
-      navigation.navigate("InboxHomeScreen");
+      clearInterval(intervalIDTest);
+      Alert.alert(
+        "Location Tracking Closed",
+        "User has reached the charger location. Live location tracking will now be closed",
+        [
+          {
+            text: "Return to Inbox",
+            onPress: () => {
+              clearInterval(intervalIDTest);
+              navigation.navigate("InboxHomeScreen");
+            },
+          },
+        ]
+      );
       return;
     }
     setUserLocation([
@@ -64,7 +89,9 @@ export default function TrackUserLocation({ navigation, route }) {
     ]);
   };
 
-  const checkLocation = setInterval(getUserLocation, 5000);
+  function startLocationTracking() {
+    intervalIDTest = setInterval(getUserLocation, 5000);
+  }
 
   useEffect(() => {
     const getDestination = async () => {
@@ -95,14 +122,15 @@ export default function TrackUserLocation({ navigation, route }) {
       .then(() => getUserLocation())
       .then(() => getUserInfo())
       .then(() => setLoading(false))
-      .then(() => console.log(profilePicture));
+      .then(() => startLocationTracking());
     if (!bgOn)
       Alert.alert(
         "User has not enabled background locations",
         "User location may not be updated"
       );
     return () => {
-      clearInterval(getUserLocation);
+      console.log("return use effect");
+      clearInterval(intervalIDTest);
     };
   }, []);
 
@@ -162,10 +190,10 @@ export default function TrackUserLocation({ navigation, route }) {
             title={address}
           >
             <Image
-                source={require("../../assets/marker/marker.png")}
-                style={{ height: 40, width: 40 }}
+              source={require("../../assets/marker/marker.png")}
+              style={{ height: 40, width: 40 }}
             />
-            </Marker>
+          </Marker>
         ) : null}
 
         {!loading ? (
@@ -177,10 +205,10 @@ export default function TrackUserLocation({ navigation, route }) {
             title="User Location"
           >
             <Image
-                source={require("../../assets/marker/currLocation.png")}
-                style={{ height: 40, width: 40 }}
+              source={require("../../assets/marker/currLocation.png")}
+              style={{ height: 40, width: 40 }}
             />
-            </Marker>
+          </Marker>
         ) : null}
 
         {!loading ? (
@@ -209,7 +237,7 @@ export default function TrackUserLocation({ navigation, route }) {
       <TouchableOpacity
         style={styles.backButton}
         onPress={() => {
-          clearInterval(checkLocation);
+          clearInterval(intervalIDTest);
           navigation.navigate("InboxHomeScreen");
         }}
       >

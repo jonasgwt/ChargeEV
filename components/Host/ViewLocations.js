@@ -36,8 +36,9 @@ export default function ViewLocations({ navigation }) {
           image: currentDoc.data().locationImage,
         };
       })
-    ).then((loc) => setLocations(loc));
-    setLoading(false);
+    )
+      .then((loc) => setLocations(loc))
+      .then(() => setLoading(false));
   };
 
   useEffect(() => {

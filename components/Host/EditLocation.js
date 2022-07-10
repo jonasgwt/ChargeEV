@@ -471,7 +471,7 @@ export default function EditLocation({ navigation, route }) {
               width: "95%",
               marginLeft: "2.5%",
               justifyContent: "space-between",
-              marginBottom: "-20%",
+              marginBottom: "-25%",
             }}
           >
             <View
@@ -507,7 +507,7 @@ export default function EditLocation({ navigation, route }) {
               width: "95%",
               marginLeft: "2.5%",
               justifyContent: "space-between",
-              marginBottom: "-15%",
+              marginBottom: "-20%",
             }}
           >
             <View

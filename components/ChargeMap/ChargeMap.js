@@ -128,6 +128,7 @@ export default function ChargeMap({ navigation }) {
   // else search for chargers
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
+      console.log(ASPECT_RATIO)
       setSearching(true);
       setSortOption("Nearest");
       setFilterCharger("");
@@ -180,11 +181,11 @@ export default function ChargeMap({ navigation }) {
       setUserNearLocation(true);
       setDestination([null, null]);
     } else {
-      setOrigin(params[1]);
       setDestination([
         locationDoc.data().coords.latitude,
         locationDoc.data().coords.longitude,
       ]);
+      setOrigin(params[1]);
     }
     setLocationBooked(true);
   };
@@ -284,6 +285,7 @@ export default function ChargeMap({ navigation }) {
             Location.watchPositionAsync(
               { distanceInterval: 500 },
               async (position) => {
+                if (destination[0] != null)
                 setOrigin([
                   position.coords.latitude,
                   position.coords.longitude,
@@ -1112,7 +1114,7 @@ export default function ChargeMap({ navigation }) {
 
         {!userNearLocation ? (
           <TouchableOpacity
-            style={[styles.bookButton, { padding: "1%" }]}
+            style={[styles.bookButton, { padding: "1%", borderRadius: 5, width: "45%" }]}
             onPress={() => openLocation(locations[0])}
           >
             <Icon name="place" color="white" />
@@ -1120,7 +1122,7 @@ export default function ChargeMap({ navigation }) {
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
-            style={[styles.bookButton, { padding: "1%" }]}
+            style={[styles.bookButton, { padding: "1%", borderRadius: 5, width: "45%" }]}
             onPress={proceedToPayment}
           >
             <Icon name="electrical-services" color="white" />
@@ -1132,7 +1134,7 @@ export default function ChargeMap({ navigation }) {
           <TouchableOpacity
             style={[
               styles.bookButton,
-              { padding: "1%", backgroundColor: "#ff4a4a" },
+              { padding: "1%", backgroundColor: "#ff4a4a",borderRadius: 5, width: "45%" },
             ]}
             onPress={cancelBooking}
           >
@@ -1320,6 +1322,7 @@ export default function ChargeMap({ navigation }) {
             width: 300,
             justifyContent: "space-between",
             alignItems: "center",
+            marginTop: "3%"
           }}
         >
           <TouchableOpacity
@@ -1327,14 +1330,14 @@ export default function ChargeMap({ navigation }) {
             onPress={otherLocations}
           >
             <Icon name="arrow-back-ios" color="white" />
-            <Text style={{ color: "white" }}>Other Locations</Text>
+            <Text h2 h2Style={{ color: "white", fontSize: 18 }}>Back</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.bookButton}
             onPress={() => bookLocation(locations[0])}
           >
-            <Icon name="book" color="white" />
-            <Text style={{ color: "white" }}>Book Location</Text>
+            <Text h2 h2Style={{ color: "white", fontSize: 18  }}>Book</Text>
+            <Icon name="arrow-forward-ios" color="white" />
           </TouchableOpacity>
         </View>
       </View>
@@ -1429,7 +1432,7 @@ export default function ChargeMap({ navigation }) {
           />
         ) : null}
 
-        {/* Current Location */}
+        {/* Current Location Hidden Marker*/}
         {origin[0] != null ? (
           <Marker
             coordinate={{ latitude: origin[0], longitude: origin[1] }}
@@ -1678,13 +1681,13 @@ const styles = StyleSheet.create({
   bookButton: {
     backgroundColor: "#1BB530",
     padding: "3%",
-    borderRadius: 5,
+    borderRadius: 20,
     marginTop: "5%",
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-evenly",
-    width: "45%",
+    width: "40%",
   },
   extraInfoParentContainer: {
     width: 300,
