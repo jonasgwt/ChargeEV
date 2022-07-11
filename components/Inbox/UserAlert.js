@@ -65,7 +65,7 @@ export default function UserAlert({ data, onPress, refresh }) {
             : statusTosubtitle.paid}
         </Text>
       </View>
-      <Icon name="arrow-forward-ios" />
+      {data.stage == "booked" ? <Icon name="arrow-forward-ios" /> : null}
     </TouchableOpacity>
   ) : (
     <View style={styles.container}>

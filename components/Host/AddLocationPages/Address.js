@@ -27,6 +27,7 @@ export default function Address({
 
   useEffect(() => {
     const asyncFunc = async () => {
+      console.log(city);
       await getStates(country);
     };
     asyncFunc();
@@ -35,6 +36,9 @@ export default function Address({
   async function getStates(countryCode) {
     if (countryCode == "") {
       setCity("");
+      return;
+    } else if (countryCode == "SG") {
+      setStates([{ label: "Singapore", value: "Singapore" }]);
       return;
     }
     setLoading(true);
@@ -110,11 +114,7 @@ export default function Address({
                 label: "Select your city",
                 value: "",
               }}
-              items={
-                country == "SG"
-                  ? [{ label: "Singapore", value: "Singapore" }]
-                  : states
-              }
+              items={states}
               style={pickerSelectStyles}
             />
           )}

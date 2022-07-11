@@ -128,7 +128,6 @@ export default function ChargeMap({ navigation }) {
   // else search for chargers
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
-      console.log(ASPECT_RATIO)
       setSearching(true);
       setSortOption("Nearest");
       setFilterCharger("");
@@ -200,20 +199,21 @@ export default function ChargeMap({ navigation }) {
 
   // Asks and gets user current location
   const getLocation = async () => {
-    await requestForegroundPermission().then((status) => {
-      if (!status.granted) {
-        Alert.alert(
-          "Enable Background Locations",
-          "Open Settings > ChargeEV > Location > Always",
-          [
-            {
-              text: "Open Settings",
-              onPress: () => Linking.openSettings(),
-            },
-          ]
-        );
-      }
-    });
+    await requestForegroundPermission()
+      .then((status) => {
+        if (!status.granted) {
+          Alert.alert(
+            "Enable Background Locations",
+            "Open Settings > ChargeEV > Location > Always",
+            [
+              {
+                text: "Open Settings",
+                onPress: () => Linking.openSettings(),
+              },
+            ]
+          );
+        }
+      })
     Location.getBackgroundPermissionsAsync()
       .then(async (res) => {
         if (!res.granted)
@@ -234,16 +234,17 @@ export default function ChargeMap({ navigation }) {
         else setBgLocation(true);
       })
       .catch((err) => {
-        if (err.code == "ERR_LOCATION_INFO_PLIST")
+        if (err.code == "ERR_LOCATION_INFO_PLIST") {
           console.log("unable to activate bg tracking");
+        }
       });
-    await Location.enableNetworkProviderAsync();
-    const position = await Location.getCurrentPositionAsync().catch((err) =>
+    await Location.enableNetworkProviderAsync()
+    const position = await Location.getLastKnownPositionAsync().catch((err) =>
       Alert.alert(
         "There is an error getting your location",
         "Please restart the app and try again"
       )
-    );
+    )
     return [
       position.coords.latitude,
       position.coords.longitude,
@@ -286,12 +287,12 @@ export default function ChargeMap({ navigation }) {
               { distanceInterval: 500 },
               async (position) => {
                 if (destination[0] != null)
-                setOrigin([
-                  position.coords.latitude,
-                  position.coords.longitude,
-                  position.coords.heading,
-                  position.coords.speed,
-                ]);
+                  setOrigin([
+                    position.coords.latitude,
+                    position.coords.longitude,
+                    position.coords.heading,
+                    position.coords.speed,
+                  ]);
                 await updateDoc(doc(firestore, "BookingAlerts", bookingID), {
                   bgLocation: false,
                 });
@@ -503,7 +504,7 @@ export default function ChargeMap({ navigation }) {
   useEffect(() => {
     if (origin[0] != null && locations.length != 0) {
       fitElements();
-      if (firstCharger!= null) firstCharger.current.showCallout();
+      if (firstCharger != null) firstCharger.current.showCallout();
       setChargerIndex(0);
     } else if (origin[0] != null && locations.length == 0) {
       updateLocation();
@@ -525,7 +526,7 @@ export default function ChargeMap({ navigation }) {
       heading: origin[2],
       zoom: -origin[3] * 0.1 + 18,
     };
-    if (mapRef != null) mapRef.current.animateCamera(camera, {duration: 500});
+    if (mapRef != null) mapRef.current.animateCamera(camera, { duration: 500 });
   };
 
   // Fits elements in map to viewport
@@ -713,6 +714,21 @@ export default function ChargeMap({ navigation }) {
             text: "Book",
             onPress: async () => {
               setSearching(true);
+              // Checks if user is booking his own location
+              const userRef = doc(
+                firestore,
+                "users",
+                authentication.currentUser.uid
+              );
+              const userDoc = await getDoc(userRef);
+              if (userDoc.data().hostID == location.hostedBy) {
+                Alert.alert(
+                  "Booking Error",
+                  "You cannot book a location that you are hosting."
+                );
+                setSearching(false);
+                return;
+              }
               // Add booking doc
               const bookingRef = await addDoc(
                 collection(firestore, "Bookings"),
@@ -728,11 +744,6 @@ export default function ChargeMap({ navigation }) {
                 }
               );
               // Add booking in user
-              const userRef = doc(
-                firestore,
-                "users",
-                authentication.currentUser.uid
-              );
               setBookingID(bookingRef.id);
               await updateDoc(userRef, {
                 activeBooking: bookingRef.id,
@@ -747,7 +758,7 @@ export default function ChargeMap({ navigation }) {
               // get host noti token
               const notiToken = hostUserDoc.data().notificationToken;
               setHostNotiToken(notiToken);
-              setHostMobileNumber(hostUserDoc.data().phone)
+              setHostMobileNumber(hostUserDoc.data().phone);
               await updateDoc(hostRef, {
                 bookings: arrayUnion(bookingRef.id),
               });
@@ -810,8 +821,10 @@ export default function ChargeMap({ navigation }) {
   // User done with charging and wants to pay
   const proceedToPayment = async () => {
     setSearching(true);
-    Location.stopLocationUpdatesAsync("GET_BG_LOCATION");
-    Location.stopGeofencingAsync("GEOFENCE_BOOKED_LOCATION");
+    if (bgLocation) {
+      Location.stopLocationUpdatesAsync("GET_BG_LOCATION");
+      Location.stopGeofencingAsync("GEOFENCE_BOOKED_LOCATION");
+    }
     navigation.navigate("Payment", { hostNotiToken: hostNotiToken });
     setLocationBooked(false);
     setDestination([null, null]);
@@ -888,8 +901,10 @@ export default function ChargeMap({ navigation }) {
             // delete booking and reset
             await deleteDoc(bookingRef);
             setSearching(false);
-            Location.stopLocationUpdatesAsync("GET_BG_LOCATION");
-            Location.stopGeofencingAsync("GEOFENCE_BOOKED_LOCATION");
+            if (bgLocation) {
+              Location.stopLocationUpdatesAsync("GET_BG_LOCATION");
+              Location.stopGeofencingAsync("GEOFENCE_BOOKED_LOCATION");
+            }
             setLocationBooked(false);
             setDestination([null, null]);
             setLocationSelected(false);
@@ -1114,7 +1129,10 @@ export default function ChargeMap({ navigation }) {
 
         {!userNearLocation ? (
           <TouchableOpacity
-            style={[styles.bookButton, { padding: "1%", borderRadius: 5, width: "45%" }]}
+            style={[
+              styles.bookButton,
+              { padding: "1%", borderRadius: 5, width: "45%" },
+            ]}
             onPress={() => openLocation(locations[0])}
           >
             <Icon name="place" color="white" />
@@ -1122,7 +1140,10 @@ export default function ChargeMap({ navigation }) {
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
-            style={[styles.bookButton, { padding: "1%", borderRadius: 5, width: "45%" }]}
+            style={[
+              styles.bookButton,
+              { padding: "1%", borderRadius: 5, width: "45%" },
+            ]}
             onPress={proceedToPayment}
           >
             <Icon name="electrical-services" color="white" />
@@ -1134,7 +1155,12 @@ export default function ChargeMap({ navigation }) {
           <TouchableOpacity
             style={[
               styles.bookButton,
-              { padding: "1%", backgroundColor: "#ff4a4a",borderRadius: 5, width: "45%" },
+              {
+                padding: "1%",
+                backgroundColor: "#ff4a4a",
+                borderRadius: 5,
+                width: "45%",
+              },
             ]}
             onPress={cancelBooking}
           >
@@ -1322,7 +1348,7 @@ export default function ChargeMap({ navigation }) {
             width: 300,
             justifyContent: "space-between",
             alignItems: "center",
-            marginTop: "3%"
+            marginTop: "3%",
           }}
         >
           <TouchableOpacity
@@ -1330,13 +1356,17 @@ export default function ChargeMap({ navigation }) {
             onPress={otherLocations}
           >
             <Icon name="arrow-back-ios" color="white" />
-            <Text h2 h2Style={{ color: "white", fontSize: 18 }}>Back</Text>
+            <Text h2 h2Style={{ color: "white", fontSize: 18 }}>
+              Back
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.bookButton}
             onPress={() => bookLocation(locations[0])}
           >
-            <Text h2 h2Style={{ color: "white", fontSize: 18  }}>Book</Text>
+            <Text h2 h2Style={{ color: "white", fontSize: 18 }}>
+              Book
+            </Text>
             <Icon name="arrow-forward-ios" color="white" />
           </TouchableOpacity>
         </View>
