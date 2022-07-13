@@ -31,7 +31,7 @@ export default function HostAddPayment({ navigation, route }) {
       paymentMethods: arrayUnion(type),
     });
     setLoading(false);
-    navigation.navigate("HostPaymentInformation");
+    navigation.navigate("Payment Information");
   };
 
   return (
