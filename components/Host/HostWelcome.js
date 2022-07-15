@@ -23,7 +23,7 @@ export default function HostWelcome({ navigation }) {
       hostID: hostRef.id,
     });
     setLoading(false);
-    navigation.navigate("HostPaymentInformation");
+    navigation.navigate("Payment Information");
   };
 
   return (
