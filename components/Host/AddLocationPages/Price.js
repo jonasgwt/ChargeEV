@@ -20,6 +20,7 @@ import {
   startAt,
   endAt,
 } from "firebase/firestore";
+import { nrelAPIKey } from "../../../firebase/firebase-config";
 
 export default function Price({ price, setPrice, coords }) {
   const [isLoading, setIsLoading] = useState(true);
@@ -34,7 +35,7 @@ export default function Price({ price, setPrice, coords }) {
 
   const getElectricityPricingData = async () => {
     const data = await fetch(
-      "https://developer.nrel.gov/api/utility_rates/v3.json?api_key=tTWuQl3cs6AzDswjFMzc4f3VizYQotTokN2D50R3&lat=" +
+      "https://developer.nrel.gov/api/utility_rates/v3.json?api_key="+ nrelAPIKey +"&lat=" +
         coords[0] +
         "&lon=" +
         coords[1]

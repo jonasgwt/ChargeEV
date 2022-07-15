@@ -20,7 +20,6 @@ import {
 import {
   authentication,
   firestore,
-  googleMapsAPIKey,
 } from "../../firebase/firebase-config";
 import { Text, Divider, Button, Icon } from "@rneui/themed";
 import PlaceType from "./AddLocationPages/PlaceType";
@@ -32,6 +31,7 @@ import Price from "./AddLocationPages/Price";
 import PaymentMethod from "./AddLocationPages/PaymentMethod";
 import { uploadImage } from "../resources/uploadImage";
 import { geohashForLocation } from "geofire-common";
+import { googleMapsAPIKey } from "../../firebase/firebase-config";
 
 export default function HostAddLocation({ navigation }) {
   const [page, setPage] = useState(0);
@@ -242,7 +242,7 @@ export default function HostAddLocation({ navigation }) {
         "," +
         coords[1] +
         "&key=" +
-        { googleMapsAPIKey }.googleMapsAPIKey
+        googleMapsAPIKey
     )
       .then((response) => response.json())
       .then((responseJson) => {

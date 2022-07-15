@@ -31,6 +31,7 @@ import * as ImagePicker from "expo-image-picker";
 import { uploadImage } from "../resources/uploadImage";
 import { geohashForLocation } from "geofire-common";
 import * as Location from "expo-location";
+import { battutaMedunesAPIKey } from "../../firebase/firebase-config";
 
 export default function EditLocation({ navigation, route }) {
   const { id, currImage, currAddress, hostID } = route.params;
@@ -65,7 +66,8 @@ export default function EditLocation({ navigation, route }) {
     await fetch(
       "https://battuta.medunes.net/api/region/" +
         countryCode +
-        "/all/?key=848a8d354030b7e0ae7a3a18d9f828ef"
+        "/all/?key=" +
+        battutaMedunesAPIKey
     )
       .catch((err) => console.log(err))
       .then((response) => response.json())
@@ -391,8 +393,8 @@ export default function EditLocation({ navigation, route }) {
           >
             <RNPickerSelect
               onValueChange={async (x) => {
-                await getStates(x);
                 setCountry(x);
+                await getStates(x);
               }}
               value={country}
               placeholder={{

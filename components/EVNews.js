@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import AnimatedLottieView from "lottie-react-native";
 import { Text } from "@rneui/themed";
+import { newsAPIKey } from "../firebase/firebase-config";
 
 export default function EVNews({ navigation }) {
   const [news, setNews] = useState([]);
@@ -18,7 +19,7 @@ export default function EVNews({ navigation }) {
   const getNews = async () => {
     setLoadingNews(true);
     await fetch(
-      "https://newsapi.org/v2/everything?q=electric%20cars&apiKey=2d9f2e2251bc45e2a8b0470e53ec11ab"
+      "https://newsapi.org/v2/everything?q=electric%20cars&apiKey="+ newsAPIKey
     )
       .then((response) => response.json())
       .then((data) => {

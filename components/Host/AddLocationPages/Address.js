@@ -9,6 +9,7 @@ import { Text, Input, Button } from "@rneui/themed";
 import RNPickerSelect from "react-native-picker-select";
 import { DismissKeyboardView } from "../../resources/DismissKeyboardView";
 import { ScrollView } from "react-native-gesture-handler";
+import { battutaMedunesAPIKey } from "../../../firebase/firebase-config";
 
 export default function Address({
   country,
@@ -45,7 +46,7 @@ export default function Address({
     await fetch(
       "https://battuta.medunes.net/api/region/" +
         countryCode +
-        "/all/?key=848a8d354030b7e0ae7a3a18d9f828ef"
+        "/all/?key="+battutaMedunesAPIKey
     )
       .catch((err) => console.log(err))
       .then((response) => response.json())
