@@ -280,7 +280,7 @@ export default function TrackUserLocation({ navigation, route }) {
                 marginTop: "5%",
               }}
             >
-              <Image source={{ url: "profilePicture" }} style={styles.userdp} />
+              <Image source={{ url: profilePicture }} style={styles.userdp} />
               <View>
                 <Text h3 h3Style={{ fontFamily: "Inter-SemiBold" }}>
                   {displayName}

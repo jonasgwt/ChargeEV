@@ -199,21 +199,20 @@ export default function ChargeMap({ navigation }) {
 
   // Asks and gets user current location
   const getLocation = async () => {
-    await requestForegroundPermission()
-      .then((status) => {
-        if (!status.granted) {
-          Alert.alert(
-            "Enable Background Locations",
-            "Open Settings > ChargeEV > Location > Always",
-            [
-              {
-                text: "Open Settings",
-                onPress: () => Linking.openSettings(),
-              },
-            ]
-          );
-        }
-      })
+    await requestForegroundPermission().then((status) => {
+      if (!status.granted) {
+        Alert.alert(
+          "Enable Background Locations",
+          "Open Settings > ChargeEV > Location > Always",
+          [
+            {
+              text: "Open Settings",
+              onPress: () => Linking.openSettings(),
+            },
+          ]
+        );
+      }
+    });
     Location.getBackgroundPermissionsAsync()
       .then(async (res) => {
         if (!res.granted)
@@ -238,13 +237,13 @@ export default function ChargeMap({ navigation }) {
           console.log("unable to activate bg tracking");
         }
       });
-    await Location.enableNetworkProviderAsync()
+    await Location.enableNetworkProviderAsync();
     const position = await Location.getLastKnownPositionAsync().catch((err) =>
       Alert.alert(
         "There is an error getting your location",
         "Please restart the app and try again"
       )
-    )
+    );
     return [
       position.coords.latitude,
       position.coords.longitude,
@@ -1030,7 +1029,12 @@ export default function ChargeMap({ navigation }) {
         {/* Reviews */}
         <View style={styles.reviewsContainer}>
           <Image
-            source={{ url: "locations[0].hostDP" }}
+            source={{
+              url:
+                locations[0].hostDP == undefined
+                  ? "https://firebasestorage.googleapis.com/v0/b/chargeev-986bd.appspot.com/o/photos%2F149071.png?alt=media&token=509b42b3-27ab-452f-a3e8-8c0e93fcb229"
+                  : locations[0].hostDP,
+            }}
             style={{
               width: 50,
               height: 50,
@@ -1213,7 +1217,9 @@ export default function ChargeMap({ navigation }) {
             source={{
               url:
                 locations[0].type == "ChargeEV"
-                  ? "locations[0].hostDP"
+                  ? locations[0].hostDP == undefined
+                    ? "https://firebasestorage.googleapis.com/v0/b/chargeev-986bd.appspot.com/o/photos%2F149071.png?alt=media&token=509b42b3-27ab-452f-a3e8-8c0e93fcb229"
+                    : locations[0].hostDP
                   : "https://cdn.icon-icons.com/icons2/836/PNG/512/Google_icon-icons.com_66793.png",
             }}
             style={{

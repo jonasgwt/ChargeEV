@@ -85,7 +85,6 @@ export default function EditLocation({ navigation, route }) {
   }
 
   // Driver function
-  // TODO: Change image to firebase image for production
   useEffect(() => {
     const getInfo = async () => {
       setLoading(true);
@@ -112,7 +111,7 @@ export default function EditLocation({ navigation, route }) {
       isMounted.current = true;
       setLoading(false);
     };
-    getInfo().then(() => setImage("https://picsum.photos/2000"));
+    getInfo().then(() => setImage(currImage));
   }, []);
 
   // handles multi select

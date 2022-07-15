@@ -31,10 +31,23 @@ export default function InboxHomeScreen({ navigation }) {
   const NoAlerts = () => {
     return (
       <View
-        style={{ paddingTop: "70%", display: "flex", justifyContent: "center" }}
+        style={{ height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}
       >
-        <Text h4 h4Style={{ textAlign: "center" }}>
-          There is nothing here yet.
+        <AnimatedLottieView
+          autoPlay
+          style={{
+            width: 300,
+            height: 300,
+            marginTop: "5%"
+          }}
+          source={require("../../assets/animations/empty.json")}
+        />
+        <Text
+          h2
+          h2Style={{ textAlign: "center" }}
+          style={{marginTop: "15%"}}
+        >
+          There is nothing here yet
         </Text>
       </View>
     );

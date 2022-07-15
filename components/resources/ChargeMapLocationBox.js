@@ -17,7 +17,7 @@ export default function ChargeMapLocationBox({ location, onPress }) {
         source={{
           url:
             location.type == "ChargeEV"
-              ? "location.locationImage"
+              ? location.locationImage
               : publicImageURL,
         }}
         style={styles.image}

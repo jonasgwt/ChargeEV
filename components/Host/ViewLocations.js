@@ -94,7 +94,7 @@ export default function ViewLocations({ navigation }) {
               <ImageBackground
                 resizeMode="cover"
                 source={{
-                  url: "https://picsum.photos/2000",
+                  url: x.image,
                 }}
                 style={styles.bgImage}
                 imageStyle={{ borderRadius: 10 }}
