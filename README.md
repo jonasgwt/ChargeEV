@@ -131,16 +131,23 @@ a charger
 
 ### Built With
 
-* [ReactNative](https://reactnative.dev/)
-* [Firebase](https://firebase.google.com/)
-* [Javascript](https://www.javascript.com/)
-* [Maps Api](https://developers.google.com/maps)
-* [Python](https://www.python.org/)
-* [Heroku](https://dashboard.heroku.com/apps)
+- ![Expo][expo.com]
+- ![Javascript][js.com]
+- ![Firebase][firebase.com]
+- ![Google Cloud][googleCloud.com]
+- ![Python][Python.com]
+- ![Heroku][Heroku.com]
+- ![Telegram][Telegram.com]
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-
+[expo.com]: https://img.shields.io/badge/Expo-1B1F23?style=for-the-badge&logo=expo&logoColor=white
+[js.com]: https://img.shields.io/badge/JavaScript-323330?style=for-the-badge&logo=javascript&logoColor=F7DF1E
+[firebase.com]: https://img.shields.io/badge/firebase-ffca28?style=for-the-badge&logo=firebase&logoColor=black
+[googleCloud.com]: https://img.shields.io/badge/Google_Cloud-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white
+[Heroku.com]:  https://img.shields.io/badge/Heroku-430098?style=for-the-badge&logo=heroku&logoColor=white
+[Python.com]: https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue
+[Telegram.com]: https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=whit
 
 <!-- GETTING STARTED -->
 ## Getting Started
