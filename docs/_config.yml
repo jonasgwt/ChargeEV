@@ -27,6 +27,8 @@ description: >- # this means to ignore newlines until "baseurl:"
 baseurl: "/ChargeEV" # the subpath of your site, e.g. /blog
 url: "https://jonasgwt.github.io/" # the base hostname & protocol for your site, e.g. http://example.com
 
+permalink: pretty
+
 # Build settings
 remote_theme: just-the-docs/just-the-docs
 # Exclude from processing.
@@ -48,3 +50,8 @@ remote_theme: just-the-docs/just-the-docs
 #   - vendor/cache/
 #   - vendor/gems/
 #   - vendor/ruby/
+
+last_edit_timestamp: true # show or hide edit time - page must have `last_modified_date` defined in the frontmatter
+last_edit_time_format: "%b %e %Y at %I:%M %p" # uses ruby's time format: https://ruby-doc.org/stdlib-2.7.0/libdoc/time/rdoc/Time.html
+back_to_top: true
+back_to_top_text: "Back to top"
