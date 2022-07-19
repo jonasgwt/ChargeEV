@@ -18,5 +18,5 @@ Video aids are used in the bot to help users have a visual experience.
 TelegramBot
 {: .fs-6 .fw-700 }
 <p float="left">
-  <img src="../photo/telegram.gif" width="30%" height="30%" />
+  <img src="{{ "assets/photo/telegram.gif" | relative_url }}" width="30%" height="30%" />
 </p>

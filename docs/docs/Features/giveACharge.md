@@ -20,5 +20,5 @@ This helps the host better guage the pricing. Hosts will be notified when user i
 Setting up:
 {: .fs-6 .fw-700 }
 <p float="left">
-  <img src="../photo/host.gif" width="30%" height="30%" />
+  <img src="{{ "assets/photo/host.gif" | relative_url }}" width="30%" height="30%" />
 </p>

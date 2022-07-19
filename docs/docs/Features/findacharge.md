@@ -18,6 +18,6 @@ on and off the platform are both loaded and are shown to the user. They are arra
 On Platform / Off Platform (Chargers not on ChargeEV platform):
 
 <p float="left">
-  <img src="../photo/onplatform.GIF" width="30%" height="30%" />
-  <img src="../photo/offplatform.GIF" width="30%" height="30%" />
+  <img src="{{ "assets/photo/onplatform.GIF" | relative_url }}" width="30%" height="30%" />
+  <img src="{{ "assets/photo/offplatform.GIF" | relative_url }}" width="30%" height="30%" />
 </p>

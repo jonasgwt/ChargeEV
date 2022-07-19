@@ -17,40 +17,40 @@ Link to Figma Mockup [here](https://www.figma.com/file/BozibW7ZR0EI4SWFEHyQCm/Ch
 #### Log-in and Charging map view
 
 <p float="left">
-  <img src="../photo/login.PNG" width="60%" />
-  <img src="../photo/chargemap.PNG" width="30%" />
+  <img src="{{ "assets/photo/login.PNG" | relative_url }}" width="60%" />
+  <img src="{{ "assets/photo/chargemap.PNG" | relative_url }}" width="30%" />
 </p>
 
 #### User profile display
 
 <p float="left">
-  <img src="../photo/userprofile.PNG" width="30%" />
+  <img src="{{ "assets/photo/userprofile.PNG" | relative_url }}" width="30%" />
 </p>
 
 #### Edit Profile Planned Flow
 
 <div align="center">
   <a href="">
-    <img src="../photo/editprofile.png" width="30%" >
+    <img src="{{ "assets/photo/editprofile.png" | relative_url }}" width="30%" >
   </a>
 </div>
 
 #### Adding Charger Process
 
 <p float="left">
-  <img src="../photo/addingcharger.PNG"  />
+  <img src="{{ "assets/photo/addingcharger.PNG" | relative_url }}"  />
 </p>
 
 <div align="center">
   <a href="">
-    <img src="../photo/chargesetup.drawio.png" width="50%" >
+    <img src="{{ "assets/photo/chargesetup.drawio.png" | relative_url }}"  width="50%" >
   </a>
 </div>
 
 ### User flow
 
 <p float="left">
-  <img src="../photo/PF.png" width="70%"/>
+  <img src="{{ "assets/photo/PF.png" | relative_url }}" width="70%"/>
 </p>
 
 <!-- BACKEND -->
@@ -59,5 +59,5 @@ Link to Figma Mockup [here](https://www.figma.com/file/BozibW7ZR0EI4SWFEHyQCm/Ch
 ### Database structure
 
 <p float="left">
-  <img src="../photo/QuickDBD-Free Diagram.png" width="70%" />
+  <img src="{{ "assets/photo/QuickDBD-Free Diagram.png" | relative_url }}" width="70%" />
 </p>
