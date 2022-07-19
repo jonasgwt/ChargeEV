@@ -171,7 +171,7 @@ export default function InboxHomeScreen({ navigation }) {
       </View>
       {/* Content */}
       {!loading ? (
-        <ScrollView style={styles.notiContainer}>
+        <ScrollView style={styles.notiContainer} contentContainerStyle={{paddingBottom: "50%"}}>
           {/* Alerts */}
           {toggleUser
             ? userAlerts.map((x, index) => (

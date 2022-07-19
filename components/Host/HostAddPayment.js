@@ -1,6 +1,6 @@
 import { Text, Icon, Button } from "@rneui/themed";
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, FlatList } from "react-native";
+import { View, StyleSheet, FlatList, TouchableOpacity } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Checkbox from "expo-checkbox";
 import { getDoc, doc, updateDoc, arrayUnion } from "firebase/firestore";
@@ -43,6 +43,13 @@ export default function HostAddPayment({ navigation, route }) {
         alignItems: "center",
       }}
     >
+      {/* Back Button */}
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => navigation.goBack()}
+      >
+        <Icon name="arrow-back-ios" />
+      </TouchableOpacity>
       <LinearGradient style={styles.semiCircle} colors={["#23E83D", "#1BB530"]}>
         <View style={styles.iconContainer}>
           <Icon
@@ -131,5 +138,20 @@ const styles = StyleSheet.create({
     fontFamily: "Inter-Regular",
     fontSize: 17,
     marginBottom: "2%",
+  },
+  backButton: {
+    position: "absolute",
+    top: "6%",
+    width: "9%",
+    height: 30,
+    backgroundColor: "white",
+    left: "5%",
+    borderRadius: 500,
+    shadowOpacity: 0.8,
+    shadowOffset: { width: 0, height: 3 },
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "flex-end",
+    zIndex: 1,
   },
 });

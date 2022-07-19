@@ -101,12 +101,10 @@ export default function ChargeMap({ navigation }) {
         return;
       }
       const location = locations[0];
-
       if (
         currLocationInFirestore[0] != location.coords.latitude ||
         currLocationInFirestore[1] != location.coords.longitude
       ) {
-        console.log("update");
         await updateDoc(doc(firestore, "Bookings", bookingID), {
           currentUserLocation: new GeoPoint(
             location.coords.latitude,
@@ -120,6 +118,13 @@ export default function ChargeMap({ navigation }) {
           location.coords.latitude,
           location.coords.longitude,
         ]);
+        setOrigin([
+          location.coords.latitude,
+          location.coords.longitude,
+          location.coords.heading,
+          location.coords.speed,
+        ]);
+        fitElements();
       }
     }
   );
@@ -265,19 +270,19 @@ export default function ChargeMap({ navigation }) {
   useEffect(() => {
     if (locationBooked) {
       // For background tracking
-      Location.startGeofencingAsync("GEOFENCE_BOOKED_LOCATION", [
-        {
-          latitude: locations[0].coords.latitude,
-          longitude: locations[0].coords.longitude,
-          radius: 500,
-        },
-      ])
+      Location.startLocationUpdatesAsync("GET_BG_LOCATION", {
+        deferredUpdatesDistance: 5000,
+        deferredUpdatesInterval: 5000,
+        pausesUpdatesAutomatically: true,
+      })
         .then(() => {
-          Location.startLocationUpdatesAsync("GET_BG_LOCATION", {
-            deferredUpdatesDistance: 5000,
-            deferredUpdatesInterval: 5000,
-            pausesUpdatesAutomatically: true,
-          });
+          Location.startGeofencingAsync("GEOFENCE_BOOKED_LOCATION", [
+            {
+              latitude: locations[0].coords.latitude,
+              longitude: locations[0].coords.longitude,
+              radius: 500,
+            },
+          ]);
         })
         .catch((err) => {
           if (err) {
@@ -292,15 +297,7 @@ export default function ChargeMap({ navigation }) {
                     position.coords.heading,
                     position.coords.speed,
                   ]);
-                await updateDoc(doc(firestore, "BookingAlerts", bookingID), {
-                  bgLocation: false,
-                });
-                await updateDoc(doc(firestore, "Bookings", bookingID), {
-                  currentUserLocation: new GeoPoint(
-                    position.coords.latitude,
-                    position.coords.longitude
-                  ),
-                });
+                fitElements();
                 if (
                   distanceBetween(
                     [position.coords.latitude, position.coords.longitude],
@@ -316,6 +313,15 @@ export default function ChargeMap({ navigation }) {
                 } else {
                   if (userNearLocation) await userLeft();
                 }
+                await updateDoc(doc(firestore, "BookingAlerts", bookingID), {
+                  bgLocation: false,
+                });
+                await updateDoc(doc(firestore, "Bookings", bookingID), {
+                  currentUserLocation: new GeoPoint(
+                    position.coords.latitude,
+                    position.coords.longitude
+                  ),
+                });
               }
             );
           }
@@ -427,13 +433,12 @@ export default function ChargeMap({ navigation }) {
 
   // when user reached location
   const userReached = async () => {
+    fitElements();
     if (!userNearLocation) {
       Alert.alert(
         "You have reached charger location",
         "You are not allowed to cancel the booking from now"
       );
-      setUserNearLocation(true);
-      setDestination([null, null]);
       // update user status
       const bookingRef = doc(firestore, "Bookings", bookingID);
       await updateDoc(bookingRef, {
@@ -457,6 +462,8 @@ export default function ChargeMap({ navigation }) {
         authentication.currentUser.displayName + " has reached ",
         ""
       );
+      setUserNearLocation(true);
+      setDestination([null, null]);
     }
   };
 
@@ -728,6 +735,21 @@ export default function ChargeMap({ navigation }) {
                 setSearching(false);
                 return;
               }
+              // Checks if location is already booked
+              const locationRef = doc(
+                firestore,
+                "HostedLocations",
+                location.placeID
+              );
+              const locDoc = await getDoc(locationRef);
+              if (!locDoc.data().available) {
+                Alert.alert(
+                  "Booking Error",
+                  "Location is already booked by another user. Please refresh."
+                );
+                setSearching(false);
+                return;
+              }
               // Add booking doc
               const bookingRef = await addDoc(
                 collection(firestore, "Bookings"),
@@ -762,11 +784,6 @@ export default function ChargeMap({ navigation }) {
                 bookings: arrayUnion(bookingRef.id),
               });
               // update bookings in location
-              const locationRef = doc(
-                firestore,
-                "HostedLocations",
-                location.placeID
-              );
               await updateDoc(locationRef, {
                 bookings: arrayUnion(bookingRef.id),
                 available: false,
@@ -937,9 +954,6 @@ export default function ChargeMap({ navigation }) {
     );
   };
 
-  // Below are all components to be rendered
-  // seperated for readability
-
   // Open Location in phone native maps
   const openLocation = (location) => {
     const scheme = Platform.select({
@@ -955,6 +969,9 @@ export default function ChargeMap({ navigation }) {
     });
     Linking.openURL(url);
   };
+
+  // Below are all components to be rendered
+  // seperated for readability
 
   // No chargers found view
   const NoChargersFound = () => {
@@ -993,185 +1010,6 @@ export default function ChargeMap({ navigation }) {
         >
           Loading...
         </Text>
-      </View>
-    );
-  };
-
-  // Items displayed when user books a location
-  const BookedLocationView = () => {
-    return (
-      <View style={styles.locationSelectedContainer}>
-        <View
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Text h2 h2Style={{ fontFamily: "Inter-Bold" }}>
-            {locations[0].address + " " + locations[0].unitNumber}
-          </Text>
-          <Text h4>{locations[0].postalCode}</Text>
-        </View>
-        <View style={styles.bookedIcon}>
-          <Icon name="check" color="#1BB530" />
-          <Text style={{ color: "#1BB530" }}>Booked</Text>
-        </View>
-        <View
-          style={{
-            backgroundColor: "black",
-            width: 300,
-            height: "0.3%",
-            marginTop: "2%",
-            marginBottom: "2%",
-          }}
-        />
-        {/* Reviews */}
-        <View style={styles.reviewsContainer}>
-          <Image
-            source={{
-              url:
-                locations[0].hostDP == undefined
-                  ? "https://firebasestorage.googleapis.com/v0/b/chargeev-986bd.appspot.com/o/photos%2F149071.png?alt=media&token=509b42b3-27ab-452f-a3e8-8c0e93fcb229"
-                  : locations[0].hostDP,
-            }}
-            style={{
-              width: 50,
-              height: 50,
-              borderRadius: 50,
-              borderWidth: 1,
-            }}
-          />
-          <View style={{ marginLeft: "2%" }}>
-            <Text h4 h4Style={{ fontFamily: "Inter-Regular" }}>
-              {locations[0].hostName}
-            </Text>
-            <TouchableOpacity style={styles.bookedIcon} onPress={callUser}>
-              <Icon name="phone-in-talk" color="#1BB530" />
-              <Text style={{ color: "#1BB530" }}>Contact</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* More Info that will be showed when user expands bottom container */}
-        {expanded ? (
-          <View style={styles.extraInfoParentContainer}>
-            {/* Charger Type */}
-            <View style={styles.infoContainer}>
-              <Text
-                style={{
-                  fontFamily: "Inter-Bold",
-                  marginBottom: "2%",
-                  fontSize: 17,
-                }}
-              >
-                Charger Type
-              </Text>
-              {locations[0].chargerType.map((charger, index) => (
-                <View
-                  key={index}
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center",
-                    marginBottom: "1%",
-                  }}
-                >
-                  <Image
-                    source={
-                      charger == "CCS2"
-                        ? require("../../assets/chargers/CCS.png")
-                        : require("../../assets/chargers/type2.png")
-                    }
-                    style={{ width: 20, height: 20 }}
-                  />
-                  <Text>{charger}</Text>
-                </View>
-              ))}
-            </View>
-            {/* Housing Type */}
-            <View style={styles.infoContainer}>
-              <Text
-                style={{
-                  fontFamily: "Inter-Bold",
-                  marginBottom: "2%",
-                  fontSize: 17,
-                }}
-              >
-                Housing Type
-              </Text>
-              <Text>{locations[0].housingType}</Text>
-            </View>
-            {/* Price */}
-            <View style={styles.infoContainer}>
-              <Text
-                style={{
-                  fontFamily: "Inter-Bold",
-                  marginBottom: "2%",
-                  fontSize: 17,
-                }}
-              >
-                Amount Payable
-              </Text>
-              <Text>${locations[0].costPerCharge}</Text>
-            </View>
-            {/* Payment Method */}
-            <View style={styles.infoContainer}>
-              <Text
-                style={{
-                  fontFamily: "Inter-Bold",
-                  marginBottom: "2%",
-                  fontSize: 17,
-                }}
-              >
-                Payment Method(s)
-              </Text>
-              <Text>{locations[0].paymentMethod.join()}</Text>
-            </View>
-          </View>
-        ) : null}
-
-        {!userNearLocation ? (
-          <TouchableOpacity
-            style={[
-              styles.bookButton,
-              { padding: "1%", borderRadius: 5, width: "45%" },
-            ]}
-            onPress={() => openLocation(locations[0])}
-          >
-            <Icon name="place" color="white" />
-            <Text style={{ color: "white" }}>Open in Maps</Text>
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity
-            style={[
-              styles.bookButton,
-              { padding: "1%", borderRadius: 5, width: "45%" },
-            ]}
-            onPress={proceedToPayment}
-          >
-            <Icon name="electrical-services" color="white" />
-            <Text style={{ color: "white" }}>I'm Charged Up!</Text>
-          </TouchableOpacity>
-        )}
-
-        {expanded && !userNearLocation ? (
-          <TouchableOpacity
-            style={[
-              styles.bookButton,
-              {
-                padding: "1%",
-                backgroundColor: "#ff4a4a",
-                borderRadius: 5,
-                width: "45%",
-              },
-            ]}
-            onPress={cancelBooking}
-          >
-            <Icon name="cancel" color="white" />
-            <Text style={{ color: "white" }}>Cancel Booking</Text>
-          </TouchableOpacity>
-        ) : null}
       </View>
     );
   };
@@ -1573,7 +1411,181 @@ export default function ChargeMap({ navigation }) {
         ) : null}
 
         {/* User booked a location */}
-        {locationBooked && !searching ? <BookedLocationView /> : null}
+        {locationBooked && !searching ? (
+          <View style={styles.locationSelectedContainer}>
+            <View
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Text h2 h2Style={{ fontFamily: "Inter-Bold" }}>
+                {locations[0].address + " " + locations[0].unitNumber}
+              </Text>
+              <Text h4>{locations[0].postalCode}</Text>
+            </View>
+            <View style={styles.bookedIcon}>
+              <Icon name="check" color="#1BB530" />
+              <Text style={{ color: "#1BB530" }}>Booked</Text>
+            </View>
+            <View
+              style={{
+                backgroundColor: "black",
+                width: 300,
+                height: "0.3%",
+                marginTop: "2%",
+                marginBottom: "2%",
+              }}
+            />
+            {/* Reviews */}
+            <View style={styles.reviewsContainer}>
+              <Image
+                source={{
+                  url:
+                    locations[0].hostDP == undefined
+                      ? "https://firebasestorage.googleapis.com/v0/b/chargeev-986bd.appspot.com/o/photos%2F149071.png?alt=media&token=509b42b3-27ab-452f-a3e8-8c0e93fcb229"
+                      : locations[0].hostDP,
+                }}
+                style={{
+                  width: 50,
+                  height: 50,
+                  borderRadius: 50,
+                  borderWidth: 1,
+                }}
+              />
+              <View style={{ marginLeft: "2%" }}>
+                <Text h4 h4Style={{ fontFamily: "Inter-Regular" }}>
+                  {locations[0].hostName}
+                </Text>
+                <TouchableOpacity style={styles.bookedIcon} onPress={callUser}>
+                  <Icon name="phone-in-talk" color="#1BB530" />
+                  <Text style={{ color: "#1BB530" }}>Contact</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            {/* More Info that will be showed when user expands bottom container */}
+            {expanded ? (
+              <View style={styles.extraInfoParentContainer}>
+                {/* Charger Type */}
+                <View style={styles.infoContainer}>
+                  <Text
+                    style={{
+                      fontFamily: "Inter-Bold",
+                      marginBottom: "2%",
+                      fontSize: 17,
+                    }}
+                  >
+                    Charger Type
+                  </Text>
+                  {locations[0].chargerType.map((charger, index) => (
+                    <View
+                      key={index}
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        marginBottom: "1%",
+                      }}
+                    >
+                      <Image
+                        source={
+                          charger == "CCS2"
+                            ? require("../../assets/chargers/CCS.png")
+                            : require("../../assets/chargers/type2.png")
+                        }
+                        style={{ width: 20, height: 20 }}
+                      />
+                      <Text>{charger}</Text>
+                    </View>
+                  ))}
+                </View>
+                {/* Housing Type */}
+                <View style={styles.infoContainer}>
+                  <Text
+                    style={{
+                      fontFamily: "Inter-Bold",
+                      marginBottom: "2%",
+                      fontSize: 17,
+                    }}
+                  >
+                    Housing Type
+                  </Text>
+                  <Text>{locations[0].housingType}</Text>
+                </View>
+                {/* Price */}
+                <View style={styles.infoContainer}>
+                  <Text
+                    style={{
+                      fontFamily: "Inter-Bold",
+                      marginBottom: "2%",
+                      fontSize: 17,
+                    }}
+                  >
+                    Amount Payable
+                  </Text>
+                  <Text>${locations[0].costPerCharge}</Text>
+                </View>
+                {/* Payment Method */}
+                <View style={styles.infoContainer}>
+                  <Text
+                    style={{
+                      fontFamily: "Inter-Bold",
+                      marginBottom: "2%",
+                      fontSize: 17,
+                    }}
+                  >
+                    Payment Method(s)
+                  </Text>
+                  <Text>{locations[0].paymentMethod.join()}</Text>
+                </View>
+              </View>
+            ) : null}
+
+            {!userNearLocation ? (
+              <TouchableOpacity
+                style={[
+                  styles.bookButton,
+                  { padding: "1%", borderRadius: 5, width: "45%" },
+                ]}
+                onPress={() => openLocation(locations[0])}
+              >
+                <Icon name="place" color="white" />
+                <Text style={{ color: "white" }}>Open in Maps</Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                style={[
+                  styles.bookButton,
+                  { padding: "1%", borderRadius: 5, width: "45%" },
+                ]}
+                onPress={proceedToPayment}
+              >
+                <Icon name="electrical-services" color="white" />
+                <Text style={{ color: "white" }}>I'm Charged Up!</Text>
+              </TouchableOpacity>
+            )}
+
+            {expanded && !userNearLocation ? (
+              <TouchableOpacity
+                style={[
+                  styles.bookButton,
+                  {
+                    padding: "1%",
+                    backgroundColor: "#ff4a4a",
+                    borderRadius: 5,
+                    width: "45%",
+                  },
+                ]}
+                onPress={cancelBooking}
+              >
+                <Icon name="cancel" color="white" />
+                <Text style={{ color: "white" }}>Cancel Booking</Text>
+              </TouchableOpacity>
+            ) : null}
+          </View>
+        ) : null}
       </Animated.ScrollView>
 
       {/* Refresh Button */}
@@ -1625,6 +1637,7 @@ const styles = StyleSheet.create({
   bottomBoxContent: {
     alignItems: "center",
     justifyContent: "center",
+    paddingBottom: "10%",
   },
   backButton: {
     position: "absolute",

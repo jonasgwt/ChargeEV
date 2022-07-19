@@ -6,6 +6,8 @@ import { authentication, firestore } from "../firebase/firebase-config";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { DismissKeyboardView } from "./resources/DismissKeyboardView";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 export default function Register({ navigation }) {
   const [email, setEmail] = useState("");
@@ -42,7 +44,7 @@ export default function Register({ navigation }) {
         await AsyncStorage.setItem("password", password);
         navigation.navigate("Home");
       } catch (err) {
-        console.log(err)
+        console.log(err);
         console.log(err.code);
         switch (err.code) {
           case "auth/invalid-email":
@@ -63,66 +65,75 @@ export default function Register({ navigation }) {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    <KeyboardAwareScrollView
       style={styles.container}
     >
-      <SafeAreaView style={styles.titleContainer}>
-        <Text h1>Create Account</Text>
-        <Text h2>An account for all your EV needs</Text>
-        <Text h4 style={{ color: "red", marginTop: 5 }}>
-          {error}
-        </Text>
-      </SafeAreaView>
-      <Input
-        placeholder="Email"
-        keyboardType="email-address"
-        onChangeText={setEmail}
-      />
-      <View style={styles.nameContainer}>
-        <Input
-          inputContainerStyle={{ width: "100%" }}
-          containerStyle={{ width: "50%" }}
-          placeholder="First Name"
-          onChangeText={setfirstName}
-          textContentType="name"
-          autoCompleteType="name"
-        />
-        <Input
-          inputContainerStyle={{ width: "100%" }}
-          containerStyle={{ width: "50%" }}
-          placeholder="Last Name"
-          onChangeText={setlastName}
-          textContentType="name"
-          autoCompleteType="name"
-        />
-      </View>
-      <Input
-        placeholder="Phone"
-        keyboardType="number-pad"
-        onChangeText={setPhone}
-      />
-      <Input
-        placeholder="Password"
-        secureTextEntry={true}
-        onChangeText={setPassword}
-      />
-      <Button
-        title="Register"
-        buttonStyle={{ width: 330, height: 50 }}
-        containerStyle={{ marginTop: 10 }}
-        onPress={handleRegister}
-      />
-      <Text h4 style={{ marginTop: 20 }}>
-        Already have an account?{" "}
-        <Text
-          style={{ color: "#1BB530", textDecorationLine: "underline" }}
-          onPress={() => navigation.navigate("Login")}
+      <DismissKeyboardView>
+        <SafeAreaView
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
         >
-          Sign in
-        </Text>
-      </Text>
-    </KeyboardAvoidingView>
+          <SafeAreaView style={styles.titleContainer}>
+            <Text h1>Create Account</Text>
+            <Text h2>An account for all your EV needs</Text>
+            <Text h4 style={{ color: "red"}}>
+              {error}
+            </Text>
+          </SafeAreaView>
+          <Input
+            placeholder="Email"
+            keyboardType="email-address"
+            onChangeText={setEmail}
+          />
+          <View style={styles.nameContainer}>
+            <Input
+              inputContainerStyle={{ width: "100%" }}
+              containerStyle={{ width: "50%" }}
+              placeholder="First Name"
+              onChangeText={setfirstName}
+              textContentType="name"
+              autoCompleteType="name"
+            />
+            <Input
+              inputContainerStyle={{ width: "100%" }}
+              containerStyle={{ width: "50%" }}
+              placeholder="Last Name"
+              onChangeText={setlastName}
+              textContentType="name"
+              autoCompleteType="name"
+            />
+          </View>
+          <Input
+            placeholder="Phone"
+            keyboardType="number-pad"
+            onChangeText={setPhone}
+          />
+          <Input
+            placeholder="Password"
+            secureTextEntry={true}
+            onChangeText={setPassword}
+          />
+          <Button
+            title="Register"
+            buttonStyle={{ width: 330, height: 50 }}
+            containerStyle={{ marginTop: 10 }}
+            onPress={handleRegister}
+          />
+          <Text h4 style={{ marginTop: 20 }}>
+            Already have an account?{" "}
+            <Text
+              style={{ color: "#1BB530", textDecorationLine: "underline" }}
+              onPress={() => navigation.navigate("Login")}
+            >
+              Sign in
+            </Text>
+          </Text>
+        </SafeAreaView>
+      </DismissKeyboardView>
+    </KeyboardAwareScrollView>
   );
 }
 
@@ -131,10 +142,8 @@ const styles = StyleSheet.create({
     flex: 1,
     background:
       "linear-gradient(225deg, #FFFFFF 0%, #EFF1F5 100%, #EFF1F5 100%)",
-    justifyContent: "center",
-    alignItems: "center",
     padding: "5%",
-    marginBottom: "30%",
+    height: "100%"
   },
   nameContainer: {
     display: "flex",
