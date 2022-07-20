@@ -24,7 +24,7 @@
     <img src="photo/logo_nobg_white.png" alt="Logo" width="280" height="90">
   </a>
   <p float="center">
-  <img src="photo/intro.GIF" width="20%"/>
+  <img src="photo/intro.GIF" width="50%"/>
   </p>
   
 
@@ -170,6 +170,21 @@ Alternatively, you can also test on iPhone Simulator <a href="https://drive.goog
 ## Stories
 
 ### User Stories
+
+#### User
+* As a user, I want to be able to book a charger so that I can charge a car
+* As a user, I want to find chargers near me so that I don't have to drive far
+* As a user, I want to to reset my password so that I can recover my account
+* As a user, I want to navigate the app easily so that I can access features easily
+* As a user, I want to find non ChargeEV chargers so that I can find the nearest charger
+* As a user, I want to cancel a booking so that I will be able to rebook 
+
+### Host
+* As a host, I want to list my charger so that I can loan it out
+* As a host, I want to have a payment method, so that I can reiceive payment 
+* As a host, I want to update my listings so that I can update any errors
+* As a host, I want to know when the user is approaching, so that I can check to confirm payment 
+* As a host, I want to report a user so that I can prevent this from occuring again 
 
 1. Hosts can provide EV chargers at fixed prices (the app will provide an estimated cost). The host will seek to lend their chargers when they are not using them.
 
