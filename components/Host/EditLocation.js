@@ -56,6 +56,8 @@ export default function EditLocation({ navigation, route }) {
   const [loadingSave, setLoadingSave] = useState(false);
   const isMounted = useRef(false);
   const [loadingDelete, setLoadingDelete] = useState(false);
+  const [status, setStatus] = useState("Loading...")
+  const [color, setColor] = useState("white")
 
   // make a reqeust to api to get all the states from a given country
   async function getStates(countryCode) {
@@ -93,6 +95,8 @@ export default function EditLocation({ navigation, route }) {
       const locationDoc = await getDoc(doc(firestore, "HostedLocations", id));
       setHousingType(locationDoc.data().housingType);
       setCountry(locationDoc.data().country);
+      setStatus(locationDoc.data().available ? "Available" : "In Use")
+      setColor(locationDoc.data().available ? "#1BB530" : "#ff5252")
       await getStates(locationDoc.data().country);
       setCity(locationDoc.data().city);
       setAddress(locationDoc.data().address);
@@ -298,6 +302,18 @@ export default function EditLocation({ navigation, route }) {
     navigation.navigate("View Locations");
   };
 
+  // user toggled status button
+  const toggleStatus = async () => {
+    setStatus("Loading...")
+    const locationRef = doc(firestore, "HostedLocations", id)
+    const locationDoc = await getDoc(locationRef);
+    await updateDoc(locationRef, {
+      available: !locationDoc.data().available
+    })
+    setStatus(!locationDoc.data().available ? "Available" : "In Use")
+    setColor(!locationDoc.data().available ? "#1BB530" : "#ff5252")
+  }
+
   return (
     <DismissKeyboardView>
       {/* Back Button */}
@@ -366,8 +382,20 @@ export default function EditLocation({ navigation, route }) {
       ) : (
         <KeyboardAwareScrollView
           style={styles.content}
-          contentContainerStyle={{ paddingBottom: "135%" }}
+          contentContainerStyle={{ paddingBottom: "175%" }}
         >
+          <TouchableOpacity style={[styles.status, {backgroundColor: color}]} onPress={toggleStatus}>
+            <Text
+              style={{
+                fontFamily: "Inter-Bold",
+                fontSize: 20,
+                color: "white",
+                  textAlign: "center",
+              }}
+            >
+              Status: {status}
+            </Text>
+          </TouchableOpacity>
           <RNPickerSelect
             onValueChange={setHousingType}
             value={housingType}
@@ -472,7 +500,7 @@ export default function EditLocation({ navigation, route }) {
               width: "95%",
               marginLeft: "2.5%",
               justifyContent: "space-between",
-              marginBottom: "-25%",
+              marginBottom: "-30%",
             }}
           >
             <View
@@ -629,6 +657,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "flex-end",
     zIndex: 1,
+  },
+  status: {
+    width: "95%",
+    padding: "5%",
+    borderColor: "#707070",
+    marginLeft: "2.5%",
+    shadowColor: "rgba(0, 0, 0, 0.101961)",
+    shadowOpacity: 100,
+    shadowRadius: 10,
+    borderRadius: 8,
+    marginBottom: "3%",
   },
 });
 
