@@ -385,7 +385,7 @@ export default function ChargeMap({ navigation }) {
   // Gets public chargers in a 50km radius
   const getPublicChargers = async (currLocation) => {
     return await fetch(
-      "https://maps.googleapis.com/maps/api/place/nearbysearch/json?keyword=ev%20charger&location=" +
+      "https://maps.googleapis.com/maps/api/place/nearbysearch/json?keyword=charger&location=" +
         currLocation[0] +
         "," +
         currLocation[1] +
