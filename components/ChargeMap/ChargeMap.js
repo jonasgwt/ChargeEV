@@ -389,7 +389,8 @@ export default function ChargeMap({ navigation }) {
         currLocation[0] +
         "," +
         currLocation[1] +
-        "&radius=50000&key="+googleMapsAPIKey
+        "&radius=50000&key=" +
+        googleMapsAPIKey
     )
       .then((response) => response.json())
       .then((data) => {
@@ -841,7 +842,19 @@ export default function ChargeMap({ navigation }) {
       Location.stopLocationUpdatesAsync("GET_BG_LOCATION");
       Location.stopGeofencingAsync("GEOFENCE_BOOKED_LOCATION");
     }
-    navigation.navigate("Payment", { hostNotiToken: hostNotiToken });
+    // Get Payment methods
+    const bookingDoc = await getDoc(doc(firestore, "Bookings", bookingID));
+    const locationDoc = await getDoc(
+      doc(firestore, "HostedLocations", bookingDoc.data().location)
+    );
+    navigation.navigate("Payment", {
+      hostNotiToken: hostNotiToken,
+      QR:
+        locationDoc.data().paymentMethod.filter((x) => x == "QR Code").length ==
+        1,
+      cash:
+        locationDoc.data().paymentMethod.filter((x) => x == "Cash").length == 1,
+    });
     setLocationBooked(false);
     setDestination([null, null]);
     setLocationSelected(false);

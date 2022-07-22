@@ -13,7 +13,7 @@ import { authentication, firestore } from "../../firebase/firebase-config";
 import sendNotification from "../resources/sendNotifications";
 
 export default function Payment({ navigation, route }) {
-  const { hostNotiToken } = route.params;
+  const { hostNotiToken, QR, cash } = route.params;
 
   // User indicated that they have paid
   const paid = async (type) => {
@@ -30,9 +30,9 @@ export default function Payment({ navigation, route }) {
     const bookingDoc = await getDoc(bookingRef);
     await updateDoc(bookingRef, {
       userPaid: true,
-      paidVia: type
+      paidVia: type,
     });
-    // update location to be available 
+    // update location to be available
     const locationRef = doc(
       firestore,
       "HostedLocations",
@@ -46,7 +46,7 @@ export default function Payment({ navigation, route }) {
       stage: "paid",
       priority: 2,
       actionRequired: true,
-      timestamp: serverTimestamp()
+      timestamp: serverTimestamp(),
     });
     // send notification
     await sendNotification(
@@ -68,51 +68,61 @@ export default function Payment({ navigation, route }) {
           Payment
         </Text>
       </LinearGradient>
-      <View style={styles.optionContainer}>
-        <TouchableOpacity style={styles.option} onPress={async () => await paid("Cash")}>
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
+      <View style={[styles.optionContainer, {height: "20%"}]}>
+        {cash ? (
+          <TouchableOpacity
+            style={styles.option}
+            onPress={async () => await paid("Cash")}
           >
-            <Icon name="money" />
-            <Text
+            <View
               style={{
-                fontFamily: "Inter-Regular",
-                fontSize: 17,
-                marginLeft: "5%",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
-              Paid by Cash
-            </Text>
-          </View>
-          <Icon name="arrow-forward-ios" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.option} onPress={() => paid("QR")}>
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
+              <Icon name="money" />
+              <Text
+                style={{
+                  fontFamily: "Inter-Regular",
+                  fontSize: 17,
+                  marginLeft: "5%",
+                }}
+              >
+                Paid by Cash
+              </Text>
+            </View>
+            <Icon name="arrow-forward-ios" />
+          </TouchableOpacity>
+        ) : null}
+        {QR ? (
+          <TouchableOpacity
+            style={styles.option}
+            onPress={async () => await paid("QR")}
           >
-            <Icon name="qr-code" />
-            <Text
+            <View
               style={{
-                fontFamily: "Inter-Regular",
-                fontSize: 17,
-                marginLeft: "5%",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
-              Paid by QR Code
-            </Text>
-          </View>
-          <Icon name="arrow-forward-ios" />
-        </TouchableOpacity>
+              <Icon name="qr-code" />
+              <Text
+                style={{
+                  fontFamily: "Inter-Regular",
+                  fontSize: 17,
+                  marginLeft: "5%",
+                }}
+              >
+                Paid by QR Code
+              </Text>
+            </View>
+            <Icon name="arrow-forward-ios" />
+          </TouchableOpacity>
+        ) : null}
       </View>
       <View style={styles.warningContainer}>
         <Icon name="warning" size={35} />
