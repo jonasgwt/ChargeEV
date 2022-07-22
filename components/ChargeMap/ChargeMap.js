@@ -389,7 +389,7 @@ export default function ChargeMap({ navigation }) {
         currLocation[0] +
         "," +
         currLocation[1] +
-        "&radius=50000&key=AIzaSyDF8ECR3O5QiEaTRLms1fmu5HRW_K_G_xM"
+        "&radius=50000&key="+googleMapsAPIKey
     )
       .then((response) => response.json())
       .then((data) => {

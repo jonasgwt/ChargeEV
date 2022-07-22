@@ -23,7 +23,7 @@ export default function EVNews({ navigation }) {
     )
       .then((response) => response.json())
       .then((data) => {
-        setNews(data.articles.splice(0, 10));
+        setNews(data.articles.splice(0, 20));
       })
       .then(() => setLoadingNews(false));
   };
