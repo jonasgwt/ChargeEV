@@ -327,7 +327,7 @@ Plan: [Link](https://app.instagantt.com/shared/s/kY9oAKAc2ID3k56JL8l7/latest)
 * We tested core features internally and after that we requested the help of peers to do testing and provide feedback to us of the product so far.
 The results are shown in the following sheet
 * We have also collected textual feedback via Google Forms and a visualisation of the positive and negative feedback can be seen on our poster. 
-* We have documented bugs that we have resolved. This helps us to understand 
+* We have documented bugs that we have resolved. This helps us to understand if previously solved bugs were not squashed successfully  
 
 Sheet: [Sheet](https://docs.google.com/spreadsheets/d/1lI6qObjsvcQ8hcxTFgI2hN9g1sCO6TRdgVF5pagoI_w/edit?usp=sharing)
 
