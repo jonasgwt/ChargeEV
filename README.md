@@ -283,7 +283,7 @@ The function works by using the Google maps API by scanning the area with a 50km
 on and off the platform are both loaded and are shown to the user. They are arranged from nearest to furthest. 
 
 On Platform / Off Platform (Chargers not on ChargeEV platform):
-<p float="left">
+<p float="center">
   <img src="photo/onplatform.GIF" width="30%" height="30%" />
   <img src="photo/offplatform.GIF" width="30%" height="30%" />
 </p>
@@ -293,12 +293,14 @@ On Platform / Off Platform (Chargers not on ChargeEV platform):
 #### GiveACharge
 This enables individuals or comapanies to loan out their chargers. The fees are pre-determined.
 We used an API to calculate the average electricity cost of the area around the charger and also the chargers around.
-This helps the host better guage the pricing. Hosts will be notified when user is nearby, this is done via expo Geo-fencing
+This helps the host better guage the pricing. Hosts will be notified when user is nearby, this is done via Expo Geo-fencing
 
 Setting up:
 <p float="left">
   <img src="photo/host.gif" width="30%" height="30%" />
 </p>
+
+
 
 #### Telegram Bot 
 To provide a more interactive support experience. The telegram bot is created to help users troubleshoot issues they face.
@@ -321,9 +323,11 @@ Plan: [Link](https://app.instagantt.com/shared/s/kY9oAKAc2ID3k56JL8l7/latest)
 <!-- Testing -->
 ## Testing
 
+* We have carried out unit tests. All documention can be found on the google sheets.
 * We tested core features internally and after that we requested the help of peers to do testing and provide feedback to us of the product so far.
 The results are shown in the following sheet
-* We have also collected textual feedback via Google Forms and are in the mindst of cleaning up the data. A visualisation of the positive and negative feedback can be seen on our MS2 poster. 
+* We have also collected textual feedback via Google Forms and a visualisation of the positive and negative feedback can be seen on our poster. 
+* We have documented bugs that we have resolved. This helps us to understand 
 
 Sheet: [Sheet](https://docs.google.com/spreadsheets/d/1lI6qObjsvcQ8hcxTFgI2hN9g1sCO6TRdgVF5pagoI_w/edit?usp=sharing)
 
