@@ -68,6 +68,7 @@
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#testing">Testing</a></li>
     <li><a href="#contact">Contact</a></li>
+    <li><a href="#challenges">Challenges</a></li>
     <li><a href="#other">Others</a></li>
   </ol>
 </details>
@@ -124,6 +125,9 @@ a charger
 * Such areas include the rural areas in the United States 
 * We do not believe the host feature will be used significantly in Singapore due to the density of EV chargers present
 
+
+## Proposed Level of Achievement
+Apollo
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -341,6 +345,14 @@ We also decided to add a telegram bot to value add to our product. The FAQ were 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
+## Challenges
+
+1. We had trouble with initially using our own server to host the database and user data due to unreliable read write occuring
+* We solved this by using google firebase and learning the API to understamd how to use it to manage our app data
+2. We initially had a basic page meant for user support. However after milestone 1 and during external UAT, we received feedback that it was not interactive and provided little assistance to our users. 
+* Thus we decided to create a chat bot. We decided to use telegram as there is good support for python using the API. We had difficulty finding a server to host our chat bot that was reliable. We tried using google cloud, however it had issues starting up after not using the bot for a few hours. Thus we used heroku which works well and suits out needs
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- ACKNOWLEDGMENTS -->
 ## Other
