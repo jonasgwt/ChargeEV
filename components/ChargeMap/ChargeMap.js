@@ -249,6 +249,13 @@ export default function ChargeMap({ navigation }) {
         "Please restart the app and try again"
       )
     );
+    if (position == undefined) {
+      Alert.alert(
+        "There is an error getting your location",
+        "Please restart the app and try again"
+      );
+      return;
+    }
     return [
       position.coords.latitude,
       position.coords.longitude,

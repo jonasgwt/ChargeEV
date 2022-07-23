@@ -46,7 +46,8 @@ export default function Address({
     await fetch(
       "https://battuta.medunes.net/api/region/" +
         countryCode +
-        "/all/?key="+battutaMedunesAPIKey
+        "/all/?key=" +
+        battutaMedunesAPIKey
     )
       .catch((err) => console.log(err))
       .then((response) => response.json())
@@ -157,6 +158,20 @@ export default function Address({
 
 const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
+    width: "95%",
+    padding: "5%",
+    borderColor: "#707070",
+    marginLeft: "2.5%",
+    borderWidth: 1,
+    fontFamily: "Inter-Regular",
+    fontSize: 20,
+    backgroundColor: "white",
+    shadowColor: "rgba(0, 0, 0, 0.101961)",
+    shadowOpacity: 100,
+    shadowRadius: 10,
+    borderRadius: 8,
+  },
+  inputAndroid: {
     width: "95%",
     padding: "5%",
     borderColor: "#707070",

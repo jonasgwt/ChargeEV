@@ -56,8 +56,8 @@ export default function EditLocation({ navigation, route }) {
   const [loadingSave, setLoadingSave] = useState(false);
   const isMounted = useRef(false);
   const [loadingDelete, setLoadingDelete] = useState(false);
-  const [status, setStatus] = useState("Loading...")
-  const [color, setColor] = useState("white")
+  const [status, setStatus] = useState("Loading...");
+  const [color, setColor] = useState("white");
 
   // make a reqeust to api to get all the states from a given country
   async function getStates(countryCode) {
@@ -95,8 +95,8 @@ export default function EditLocation({ navigation, route }) {
       const locationDoc = await getDoc(doc(firestore, "HostedLocations", id));
       setHousingType(locationDoc.data().housingType);
       setCountry(locationDoc.data().country);
-      setStatus(locationDoc.data().available ? "Available" : "In Use")
-      setColor(locationDoc.data().available ? "#1BB530" : "#ff5252")
+      setStatus(locationDoc.data().available ? "Available" : "In Use");
+      setColor(locationDoc.data().available ? "#1BB530" : "#ff5252");
       await getStates(locationDoc.data().country);
       setCity(locationDoc.data().city);
       setAddress(locationDoc.data().address);
@@ -304,18 +304,18 @@ export default function EditLocation({ navigation, route }) {
 
   // user toggled status button
   const toggleStatus = async () => {
-    setStatus("Loading...")
-    const locationRef = doc(firestore, "HostedLocations", id)
+    setStatus("Loading...");
+    const locationRef = doc(firestore, "HostedLocations", id);
     const locationDoc = await getDoc(locationRef);
     await updateDoc(locationRef, {
-      available: !locationDoc.data().available
-    })
-    setStatus(!locationDoc.data().available ? "Available" : "In Use")
-    setColor(!locationDoc.data().available ? "#1BB530" : "#ff5252")
-  }
+      available: !locationDoc.data().available,
+    });
+    setStatus(!locationDoc.data().available ? "Available" : "In Use");
+    setColor(!locationDoc.data().available ? "#1BB530" : "#ff5252");
+  };
 
   return (
-    <DismissKeyboardView>
+    <KeyboardAwareScrollView>
       {/* Back Button */}
       <TouchableOpacity
         style={styles.backButton}
@@ -384,13 +384,16 @@ export default function EditLocation({ navigation, route }) {
           style={styles.content}
           contentContainerStyle={{ paddingBottom: "175%" }}
         >
-          <TouchableOpacity style={[styles.status, {backgroundColor: color}]} onPress={toggleStatus}>
+          <TouchableOpacity
+            style={[styles.status, { backgroundColor: color }]}
+            onPress={toggleStatus}
+          >
             <Text
               style={{
                 fontFamily: "Inter-Bold",
                 fontSize: 20,
                 color: "white",
-                  textAlign: "center",
+                textAlign: "center",
               }}
             >
               Status: {status}
@@ -601,7 +604,7 @@ export default function EditLocation({ navigation, route }) {
           </Button>
         </KeyboardAwareScrollView>
       )}
-    </DismissKeyboardView>
+    </KeyboardAwareScrollView>
   );
 }
 
@@ -686,6 +689,20 @@ const pickerSelectStyles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: "3%",
   },
+  inputAndroid: {
+    width: "95%",
+    padding: "5%",
+    borderColor: "#707070",
+    marginLeft: "2.5%",
+    fontFamily: "Inter-Regular",
+    fontSize: 18,
+    backgroundColor: "white",
+    shadowColor: "rgba(0, 0, 0, 0.101961)",
+    shadowOpacity: 100,
+    shadowRadius: 10,
+    borderRadius: 8,
+    marginBottom: "3%",
+  }
 });
 
 const pickerSelectStylesHalved = StyleSheet.create({
@@ -703,4 +720,18 @@ const pickerSelectStylesHalved = StyleSheet.create({
     borderRadius: 8,
     flex: 1,
   },
+  inputAndroid: {
+    width: (Dimensions.get("window").width / 100) * 45,
+    padding: "5%",
+    borderColor: "#707070",
+    marginLeft: "2.5%",
+    fontFamily: "Inter-Regular",
+    fontSize: 18,
+    backgroundColor: "white",
+    shadowColor: "rgba(0, 0, 0, 0.101961)",
+    shadowOpacity: 100,
+    shadowRadius: 10,
+    borderRadius: 8,
+    flex: 1,
+  }
 });
