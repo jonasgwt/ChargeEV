@@ -143,6 +143,14 @@ Apollo
 - ![Heroku][Heroku.com]
 - ![Telegram][Telegram.com]
 
+### Tools used
+
+- ![Github][Github.com]
+- ![Sheets][Sheets.com]
+* Instagantt
+
+
+
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 [expo.com]: https://img.shields.io/badge/Expo-1B1F23?style=for-the-badge&logo=expo&logoColor=white
@@ -152,6 +160,8 @@ Apollo
 [Heroku.com]:  https://img.shields.io/badge/Heroku-430098?style=for-the-badge&logo=heroku&logoColor=white
 [Python.com]: https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue
 [Telegram.com]: https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=whit
+[Github.com]: https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white
+[Sheets.com]: https://img.shields.io/badge/Google%20Sheets-34A853?style=for-the-badge&logo=google-sheets&logoColor=white
 
 <!-- GETTING STARTED -->
 ## Getting Started
@@ -205,7 +215,7 @@ Alternatively, you can also test on iPhone Simulator <a href="https://drive.goog
 ### Plans
 * One drawback is that our app requires sign-ups which could hold back potential users
 - A way is to create a mode which allows for non signed up users to use the app, however CRM methods will have to be thought off to encourage them to sign up 
-* We have an advantage whichout many competitors, this also means the market share is likely to be small. There will have to be greater drive to increase potential market. 
+* We have an advantage without many competitors, this also means the market share is likely to be small. There will have to be greater drive to increase potential market. 
 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -305,6 +315,7 @@ Setting up:
 #### Telegram Bot 
 To provide a more interactive support experience. The telegram bot is created to help users troubleshoot issues they face.
 Video aids are used in the bot to help users have a visual experience. 
+It is supported by Heroku backend to ensure that we do not need to keep our own server running.
 
 TelegramBot
 <p float="left">
@@ -324,10 +335,13 @@ Plan: [Link](https://app.instagantt.com/shared/s/kY9oAKAc2ID3k56JL8l7/latest)
 ## Testing
 
 * We have carried out unit tests. All documention can be found on the google sheets.
+1. To conduct unit tests, we have identified our key features. We then broke down it into specific steps and tested them
 * We tested core features internally and after that we requested the help of peers to do testing and provide feedback to us of the product so far.
 The results are shown in the following sheet
-* We have also collected textual feedback via Google Forms and a visualisation of the positive and negative feedback can be seen on our poster. 
-* We have documented bugs that we have resolved. This helps us to understand if previously solved bugs were not squashed successfully  
+* We have also collected textual feedback via Google Forms and a visualisation of the positive and negative feedback can be seen on our poster.
+1. The feedback was collected during the acceptance testing stage of our app
+* We have documented bugs that we have resolved. This helps us to understand if previously solved bugs were not squashed successfully 
+1. Should similar bugs keep happening, there could be underlying problems that require more than a simple fix
 
 Sheet: [Sheet](https://docs.google.com/spreadsheets/d/1lI6qObjsvcQ8hcxTFgI2hN9g1sCO6TRdgVF5pagoI_w/edit?usp=sharing)
 
