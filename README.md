@@ -369,6 +369,8 @@ We also decided to add a telegram bot to value add to our product. The FAQ were 
 * We solved this by using google firebase and learning the API to understamd how to use it to manage our app data
 2. We initially had a basic page meant for user support. However after milestone 1 and during external UAT, we received feedback that it was not interactive and provided little assistance to our users. 
 * Thus we decided to create a chat bot. We decided to use telegram as there is good support for python using the API. We had difficulty finding a server to host our chat bot that was reliable. We tried using google cloud, however it had issues starting up after not using the bot for a few hours. Thus we used heroku which works well and suits out needs
+3. We are facing the challenge of badnwith limitation with firebase for loading images.
+* We have calculated the rough cost of firebase with approximately 5000 users a day at 1 hour. Approximate cost will be $50-$100
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -376,7 +378,6 @@ We also decided to add a telegram bot to value add to our product. The FAQ were 
 ## Other
 
 * For our payment plan we are considering using the paynow system
-* The api keys has been removed from github will only be uploaded after Orbital has concluded for those that hope to work on it
 * Should you have suggestions for features please open an <a href="https://github.com/jonasgwt/ChargeEV/issues">issue</a>
 * We will be working to fix bugs and add content to the telegram bot for MS3
 
