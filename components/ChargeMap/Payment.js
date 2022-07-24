@@ -40,6 +40,7 @@ export default function Payment({ navigation, route }) {
     );
     await updateDoc(locationRef, {
       available: true,
+      inBooking: false,
     });
     // update booking alerts
     await updateDoc(doc(firestore, "BookingAlerts", bookingID), {

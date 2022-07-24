@@ -753,7 +753,7 @@ export default function ChargeMap({ navigation }) {
               if (!locDoc.data().available) {
                 Alert.alert(
                   "Booking Error",
-                  "Location is already booked by another user. Please refresh."
+                  "Location is currently unavailable. Please refresh."
                 );
                 setSearching(false);
                 return;
@@ -795,6 +795,7 @@ export default function ChargeMap({ navigation }) {
               await updateDoc(locationRef, {
                 bookings: arrayUnion(bookingRef.id),
                 available: false,
+                inBooking: true,
               });
               // add alerts
               await setDoc(doc(firestore, "BookingAlerts", bookingRef.id), {
@@ -917,6 +918,7 @@ export default function ChargeMap({ navigation }) {
             await updateDoc(locationRef, {
               bookings: arrayRemove(bookingID),
               available: true,
+              inBooking: false,
             });
             // update alerts
             await updateDoc(doc(firestore, "BookingAlerts", bookingID), {

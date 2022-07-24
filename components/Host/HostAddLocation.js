@@ -286,6 +286,7 @@ export default function HostAddLocation({ navigation }) {
       locationHash: locationHash,
       bookings: [],
       available: true,
+      inBooking: false,
     });
     // Navigate to success page
     navigation.navigate("Success");

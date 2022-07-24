@@ -307,6 +307,15 @@ export default function EditLocation({ navigation, route }) {
     setStatus("Loading...");
     const locationRef = doc(firestore, "HostedLocations", id);
     const locationDoc = await getDoc(locationRef);
+    if (locationDoc.data().inBooking) {
+      Alert.alert(
+        "Location currently booked",
+        "You cannot change the status of your charger location when it's in an active booking."
+      );
+      setStatus("In Use")
+      setColor("#ff5252")
+      return;
+    }
     await updateDoc(locationRef, {
       available: !locationDoc.data().available,
     });
@@ -702,7 +711,7 @@ const pickerSelectStyles = StyleSheet.create({
     shadowRadius: 10,
     borderRadius: 8,
     marginBottom: "3%",
-  }
+  },
 });
 
 const pickerSelectStylesHalved = StyleSheet.create({
@@ -733,5 +742,5 @@ const pickerSelectStylesHalved = StyleSheet.create({
     shadowRadius: 10,
     borderRadius: 8,
     flex: 1,
-  }
+  },
 });
