@@ -21,6 +21,7 @@ import {
   endAt,
 } from "firebase/firestore";
 import { nrelAPIKey } from "../../../firebase/firebase-config";
+import AnimatedLottieView from "lottie-react-native";
 
 export default function Price({ price, setPrice, coords }) {
   const [isLoading, setIsLoading] = useState(true);
@@ -197,7 +198,26 @@ export default function Price({ price, setPrice, coords }) {
           </DismissKeyboardView>
         </ScrollView>
       ) : (
-        <Text>Loading Data...</Text>
+        <View
+          style={{ height: "80%", display: "flex", justifyContent: "center" }}
+        >
+          <AnimatedLottieView
+            autoPlay
+            style={{
+              width: 300,
+              height: 300,
+              marginTop: "-10%",
+            }}
+            source={require("../../../assets/animations/findmessages.json")}
+          />
+          <Text
+            h2
+            h2Style={{ textAlign: "center" }}
+            style={{ marginTop: "-30%" }}
+          >
+            Loading Data...
+          </Text>
+        </View>
       )}
     </View>
   );

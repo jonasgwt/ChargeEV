@@ -28,7 +28,6 @@ export default function Address({
 
   useEffect(() => {
     const asyncFunc = async () => {
-      console.log(city);
       await getStates(country);
     };
     asyncFunc();
@@ -113,7 +112,7 @@ export default function Address({
               onValueChange={setCity}
               value={city}
               placeholder={{
-                label: "Select your city",
+                label: "Select your state",
                 value: "",
               }}
               items={states}

@@ -17,7 +17,7 @@ export default function HostHomeScreen({ navigation }) {
   const [name, setName] = useState("");
 
   const userEditLocation = () => {
-    navigation.navigate("View Locations")
+    navigation.navigate("View Locations");
   };
 
   // Get first name of the host
@@ -33,17 +33,32 @@ export default function HostHomeScreen({ navigation }) {
     const userDoc = await getDoc(
       doc(firestore, "users", authentication.currentUser.uid)
     );
-      const hostDoc = await getDoc(doc(firestore, "Host", userDoc.data().hostID));
-    if (hostDoc.data().paymentMethods == undefined || hostDoc.data().paymentMethods.length == 0 ) {
-      Alert.alert("No Payment Method", "Please add a payment method before adding a hosting location");
+    const hostDoc = await getDoc(doc(firestore, "Host", userDoc.data().hostID));
+    if (
+      hostDoc.data().paymentMethods == undefined ||
+      hostDoc.data().paymentMethods.length == 0
+    ) {
+      Alert.alert(
+        "No Payment Method",
+        "Please add a payment method before adding a hosting location"
+      );
       return;
     }
-    navigation.navigate("HostAddLocation")
-  }
+    navigation.navigate("HostAddLocation");
+  };
+
+  // Checks if user is new
+  const getData = async () => {
+    const userDoc = await getDoc(
+      doc(firestore, "users", authentication.currentUser.uid)
+    );
+    if (userDoc.data().hostID == undefined) navigation.navigate("HostWelcome");
+  };
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
       await getFirstName();
+      await getData();
     });
     return unsubscribe;
   }, [navigation]);
