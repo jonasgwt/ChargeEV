@@ -348,7 +348,7 @@ Plan: [Link](https://app.instagantt.com/shared/s/kY9oAKAc2ID3k56JL8l7/latest)
 ## Testing
 
 * We have carried out unit tests. All documention can be found on the google sheets.
-*  To conduct unit tests, we have identified our key features. We then broke down it into specific steps and tested them
+* To conduct unit tests, we have identified our key features. We then broke down it into specific steps and tested them
 * We tested core features internally and after that we requested the help of peers to do testing and provide feedback to us of the product so far.
 * We have also collected textual feedback via Google Forms and a visualisation of the positive and negative feedback can be seen on our poster.
 * The feedback was collected during the acceptance testing stage of our app
@@ -366,7 +366,8 @@ Sheet: [Sheet](https://docs.google.com/spreadsheets/d/1lI6qObjsvcQ8hcxTFgI2hN9g1
 <!-- Deviations from initial plan -->
 ## Changes from initial plan
 
-<p>While we initially wanted to use our backend with MySQL, we found that Firebase suited our backend better as it allowed for user authentication and also data storage </p>
+While we initially wanted to use our backend with MySQL, we found that Firebase suited our backend better as it allowed for user authentication and also data storage
+
 We also decided to add a telegram bot to value add to our product. The FAQ were generated from feedback during our initial round of UAT.
 
 We have also decided to not support android devices. Although basic functionality is available on android devices, there are many styling issues that we were not able to fix, as it would entail a significant redesign. You can read more in the challenges section point 5.
