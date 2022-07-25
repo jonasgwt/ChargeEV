@@ -1,3 +1,4 @@
+
 <div id="top"></div>
 
 
@@ -20,11 +21,11 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/github_username/repo_name">
+  <a href="https://github.com/jonasgwt/ChargeEV">
     <img src="photo/logo_nobg_white.png" alt="Logo" width="280" height="90">
   </a>
   <p float="center">
-  <img src="photo/intro.GIF" width="50%"/>
+  <img src="photo/intro.GIF" width="40%"/>
   </p>
   
 
@@ -147,7 +148,17 @@ Apollo
 
 - ![Github][Github.com]
 - ![Sheets][Sheets.com]
+- ![Figma][Figma.com]
 * Instagantt
+
+### APIs used
+* Google Maps SDK
+* Google Places API
+* Google Geocoding API
+* Google Directions API
+* Battuta Medunes Countries API
+* The National Renewable Energy Laboratory (_NREL_) API
+* News API
 
 
 
@@ -162,11 +173,13 @@ Apollo
 [Telegram.com]: https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=whit
 [Github.com]: https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white
 [Sheets.com]: https://img.shields.io/badge/Google%20Sheets-34A853?style=for-the-badge&logo=google-sheets&logoColor=white
+[Figma.com]: https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white
 
 <!-- GETTING STARTED -->
 ## Getting Started
 
-The App has **only been optimised for IOS**, Andriod is being considered.
+The App has **only been optimised for IOS**.
+
 To start, download the ExpoGo app and scan the following QR code (In Camera App)
 Contact Mila @MilaTayJK (Telegram) should you have any issues 
 
@@ -175,7 +188,7 @@ Contact Mila @MilaTayJK (Telegram) should you have any issues
   <img src="photo/setup.GIF" width="20%" />
 </p>
 
-**Note:** Due to the limited bandwidth we have for firebase, we have temprarily disabled the displaying of some images for testing
+**Note:** When testing on Expo Go, background location is not available
 
 Alternatively, you can also test on iPhone Simulator <a href="https://drive.google.com/drive/folders/1GC19YGHUu1QHnV6HoAdkamiN6RMGNjQn?usp=sharing">here</a>
 
@@ -206,7 +219,7 @@ Alternatively, you can also test on iPhone Simulator <a href="https://drive.goog
 
 3. As administrators, we will seek to reduce predatory behaviour such as price gouging. This can be done by informing users if they are overpaying.
 
-## Competitor 
+## Competitors
 
 ### Current competition
 * We have not identified an app that implements the same ideas as ours.
@@ -288,7 +301,7 @@ Link to Figma Mockup [here](https://www.figma.com/file/BozibW7ZR0EI4SWFEHyQCm/Ch
 ### Main Feature List 
 
 #### FindACharge
-This enables drivers to find EVchargers that are near them. Chargers may not be on ChargeEV platform and are retrieved using the Google maps API.
+This enables drivers to find EV chargers that are near them. Chargers may not be on ChargeEV platform and are retrieved using the Google maps API.
 The function works by using the Google maps API by scanning the area with a 50km radius. The chargers that are within that range
 on and off the platform are both loaded and are shown to the user. They are arranged from nearest to furthest. 
 
@@ -335,16 +348,58 @@ Plan: [Link](https://app.instagantt.com/shared/s/kY9oAKAc2ID3k56JL8l7/latest)
 ## Testing
 
 * We have carried out unit tests. All documention can be found on the google sheets.
-1. To conduct unit tests, we have identified our key features. We then broke down it into specific steps and tested them
+*  To conduct unit tests, we have identified our key features. We then broke down it into specific steps and tested them
 * We tested core features internally and after that we requested the help of peers to do testing and provide feedback to us of the product so far.
-The results are shown in the following sheet
 * We have also collected textual feedback via Google Forms and a visualisation of the positive and negative feedback can be seen on our poster.
-1. The feedback was collected during the acceptance testing stage of our app
+* The feedback was collected during the acceptance testing stage of our app
 * We have documented bugs that we have resolved. This helps us to understand if previously solved bugs were not squashed successfully 
-1. Should similar bugs keep happening, there could be underlying problems that require more than a simple fix
+* Should similar bugs keep happening, there could be underlying problems that require more than a simple fix
 
 Sheet: [Sheet](https://docs.google.com/spreadsheets/d/1lI6qObjsvcQ8hcxTFgI2hN9g1sCO6TRdgVF5pagoI_w/edit?usp=sharing)
 
+<!-- Testing -->
+## Conclusions from Testing
+* For internal and unit tests, the issues that arose are mainly techinal in nature, where features fail because they do not behave as intended.
+
+* For external test, issues that were raised were regarding user experience. For instance, the lack of a back button etc. Some other issues include "good to have features" that were overlooked by us during our planning.
+
+<!-- Deviations from initial plan -->
+## Changes from initial plan
+
+<p>While we initially wanted to use our backend with MySQL, we found that Firebase suited our backend better as it allowed for user authentication and also data storage </p>
+We also decided to add a telegram bot to value add to our product. The FAQ were generated from feedback during our initial round of UAT.
+
+We have also decided to not support android devices. Although basic functionality is available on android devices, there are many styling issues that we were not able to fix, as it would entail a significant redesign. You can read more in the challenges section point 5.
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## Challenges
+
+1. We had trouble with initially using our own server to host the database and user data due to unreliable read write occuring
+* We solved this by using google firebase and learning the API to understand how to use it to manage our app data
+2. We initially had a basic page meant for user support. However after milestone 1 and during external UAT, we received feedback that it was not interactive and provided little assistance to our users. 
+* Thus we decided to create a chat bot. We decided to use telegram as there is good support for python using the API. We had difficulty finding a server to host our chat bot that was reliable. We tried using google cloud, however it had issues starting up after not using the bot for a few hours. Thus we used heroku which works well and suits out needs
+3. We are facing the challenge of bandwith limitation with firebase for loading images.
+* We have calculated the rough cost of firebase with approximately 5000 users a day at 1 hour. Approximate cost will be $50-$100. For testing, we temporarily disabled the displaying of images so that we can save up on the bandwidth.
+4.  As we do not have experience with UI/UX, we faced difficulty in creating an app that looks nice and is easy to use.
+* We took inspiration from apps such as Airbnb and Grab when planning out our app design. 
+5. Android Compatibility
+* Throughout most of the project we have been testing on IOS simulators, as such we have overlooked the aspect of android compatibility. Furthermore, we experience severe lag when testing on android simulators. With the help of some of our friends with android devices, we have fixed some of the problems, and now all basic features on android should work. However, there are still many styling issues, where fonts don't load in or some animations not working. As fixing such issues would mean a significant redesign, we have decided to focus our efforts on perfecting the IOS version instead. 
+6. Long loading times when searching for chargers
+* Since MS2, we have significantly reduced the loading time when searching for chargers. To reduce searching time, we made use of Firebase indexing, to index the chargers based on their geohash, so as to have faster queries. 
+* Another cause for the slow loading time is because of the getting of the user location. Originally we used `getCurrentPositionAsync()`, however that contributed to a couple of seconds to the loading time. Instead now, we used `getLastKnownPositionAsync()`, which can retreieve user location almost immediately.
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+<!-- Contributing -->
+## API Keys
+All API keys used are located in firebase/firebase-config.js. You can create an API key using the following links:
+* <a href="https://console.cloud.google.com/freetrial?_ga=2.230362654.38470480.1658741246-653910720.1658741243">Google Cloud Console </a>
+* <a href="https://developer.nrel.gov/signup/">NREL API</a>
+* <a href="https://battuta.medunes.net/">Bettuta Medunes</a>
+* <a href="https://newsapi.org/">News API</a>
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- CONTACT -->
 ## Contact
@@ -355,31 +410,10 @@ Name - Mila Tay (taymila1@gmail.com)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-<!-- Deviations from initial plan -->
-## Changes from initial plan
-
-<p>While we initially wanted to use our backend with MySQL, we found that Firebase suited our backend better as it allowed for user authentication and also data storage </p>
-We also decided to add a telegram bot to value add to our product. The FAQ were generated from feedback during our initial round of UAT
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-## Challenges
-
-1. We had trouble with initially using our own server to host the database and user data due to unreliable read write occuring
-* We solved this by using google firebase and learning the API to understamd how to use it to manage our app data
-2. We initially had a basic page meant for user support. However after milestone 1 and during external UAT, we received feedback that it was not interactive and provided little assistance to our users. 
-* Thus we decided to create a chat bot. We decided to use telegram as there is good support for python using the API. We had difficulty finding a server to host our chat bot that was reliable. We tried using google cloud, however it had issues starting up after not using the bot for a few hours. Thus we used heroku which works well and suits out needs
-3. We are facing the challenge of badnwith limitation with firebase for loading images.
-* We have calculated the rough cost of firebase with approximately 5000 users a day at 1 hour. Approximate cost will be $50-$100
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
 <!-- ACKNOWLEDGMENTS -->
 ## Other
 
-* For our payment plan we are considering using the paynow system
 * Should you have suggestions for features please open an <a href="https://github.com/jonasgwt/ChargeEV/issues">issue</a>
-* We will be working to fix bugs and add content to the telegram bot for MS3
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
