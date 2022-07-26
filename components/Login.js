@@ -59,7 +59,6 @@ export default function Login({ navigation }) {
             keyboardType="email-address"
             onChangeText={setEmail}
             autoCapitalize="none"
-            autoComplete={false}
           ></Input>
           <Input
             placeholder="Password"
