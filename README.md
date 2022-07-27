@@ -269,7 +269,7 @@ Link to Figma Mockup [here](https://www.figma.com/file/BozibW7ZR0EI4SWFEHyQCm/Ch
 
 <div align="center">
   <a href="">
-    <img src="photo/chargesetup.drawio.png" width="10%" >
+    <img src="photo/chargesetup.drawio.png" width="40%" >
   </a>
 </div>
 
@@ -280,7 +280,7 @@ Link to Figma Mockup [here](https://www.figma.com/file/BozibW7ZR0EI4SWFEHyQCm/Ch
 
 ### User flow
 <p float="left">
-  <img src="photo/PF.png" width="20%"/>
+  <img src="photo/PF.png" width="50%"/>
 </p>
 
 <!-- BACKEND -->
@@ -288,7 +288,7 @@ Link to Figma Mockup [here](https://www.figma.com/file/BozibW7ZR0EI4SWFEHyQCm/Ch
 
 ### Database structure
 <p float="left">
-  <img src="photo/QuickDBD-Free Diagram.png" width="25%" />
+  <img src="photo/QuickDBD-Free Diagram.png" width="40%" />
 </p>
 
 
