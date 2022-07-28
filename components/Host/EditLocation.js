@@ -261,7 +261,7 @@ export default function EditLocation({ navigation, route }) {
     if (await checkAddress()) await uploadData();
     else return;
     setLoadingSave(false);
-    navigation.navigate("ViewLocations");
+    navigation.navigate("View Locations");
   };
 
   // updates data to firebase
