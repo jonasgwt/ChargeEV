@@ -83,7 +83,7 @@
 
 * jongoh2000@gmail.com
 * [![LinkedIn][LinkedIn.com]][Jonas]
-* [![Github][Github.com]][MilaGit]
+* [![Github][Github.com]][JonasGit]
 
 ### Proposed Achivement Level
 
@@ -91,8 +91,8 @@
 
 [Github.com]: https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white
 [MilaGit]: https://github.com/taymila
-[Mila]: (https://www.linkedin.com/in/tay-jiakang-mila-61a9bb146/)
-[Jonas]: (https://www.linkedin.com/in/jonas-goh-891a15146/)
+[Mila]: https://www.linkedin.com/in/tay-jiakang-mila-61a9bb146/
+[Jonas]: https://www.linkedin.com/in/jonas-goh-891a15146/
 [JonasGit]: https://github.com/jonasgwt
 
 <!-- ABOUT THE PROJECT -->
@@ -106,7 +106,7 @@
 
 ### Aim
 
-ChargEV is a mobile-based application targeted toward EV users in large countries to
+ChargeEV is a mobile-based application targeted towards EV users in large countries to
 provide them with additional locations to charge their vehicles if superchargers are not
 available in the current area.
 
@@ -379,13 +379,13 @@ Pricing is based on a per charge basis. To help users better decide on a price, 
 
 **Payment**
 
-We have two payment methods available, cash and QR code. For cash, hosts must be at the charger location to receive the Payment during a booking. For QR code, hosts have to display a QR code for users to scan to make their payments. Hosts can choose which payment method they want to make available for their customers.
+We have two payment methods available, cash and QR code. For cash, hosts must be at the charger location to receive the payment during a booking. For QR code, hosts have to display a QR code for users to scan to make their payments. Hosts can choose which payment method they want to make available for their customers.
 
 Hosts can choose which payment method(s) they accept on the "Manage Payment Information" page. Additionally, when adding a location, hosts can choose which payment method(s) they accept for each charger location, allowing them to have the option to choose different payment methods for different charger locations they host.
 
 **Booking**
 
-Upon booking, hosts will be notified that their charger location is booked, and they can track the user location live. Details on how it works are found above in the FindACharge section. After the booking is complete and the user has made Payment, the host has to verify that they have received the Payment before the booking is closed.
+Upon booking, hosts will be notified that their charger location is booked, and they can track the user location live. Details on how it works are found above in the FindACharge section. After the booking is complete and the user has made payment, the host has to verify that they have received the Payment before the booking is closed.
 
 **Address**
 

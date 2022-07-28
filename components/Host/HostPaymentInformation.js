@@ -34,8 +34,11 @@ export default function HostPaymentInformation({ navigation }) {
       doc(firestore, "users", authentication.currentUser.uid)
     );
     setHostID(userDoc.data().hostID);
-      const hostDoc = await getDoc(doc(firestore, "Host", userDoc.data().hostID));
-    if (hostDoc.data().paymentMethods != undefined && hostDoc.data().paymentMethods.length > 0) {
+    const hostDoc = await getDoc(doc(firestore, "Host", userDoc.data().hostID));
+    if (
+      hostDoc.data().paymentMethods != undefined &&
+      hostDoc.data().paymentMethods.length > 0
+    ) {
       setCurrPaymentMethods(hostDoc.data().paymentMethods);
       setAddPaymentMethods(
         addPaymentMethods.filter(
@@ -56,6 +59,25 @@ export default function HostPaymentInformation({ navigation }) {
 
   const removePaymentMethod = async (payment) => {
     setLoading(true);
+    // check if any active hosted locations has that payment method
+    // that the user wants to remove
+    const hostDoc = await getDoc(doc(firestore, "Host", hostID));
+    const locations = hostDoc.data().locations;
+    if (
+      locations.find(async (x) => {
+        const locationDoc = await getDoc(
+          doc(firestore, "HostedLocations", x)
+        );
+        locationDoc.data().paymentMethod.find((y) => y == payment) != undefined;
+      }) != undefined
+    ) {
+      Alert.alert(
+        "Unable to remove payment method",
+        "You are not allowed to remove a payment method when it is being used by one of your hosted locations."
+      );
+      setLoading(false);
+      return;
+    }
     setAddPaymentMethods(addPaymentMethods.push(payment));
     await updateDoc(doc(firestore, "Host", hostID), {
       paymentMethods: arrayRemove(payment),
@@ -114,8 +136,8 @@ export default function HostPaymentInformation({ navigation }) {
                   </Text>
                   {currPaymentMethods.length > 1 ? (
                     <Icon
-                      name="cancel"
-                      color="red"
+                      name="delete"
+                      color="#ff4a59"
                       onPress={() => removePaymentMethod(x)}
                     />
                   ) : null}

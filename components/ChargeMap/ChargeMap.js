@@ -717,7 +717,7 @@ export default function ChargeMap({ navigation }) {
     if (location.type == "ChargeEV")
       Alert.alert(
         "Book Location?",
-        "Host will be informed. \n Cancellation is not allowed when you are near the location.",
+        "Host will be informed. \n Cancellation is not allowed when you are near the location. \n Your location will also be shared with your host while the booking is active.",
         [
           {
             text: "Cancel",
