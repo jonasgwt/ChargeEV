@@ -81,7 +81,7 @@
 
 ### Aim 
 
-ChargEV is a mobile-based application targeted towards EV users in large countries to
+ChargEV is a mobile-based application targeted toward EV users in large countries to
 provide them with additional locations to charge their vehicles if superchargers are not
 available in the current area.
 
@@ -91,7 +91,7 @@ Many countries have been shifting their focus to electric vehicles (EV) in recen
 However, in many larger countries such as the United States (US) and Australia, electric
 cars are seen as less superior compared to traditional petrol vehicles in terms of range
 and convenience.
-Due to its short range, many people are put off from purchasing EVs as they cannot
+Due to its short range, many people are put off purchasing EVs as they cannot
 travel out of large cities where superchargers are usually located. ChargEV aims to
 solve this problem by enabling people to loan out chargers so that EV users can charge
 anywhere, even in the most remote areas.
@@ -173,7 +173,7 @@ Apollo
 
 The App has **only been optimised for IOS**.
 
-To start, download the ExpoGo app and scan the following QR code (In Camera App)
+To start, download the ExpoGo app and scan the following QR code (In the Camera App)
 Contact Mila @MilaTayJK (Telegram) should you have any issues 
 
 <p float="center">
@@ -194,17 +194,17 @@ Alternatively, you can also test on iPhone Simulator <a href="https://drive.goog
 #### User
 * As a user, I want to be able to book a charger so that I can charge a car
 * As a user, I want to find chargers near me so that I don't have to drive far
-* As a user, I want to to reset my password so that I can recover my account
+* As a user, I want to reset my password so that I can recover my account
 * As a user, I want to navigate the app easily so that I can access features easily
-* As a user, I want to find non ChargeEV chargers so that I can find the nearest charger
+* As a user, I want to find non-ChargeEV chargers so that I can find the nearest charger
 * As a user, I want to cancel a booking so that I will be able to rebook 
 
 ### Host
 * As a host, I want to list my charger so that I can loan it out
-* As a host, I want to have a payment method, so that I can reiceive payment 
+* As a host, I want to have a payment method, so that I can receive payment 
 * As a host, I want to update my listings so that I can update any errors
-* As a host, I want to know when the user is approaching, so that I can check to confirm payment 
-* As a host, I want to report a user so that I can prevent this from occuring again 
+* As a host, I want to know when the user is approaching, so that I can check to confirm the payment 
+* As a host, I want to report a user so that I can prevent this from occurring again 
 
 1. Hosts can provide EV chargers at fixed prices (the app will provide an estimated cost). The host will seek to lend their chargers when they are not using them.
 
@@ -216,12 +216,12 @@ Alternatively, you can also test on iPhone Simulator <a href="https://drive.goog
 
 ### Current competition
 * We have not identified an app that implements the same ideas as ours.
-* There are apps that allow the locating of chargers in general, we are aware of such apps. We have allowed for the non ChargeEV chargers to be shown as well as this will attract more users to the app
+* There are apps that allow the locating of chargers in general, we are aware of such apps. We have allowed for the non-ChargeEV chargers to be shown as well as this will attract more users to the app
 
 ### Plans
 * One drawback is that our app requires sign-ups which could hold back potential users
-- A way is to create a mode which allows for non signed up users to use the app, however CRM methods will have to be thought off to encourage them to sign up 
-* We have an advantage without many competitors, this also means the market share is likely to be small. There will have to be greater drive to increase potential market. 
+- A way is to create a mode which allows for non-signed up users to use the app, however CRM methods will have to be thought off to encourage them to sign up 
+* We have an advantage without many competitors, this also means the market share is likely to be small. There will have to be a greater drive to increase the potential market. 
 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -294,9 +294,9 @@ Link to Figma Mockup [here](https://www.figma.com/file/BozibW7ZR0EI4SWFEHyQCm/Ch
 ### Main Feature List 
 
 #### FindACharge
-This enables drivers to find EV chargers that are near them. Chargers may not be on ChargeEV platform and are retrieved using the Google maps API.
-The function works by using the Google maps API by scanning the area with a 50km radius. The chargers that are within that range
-on and off the platform are both loaded and are shown to the user. They are arranged from nearest to furthest. 
+This enables drivers to find EV chargers that are near them. Chargers may not be on ChargeEV platform and are retrieved using the Google Maps API.
+The function works by using the Google maps API by scanning the area within a 50km radius. The chargers that are within that range
+on and off the platform are both loaded and shown to the user. They are arranged from nearest to furthest. 
 
 On Platform / Off Platform (Chargers not on ChargeEV platform):
 <p float="center">
@@ -307,9 +307,9 @@ On Platform / Off Platform (Chargers not on ChargeEV platform):
 
 
 #### GiveACharge
-This enables individuals or comapanies to loan out their chargers. The fees are pre-determined.
-We used an API to calculate the average electricity cost of the area around the charger and also the chargers around.
-This helps the host better guage the pricing. Hosts will be notified when user is nearby, this is done via Expo Geo-fencing
+This enables individuals or companies to loan out their chargers. The fees are pre-determined.
+We used an API to calculate the average electricity cost of the area around the charger and also the chargers around it.
+This helps the host better gauge the pricing. Hosts will be notified when the user is nearby, this is done via Expo Geo-fencing
 
 Setting up:
 <p float="left">
@@ -321,7 +321,7 @@ Setting up:
 #### Telegram Bot 
 To provide a more interactive support experience. The telegram bot is created to help users troubleshoot issues they face.
 Video aids are used in the bot to help users have a visual experience. 
-It is supported by Heroku backend to ensure that we do not need to keep our own server running.
+It is supported by Heroku backend to ensure that we do not need to keep our server running.
 
 TelegramBot
 <p float="left">
@@ -340,9 +340,9 @@ Plan: [Link](https://app.instagantt.com/shared/s/kY9oAKAc2ID3k56JL8l7/latest)
 <!-- Testing -->
 ## Testing
 
-* We have carried out unit tests. All documention can be found on the google sheets.
+* We have carried out unit tests. All documentation can be found on google sheets.
 * To conduct unit tests, we have identified our key features. We then broke down it into specific steps and tested them
-* We tested core features internally and after that we requested the help of peers to do testing and provide feedback to us of the product so far.
+* We tested core features internally and after that, we requested the help of peers to do testing and provide feedback to us on the product so far.
 * We have also collected textual feedback via Google Forms and a visualisation of the positive and negative feedback can be seen on our poster.
 * The feedback was collected during the acceptance testing stage of our app
 * We have documented bugs that we have resolved. This helps us to understand if previously solved bugs were not squashed successfully 
@@ -352,16 +352,16 @@ Sheet: [Sheet](https://docs.google.com/spreadsheets/d/1lI6qObjsvcQ8hcxTFgI2hN9g1
 
 <!-- Testing -->
 ## Conclusions from Testing
-* For internal and unit tests, the issues that arose are mainly techinal in nature, where features fail because they do not behave as intended.
+* For internal and unit tests, the issues that arose are mainly technical in nature, where features fail because they do not behave as intended.
 
-* For external test, issues that were raised were regarding user experience. For instance, the lack of a back button etc. Some other issues include "good to have features" that were overlooked by us during our planning.
+* For the external test, issues that were raised were regarding user experience. For instance, the lack of a back button etc. Some other issues include "good to have features" that were overlooked by us during our planning.
 
 <!-- Deviations from initial plan -->
-## Changes from initial plan
+## Changes from the initial plan
 
 * While we initially wanted to use our backend with MySQL, we found that Firebase suited our backend better as it allowed for user authentication and also data storage
 
-* We also decided to add a telegram bot to value add to our product. The FAQ were generated from feedback during our initial round of UAT.
+* We also decided to add a telegram bot to value add to our product. The FAQ was generated from feedback during our initial round of UAT.
 
 * We have also decided to not support android devices. Although basic functionality is available on android devices, there are many styling issues that we were not able to fix, as it would entail a significant redesign. You can read more in the challenges section point 5.
 
@@ -369,19 +369,19 @@ Sheet: [Sheet](https://docs.google.com/spreadsheets/d/1lI6qObjsvcQ8hcxTFgI2hN9g1
 
 ## Challenges
 
-1. We had trouble with initially using our own server to host the database and user data due to unreliable read write occuring
+1. We had trouble with initially using our own server to host the database and user data due to unreliable read-write occuring
 * We solved this by using google firebase and learning the API to understand how to use it to manage our app data
-2. We initially had a basic page meant for user support. However after milestone 1 and during external UAT, we received feedback that it was not interactive and provided little assistance to our users. 
-* Thus we decided to create a chat bot. We decided to use telegram as there is good support for python using the API. We had difficulty finding a server to host our chat bot that was reliable. We tried using google cloud, however it had issues starting up after not using the bot for a few hours. Thus we used heroku which works well and suits out needs
-3. We are facing the challenge of bandwith limitation with firebase for loading images.
-* We have calculated the rough cost of firebase with approximately 5000 users a day at 1 hour. Approximate cost will be $50-$100. For testing, we temporarily disabled the displaying of images so that we can save up on the bandwidth.
+2. We initially had a basic page meant for user support. However, after milestone 1 and during external UAT, we received feedback that it was not interactive and provided little assistance to our users. 
+* Thus we decided to create a chatbot. We decided to use telegram as there is good support for python using the API. We had difficulty finding a server to host our chatbot that was reliable. We tried using google cloud, however, it had issues starting up after not using the bot for a few hours. Thus we used heroku which works well and suits out needs
+3. We are facing the challenge of bandwidth limitation with firebase for loading images.
+* We have calculated the rough cost of firebase with approximately 5000 users a day at 1 hour. The approximate cost will be $50-$100. For testing, we temporarily disabled the display of images so that we can save up on bandwidth.
 4.  As we do not have experience with UI/UX, we faced difficulty in creating an app that looks nice and is easy to use.
 * We took inspiration from apps such as Airbnb and Grab when planning out our app design. 
 5. Android Compatibility
-* Throughout most of the project we have been testing on IOS simulators, as such we have overlooked the aspect of android compatibility. Furthermore, we experience severe lag when testing on android simulators. With the help of some of our friends with android devices, we have fixed some of the problems, and now all basic features on android should work. However, there are still many styling issues, where fonts don't load in or some animations not working. As fixing such issues would mean a significant redesign, we have decided to focus our efforts on perfecting the IOS version instead. 
+* Throughout most of the project we have been testing on IOS simulators, as such, we have overlooked the aspect of android compatibility. Furthermore, we experience severe lag when testing on android simulators. With the help of some of our friends with android devices, we have fixed some of the problems, and now all basic features on android should work. However, there are still many styling issues, where fonts don't load in or some animations do not work. As fixing such issues would mean a significant redesign, we have decided to focus our efforts on perfecting the IOS version instead. 
 6. Long loading times when searching for chargers
-* Since MS2, we have significantly reduced the loading time when searching for chargers. To reduce searching time, we made use of Firebase indexing, to index the chargers based on their geohash, so as to have faster queries. 
-* Another cause for the slow loading time is because of the getting of the user location. Originally we used `getCurrentPositionAsync()`, however that contributed to a couple of seconds to the loading time. Instead now, we used `getLastKnownPositionAsync()`, which can retreieve user location almost immediately.
+* Since MS2, we have significantly reduced the loading time when searching for chargers. To reduce searching time, we made use of Firebase indexing, to index the chargers based on their geohash, to have faster queries. 
+* Another cause for the slow loading time is because of the getting of the user location. Originally we used `getCurrentPositionAsync()`, however, which contributed to a couple of seconds to the loading time. Instead, now, we used `getLastKnownPositionAsync()`, which can receive user location almost immediately.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -410,21 +410,3 @@ Name - Mila Tay (taymila1@gmail.com)
 * Should you have suggestions for features please open an <a href="https://github.com/jonasgwt/ChargeEV/issues">issue</a>
 
 <p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/github_username/repo_name.svg?style=for-the-badge
-[contributors-url]: https://github.com/github_username/repo_name/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/github_username/repo_name.svg?style=for-the-badge
-[forks-url]: https://github.com/github_username/repo_name/network/members
-[stars-shield]: https://img.shields.io/github/stars/github_username/repo_name.svg?style=for-the-badge
-[stars-url]: https://github.com/github_username/repo_name/stargazers
-[issues-shield]: https://img.shields.io/github/issues/github_username/repo_name.svg?style=for-the-badge
-[issues-url]: https://github.com/github_username/repo_name/issues
-[license-shield]: https://img.shields.io/github/license/github_username/repo_name.svg?style=for-the-badge
-[license-url]: https://github.com/github_username/repo_name/blob/master/LICENSE.txt
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/linkedin_username
-[product-screenshot]: images/screenshot.png
