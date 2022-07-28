@@ -5,9 +5,10 @@
 
 
 <!-- PROJECT SHIELDS -->
-[![LinkedIn][linkedin-shield]](https://www.linkedin.com/in/jonas-goh-891a15146/)(Jonas)
-[![LinkedIn][linkedin-shield]](https://www.linkedin.com/in/tay-jiakang-mila-61a9bb146/)(Mila)
-
+## Connect with us
+![LinkedIn][LinkedIn.com]
+- [Mila](https://www.linkedin.com/in/tay-jiakang-mila-61a9bb146/)
+- [Jonas](https://www.linkedin.com/in/jonas-goh-891a15146/)
 
 
 
@@ -167,6 +168,7 @@ Apollo
 [Github.com]: https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white
 [Sheets.com]: https://img.shields.io/badge/Google%20Sheets-34A853?style=for-the-badge&logo=google-sheets&logoColor=white
 [Figma.com]: https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white
+[LinkedIn.com]: https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white
 
 <!-- GETTING STARTED -->
 ## Getting Started
