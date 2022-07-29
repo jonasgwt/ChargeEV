@@ -63,9 +63,11 @@
       </ul>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#testing">Testing</a></li>
+    <li><a href="#git-workflow">Git Workflow</a></li>
     <li><a href="#changes-from-the-initial-plan">Changes from the initial plan</a></li>
     <li><a href="#challenges">Challenges</a></li>
     <li><a href="#api-keys">API Keys</a></li>
+    <li><a href="#future-features">Future Features</a></li>
     <li><a href="#other">Others</a></li>
   </ol>
 </details>
@@ -457,7 +459,7 @@ For instance, person A is working on Host features for the app, while person B i
 
 After we are done with creating our assigned feature, we will then merge with the master branch. Should there be any conflicts, we will review the conflicted code together.
 
-<img src="photo/gitPR.png" width="50%"/>
+<img src="photo/gitPR.png" width="40%"/>
 
 <!-- Deviations from initial plan -->
 ## Changes from the initial plan
