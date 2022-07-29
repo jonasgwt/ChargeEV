@@ -358,6 +358,15 @@ Upon arriving at the location, we will immediately stop the location update with
 We have also used background location tracking to retrieve users' location when they make their way to a charger location during a booking, even when their app is closed.
 If the user does not allow for background tracking, during the live tracking page, hosts will be informed that the location of the user might not be updated.
 
+**Notifications**
+
+As a user, you will receive notifications
+
+* upon arrival at charger location
+* when the host verifies your payment
+
+This is achieved by making use of expo push notifications. Upon launch of the app, we will prompt the user for permission to send push notifications. If accepted, we will generate a unique `expoPushToken`, and store it in firebase. When sending a notification, we made use of Expo Push API and the unique token we received earlier to send a notification to a user.
+
 <br>
 
 **Note:** As we do not have information on charger types and pricing for public chargers, filtering by charger type or sorting by cheapest will not display any public chargers.
@@ -398,6 +407,17 @@ During the address stage, we used the Google Geocoding API to ensure that the lo
 **Edit Locations**
 
 Hosts can also edit details about their location or remove the location. For example, if the host does not want their charger to be available for rent for a period of time, they can set it to "In Use", and their charger would not be booked. Note that hosts will not be able to change the availability of their charger when the location is in an active booking.
+
+**Notifications**
+
+As a host, you will receive a notification
+
+* when your location gets booked
+* when the user arrives at the location
+* when the user has completed the payment
+* when the user has canceled the booking
+
+Details on how the push notification is sent are found in the notifications section of FindACharge.
 
 **Setting up:**
 <p float="left">
