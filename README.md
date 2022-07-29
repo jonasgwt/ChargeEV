@@ -97,6 +97,8 @@
 [Jonas]: https://www.linkedin.com/in/jonas-goh-891a15146/
 [JonasGit]: https://github.com/jonasgwt
 
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
@@ -243,6 +245,8 @@ Alternatively, you can also test on iPhone Simulator <a href="https://drive.goog
 
 3. As administrators, we will seek to reduce predatory behaviour such as price gouging. This can be done by informing users if they are overpaying.
 
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 ## Competitors
 
 ### Current competition
@@ -301,8 +305,6 @@ App Mockup: [Figma](https://www.figma.com/file/BozibW7ZR0EI4SWFEHyQCm/ChargeEV).
     <img src="photo/chargesetup.drawio.png" width="40%" >
   </a>
 </div>
-
-<p align="right">(<a href="#top">back to top</a>)</p>
 
 ### User flow
 
@@ -431,6 +433,8 @@ Refer to the development plan
 
 Plan: [Instagantt](https://app.instagantt.com/shared/s/kY9oAKAc2ID3k56JL8l7/latest)
 
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 <!-- Testing -->
 ## Testing
 
@@ -451,6 +455,8 @@ Testing: [Google Sheets](https://docs.google.com/spreadsheets/d/1lI6qObjsvcQ8hcx
 
 * For the external test, issues that were raised were regarding user experience. For instance, the lack of a back button etc. Some other issues include "good to have features" that were overlooked by us during our planning.
 
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 ## Git Workflow
 
 As we split the work by features, most of the time, we will be working on different components simultaneously. This is done by making use of branches in Github.
@@ -460,6 +466,8 @@ For instance, person A is working on Host features for the app, while person B i
 After we are done with creating our assigned feature, we will then merge with the master branch. Should there be any conflicts, we will review the conflicted code together.
 
 <img src="photo/gitPR.png" width="40%"/>
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- Deviations from initial plan -->
 ## Changes from the initial plan
@@ -528,6 +536,8 @@ There are also several features that we want to develop but are unable to due to
 
 * Providing charger type and price information for public chargers <br>
 We could not find a reliable API that provides such comprehensive information for public chargers worldwide.
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- ACKNOWLEDGMENTS -->
 ## Other
