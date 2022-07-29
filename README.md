@@ -457,7 +457,7 @@ For instance, person A is working on Host features for the app, while person B i
 
 After we are done with creating our assigned feature, we will then merge with the master branch. Should there be any conflicts, we will review the conflicted code together.
 
-<img src="photo/gitPR.png" width="70%"/>
+<img src="photo/gitPR.png" width="50%"/>
 
 <!-- Deviations from initial plan -->
 ## Changes from the initial plan
