@@ -418,11 +418,12 @@ TelegramBot
 ## Roadmap
 
 ### Planning
-* For our planning, we employed Agile. We broke our App features into smaller deliverables. Within the 3 months period, we worked on each feature by: 
+
+* For our planning, we employed Agile. We broke our App features into smaller deliverables. Within the 3 months period, we worked on each feature by:
 * Planning -> Design -> Code -> Test -> Reflect
 * This allowed for us to work fast and build our product feature by feature. With Agile, we do not need to spend excessive amount of time to debug and test.
 * Our roadmap was adjusted when we realised we were unable to meet deadlines
-* We used product management tools such as instagantt to distribute work and better picture our roadmap 
+* We used product management tools such as instagantt to distribute work and better picture our roadmap
 
 Refer to the development plan
 
@@ -447,6 +448,16 @@ Testing: [Google Sheets](https://docs.google.com/spreadsheets/d/1lI6qObjsvcQ8hcx
 * For internal and unit tests, the issues that arose are mainly technical in nature, where features fail because they do not behave as intended.
 
 * For the external test, issues that were raised were regarding user experience. For instance, the lack of a back button etc. Some other issues include "good to have features" that were overlooked by us during our planning.
+
+## Git Workflow
+
+As we split the work by features, most of the time, we will be working on different components simultaneously. This is done by making use of branches in Github.
+
+For instance, person A is working on Host features for the app, while person B is working on the ChargeMap features. We will create two separate branches, and persons A and B will work on their respective branches.
+
+After we are done with creating our assigned feature, we will then merge with the master branch. Should there be any conflicts, we will review the conflicted code together.
+
+<img src="photo/gitPR.png" width="70%"/>
 
 <!-- Deviations from initial plan -->
 ## Changes from the initial plan
@@ -500,6 +511,21 @@ All API keys used are located in firebase/firebase-config.js. You can create an 
 * <a href="https://newsapi.org/">News API</a>
 
 <p align="right">(<a href="#top">back to top</a>)</p>
+
+## Future Features
+
+Due to our limited time, we cannot develop several features that will further improve the app.
+
+* View Booking History Feature
+* Android Compatibility
+* Chat Feature
+
+There are also several features that we want to develop but are unable to due to the lack of a reliable API.
+
+* Charging users by kwh <br> There are APIs that allow us to track how much by kwh a user used at the charging station. However, not every EV company has an API, and there isn't one API that can be used for all EVs. For now, only Tesla has an API that allows such tracking as seen <a href="https://www.teslaapi.io/">here</a>
+
+* Providing charger type and price information for public chargers <br>
+We could not find a reliable API that provides such comprehensive information for public chargers worldwide.
 
 <!-- ACKNOWLEDGMENTS -->
 ## Other
