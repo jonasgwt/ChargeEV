@@ -27,7 +27,7 @@ are willing to loan out their chargers.
 <!-- Video -->
 
 <figure class="video_container">
-<iframe src="https://drive.google.com/file/d/15IoMpuw_LE40LSMfbkVvX-5mrZaeaUZj/preview" allow="autoplay"></iframe>
+<iframe src="https://drive.google.com/file/d/15IoMpuw_LE40LSMfbkVvX-5mrZaeaUZj/preview" width="640" height="480" allow="autoplay"></iframe>
 </figure>
 
 
