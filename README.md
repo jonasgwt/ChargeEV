@@ -210,7 +210,10 @@ Contact Mila @MilaTayJK (Telegram) should you have any issues
   <img src="photo/setup.GIF" width="20%" />
 </p>
 
-**Note:** When testing on Expo Go, background location is not available
+**Note:** 
+
+- When testing on Expo Go, background location is not available
+- **This demo is available until the end of August 2022**
 
 Alternatively, you can also test on iPhone Simulator <a href="https://drive.google.com/drive/folders/1GC19YGHUu1QHnV6HoAdkamiN6RMGNjQn?usp=sharing">here</a>
 
