@@ -17,6 +17,6 @@ For instance, person A is working on Host features for the app, while person B i
 
 After we are done with creating our assigned feature, we will then merge with the master branch. Should there be any conflicts, we will review the conflicted code together.
 
-<img src="{{ "assets/photo/gitPR.PNG" | relative_url }}" width="40%"/>
+<img src="{{ "assets/photo/gitpr.png" | relative_url }}" width="40%"/>
 
 <p align="right">(<a href="#top">back to top</a>)</p>
