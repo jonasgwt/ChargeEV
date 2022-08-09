@@ -24,22 +24,28 @@ are willing to loan out their chargers.
 [View it on GitHub](https://github.com/jonasgwt/ChargeEV){: .btn .btn-green .fs-5 .mb-4 .mb-md-0 }
 
 ---
+<!-- Video -->
+
+<figure class="video_container">
+<iframe src="https://drive.google.com/file/d/15IoMpuw_LE40LSMfbkVvX-5mrZaeaUZj/preview" allow="autoplay"></iframe>
+</figure>
+
 
 <!-- ABOUT THE PROJECT -->
 
-## Aim
+### Aim
 
-ChargEV is a mobile-based application targeted towards EV users in large countries to
+ChargeEV is a mobile-based application targeted towards EV users in large countries to
 provide them with additional locations to charge their vehicles if superchargers are not
 available in the current area.
 
-## Motivation
+### Motivation
 
 Many countries have been shifting their focus to electric vehicles (EV) in recent years.
 However, in many larger countries such as the United States (US) and Australia, electric
 cars are seen as less superior compared to traditional petrol vehicles in terms of range
 and convenience.
-Due to its short range, many people are put off from purchasing EVs as they cannot
+Due to its short range, many people are put off purchasing EVs as they cannot
 travel out of large cities where superchargers are usually located. ChargEV aims to
 solve this problem by enabling people to loan out chargers so that EV users can charge
 anywhere, even in the most remote areas.
@@ -48,62 +54,60 @@ their chargers and rent them out. With outdoor chargers costing up to $15000, so
 users might be unwilling to install them. Additionally, in rural areas, there might be a lack
 of charging stations, and thus users will be able to share.
 
-## Key Features
+### Key Features
 
-- ChargEV will consist of two sections, GetACharge and GiveACharge.
-- GetACharge will consist of users looking to charge their EVs. Using their current
-  location, the app will find suitable chargers for the user, and they can then select
-  the preferred charge point depending on distance etc.
-- GiveACharge will consist of hosts that provide users with charging points. Hosts
-  offer details such as an address, photos, charger type, available times,
-  instructions etc. Hosts can also have the option to charge users a chosen
-  amount. The app will provide a recommended cost for the host based on their
-  need to charge. Users will tentatively make payments through a QR code.
+* ChargEV will consist of two sections, GetACharge and GiveACharge.
+* GetACharge will consist of users looking to charge their EVs. Using their current
+location, the app will find suitable chargers for the user, and they can then select
+the preferred charge point depending on distance etc.
+* GiveACharge will consist of hosts that provide users with charging points. Hosts
+offer details such as an address, photos, charger type, available times,
+instructions etc. Hosts can also have the option to charge users a chosen
+amount. The app will provide a recommended cost for the host based on their
+need to charge. Users will tentatively make payments through a QR code.
+
+### Target Audience
+
+* ChargEV will be targeting countries or areas that are more sparse where it is more difficult to locate
+a charger
+* Such areas include the rural areas in the United States
+* We do not believe the host feature will be used significantly in Singapore due to the density of EV chargers present
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Tech Stack
 
-- ![Expo][expo.com]
-- ![Javascript][js.com]
-- ![Firebase][firebase.com]
-- ![Google Cloud][googleCloud.com]
-- ![Python][Python.com]
-- ![Heroku][Heroku.com]
-- ![Telegram][Telegram.com]
+### Built With
 
-## Target Audience
+* ![Expo][expo.com]
+* ![Javascript][js.com]
+* ![Firebase][firebase.com]
+* ![Google Cloud][googleCloud.com]
+* ![Python][Python.com]
+* ![Heroku][Heroku.com]
+* ![Telegram][Telegram.com]
 
-- ChargEV will be targeting countries or areas that are more sparse where it is more difficult to locate
-  a charger
-- Such areas include the rural areas in the United States
-- We do not believe the host feature will be used significantly in Singapore due to the density of EV chargers present
+### Tools used
 
-## User Stories
+* ![Github][Github.com]
+* ![Sheets][Sheets.com]
+* ![Figma][Figma.com]
 
-1. Hosts can provide EV chargers at fixed prices (the app will provide an estimated cost). The host will seek to lend their chargers when they are not using them.
+* Instagantt
 
-2. Users can find and select their preferred locations and suitable chargers within the area. As a user, I might be unable to find chargers near me, especially if there is no well-developed EV network in my country.
+### APIs used
 
-3. As administrators, we will seek to reduce predatory behaviour such as price gouging. This can be done by informing users if they are overpaying.
+* Google Maps SDK
 
-## Current competition
+* Google Places API
 
-- We have not identified an app that implements the same ideas as ours.
-- There are apps that allow the locating of chargers in general, we are aware of such apps. We have allowed for the non ChargeEV chargers to be shown as well as this will attract more users to the app
+* Google Geocoding API
+* Google Directions API
+* Battuta Medunes Countries API
+* The National Renewable Energy Laboratory (_NREL_) API
+* News API
 
-## Plans
-
-- One drawback is that our app requires sign-ups which could hold back potential users
-
-* A way is to create a mode which allows for non signed up users to use the app, however CRM methods will have to be thought off to encourage them to sign up
-
-- We have an advantage whichout many competitors, this also means the market share is likely to be small. There will have to be greater drive to increase potential market.
-
-## Roadmap
-
-Refer to the development plan
-
-Plan: [Link](https://app.instagantt.com/shared/s/kY9oAKAc2ID3k56JL8l7/latest)
-
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 [expo.com]: https://img.shields.io/badge/Expo-1B1F23?style=for-the-badge&logo=expo&logoColor=white
 [js.com]: https://img.shields.io/badge/JavaScript-323330?style=for-the-badge&logo=javascript&logoColor=F7DF1E
@@ -111,4 +115,8 @@ Plan: [Link](https://app.instagantt.com/shared/s/kY9oAKAc2ID3k56JL8l7/latest)
 [googleCloud.com]: https://img.shields.io/badge/Google_Cloud-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white
 [Heroku.com]:  https://img.shields.io/badge/Heroku-430098?style=for-the-badge&logo=heroku&logoColor=white
 [Python.com]: https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue
-[Telegram.com]: https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white
+[Telegram.com]: https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=whit
+[Github.com]: https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white
+[Sheets.com]: https://img.shields.io/badge/Google%20Sheets-34A853?style=for-the-badge&logo=google-sheets&logoColor=white
+[Figma.com]: https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white
+[LinkedIn.com]: https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white

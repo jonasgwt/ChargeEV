@@ -5,21 +5,19 @@
 layout: page
 title: Others
 permalink: /others
-nav_order: 6
+nav_order: 12
 ---
 
-## Changes from initial plan
-
----
-
-<p>While we initially wanted to use our backend with MySQL, we found that Firebase suited our backend better as it allowed for user authentication and also data storage </p>
-We also decided to add a telegram bot to value add to our product. The FAQ were generated from feedback during our initial round of UAT
-
-## Others
+# Others
 
 ---
 
-* For our payment plan we are considering using the paynow system
-* The api keys has been removed from github will only be uploaded after Orbital has concluded for those that hope to work on it
-* Should you have suggestions for features please open an <a href="https://github.com/jonasgwt/ChargeEV/issues">issue</a>
-* We will be working to fix bugs and add content to the telegram bot for MS3
+## Changes from the initial plan
+
+* While we initially wanted to use our backend with MySQL, we found that Firebase suited our backend better as it allowed for user authentication and also data storage
+
+* We also decided to add a telegram bot to value add to our product. The FAQ was generated from feedback during our initial round of UAT.
+
+* We have also decided to not support android devices. Although basic functionality is available on android devices, there are many styling issues that we were not able to fix, as it would entail a significant redesign. You can read more in the challenges section point 5.
+
+<p align="right">(<a href="#top">back to top</a>)</p>
