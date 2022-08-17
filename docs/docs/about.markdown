@@ -48,7 +48,7 @@ However, in many larger countries such as the United States (US) and Australia, 
 cars are seen as less superior compared to traditional petrol vehicles in terms of range
 and convenience.
 Due to its short range, many people are put off purchasing EVs as they cannot
-travel out of large cities where superchargers are usually located. ChargEV aims to
+travel out of large cities where superchargers are usually located. ChargeEV aims to
 solve this problem by enabling people to loan out chargers so that EV users can charge
 anywhere, even in the most remote areas.
 While apps on the market show EV chargers locations, it does not enable users to add
@@ -58,7 +58,7 @@ of charging stations, and thus users will be able to share.
 
 ### Key Features
 
-* ChargEV will consist of two sections, GetACharge and GiveACharge.
+* ChargeEV will consist of two sections, GetACharge and GiveACharge.
 * GetACharge will consist of users looking to charge their EVs. Using their current
 location, the app will find suitable chargers for the user, and they can then select
 the preferred charge point depending on distance etc.
@@ -70,7 +70,7 @@ need to charge. Users will tentatively make payments through a QR code.
 
 ### Target Audience
 
-* ChargEV will be targeting countries or areas that are more sparse where it is more difficult to locate
+* ChargeEV will be targeting countries or areas that are more sparse where it is more difficult to locate
 a charger
 * Such areas include the rural areas in the United States
 * We do not believe the host feature will be used significantly in Singapore due to the density of EV chargers present
@@ -94,15 +94,12 @@ a charger
 * ![Github][Github.com]
 * ![Sheets][Sheets.com]
 * ![Figma][Figma.com]
-
 * Instagantt
 
 ### APIs used
 
 * Google Maps SDK
-
 * Google Places API
-
 * Google Geocoding API
 * Google Directions API
 * Battuta Medunes Countries API
